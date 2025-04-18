@@ -28,6 +28,8 @@ interface UserProfile {
 // Combine Firebase User info with your UserProfile
 interface AppUser extends FirebaseUser {
   profile: UserProfile | null; // Store fetched profile data here
+  isOwner?: boolean; // Direct access to isOwner property
+  username?: string; // Direct access to username property
 }
 
 
@@ -64,7 +66,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         // Combine Firebase user with Firestore profile
-        setCurrentUser({ ...firebaseUser, profile: userProfile });
+        setCurrentUser({
+          ...firebaseUser,
+          profile: userProfile,
+          isOwner: userProfile?.isOwner,
+          username: userProfile?.username
+        });
 
       } else {
         // User is signed out
