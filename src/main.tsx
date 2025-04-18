@@ -33,8 +33,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   </React.StrictMode>
 );
 
-// Register service worker for caching
-registerServiceWorker();
+// Register service worker for caching only in production and browser environment
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+  registerServiceWorker();
+}
 
-// Initialize performance analytics
-analytics.init();
+// Initialize performance analytics only in browser environment
+if (typeof window !== 'undefined') {
+  analytics.init();
+}

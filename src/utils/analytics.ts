@@ -43,17 +43,30 @@ const config = {
 export const initAnalytics = (): void => {
   if (!config.enabled) return;
   if (!shouldSample()) return;
+  if (typeof window === 'undefined') return; // Skip if not in browser environment
+
+  // Increase max listeners to avoid warnings
+  if (window.EventTarget && window.EventTarget.prototype.addEventListener) {
+    // @ts-ignore - setMaxListeners is not in the type definitions
+    if (typeof EventTarget.prototype.setMaxListeners === 'function') {
+      // @ts-ignore
+      EventTarget.prototype.setMaxListeners(20);
+    }
+  }
 
   // Register performance observers
   registerPerformanceObservers();
 
-  // Collect metrics on page load
-  window.addEventListener('load', () => {
+  // Collect metrics on page load - use once option to avoid memory leaks
+  const loadHandler = () => {
     setTimeout(() => {
       const metrics = collectMetrics();
       reportMetrics(metrics);
     }, 1000);
-  });
+    window.removeEventListener('load', loadHandler);
+  };
+
+  window.addEventListener('load', loadHandler);
 };
 
 // Determine if this session should be sampled
