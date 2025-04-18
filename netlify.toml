@@ -1,14 +1,14 @@
 [build]
   base = "/"
   publish = "dist"
-  command = "bash netlify-build.sh || npm run simple-build || bash direct-build.sh"
+  command = "npm install && npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
 
 # Production context: all deploys from the main branch
 [context.production]
-  command = "bash netlify-build.sh || npm run simple-build || bash direct-build.sh"
+  command = "npm install && npm run build"
 
 # Redirects and headers are GLOBAL for all builds
 [[redirects]]

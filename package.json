@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "optimize-images": "node scripts/optimize-images.js",
-    "build:prod": "npm run optimize-images && npm run build",
+    "build:prod": "npm run build",
     "test:performance": "node scripts/performance-test.js",
     "analyze-bundle": "vite build --mode analyze",
     "deploy:netlify": "node scripts/deploy-netlify.js",
