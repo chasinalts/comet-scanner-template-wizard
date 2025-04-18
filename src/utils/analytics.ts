@@ -46,7 +46,7 @@ export const initAnalytics = (): void => {
   if (typeof window === 'undefined') return; // Skip if not in browser environment
 
   // Increase max listeners to avoid warnings
-  if (window.EventTarget && window.EventTarget.prototype.addEventListener) {
+  if (window.EventTarget) {
     // @ts-ignore - setMaxListeners is not in the type definitions
     if (typeof EventTarget.prototype.setMaxListeners === 'function') {
       // @ts-ignore
