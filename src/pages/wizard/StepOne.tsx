@@ -170,22 +170,15 @@ const StepOne = () => {
             size="xl"
           >
             <div className="relative">
-              <div className="flex justify-center items-center bg-white dark:bg-gray-800 rounded-lg p-4">\n                <ResponsiveImageWithPlaceholder
-                <OptimizedImage
+              <div className="flex justify-center items-center bg-white dark:bg-gray-800 rounded-lg p-4">
+                <ResponsiveImageWithPlaceholder
                   src={selectedImage}
                   alt={selectedTitle}
                   className="max-w-full max-h-[80vh] object-contain"
                   loading="eager"
+                  gallerySize={false}
+                  sizes="(max-width: 768px) 100vw, 1200px"
                 />
-              </div>
-            </div>
-          </Modal>
-        )}
-      </div>
-    </div>
-  );
-};
-
               </div>
             </div>
           </Modal>
