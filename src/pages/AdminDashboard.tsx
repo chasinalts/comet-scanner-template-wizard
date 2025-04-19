@@ -14,6 +14,7 @@ import { useAdminContent } from '../hooks/useAdminContent';
 import type { Question, QuestionOption } from '../types/questions';
 import type { Section } from '../hooks/useSections';
 import TrashIcon from '../components/ui/TrashIcon';
+import TemplateCreator from '../components/TemplateCreator';
 
 interface UploadingState {
   questionId?: string;
@@ -478,6 +479,7 @@ export default function AdminDashboard() {
       {/* Template Builder Section */}
       <section className="space-y-8">
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Template Builder</h2>
+        <TemplateCreator />
         <div className="space-y-6">
           <Button onClick={addSection}>Add New Section</Button>
           <Reorder.Group axis="y" values={sections} onReorder={reorderSections} className="space-y-4">

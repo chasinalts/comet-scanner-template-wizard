@@ -2,8 +2,9 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   createUserWithEmailAndPassword,
-  signOut,
+  signOut, 
   User as FirebaseUser // Rename to avoid conflict with local User interface if needed
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
@@ -37,6 +38,8 @@ interface AuthContextType {
   currentUser: AppUser | null; // Use the combined AppUser type
   login: (email: string, password: string) => Promise<void>; // Use email for Firebase
   signup: (email: string, password: string, isOwner: boolean) => Promise<void>; // Use email for Firebase
+  sendPasswordResetEmail: (email: string) => Promise<void>;
+  saveTemplate: (templateName: string, templateData: any, currentUser: AppUser) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
 }
@@ -51,31 +54,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Firebase's listener for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setIsLoading(true);
-      if (firebaseUser) {
-        // User is signed in, fetch their profile from Firestore
-        const userDocRef = doc(db, 'users', firebaseUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
+      try {
+        if (firebaseUser) {
+          // User is signed in, fetch their profile from Firestore
+          const userDocRef = doc(db, 'users', firebaseUser.uid);
+          const userDocSnap = await getDoc(userDocRef);
 
-        let userProfile: UserProfile | null = null;
-        if (userDocSnap.exists()) {
-          userProfile = userDocSnap.data() as UserProfile;
+          let userProfile: UserProfile | null = null;
+          if (userDocSnap.exists()) {
+            userProfile = userDocSnap.data() as UserProfile;
+          } else {
+            // Handle case where user exists in Auth but not Firestore (should ideally not happen with proper signup)
+            console.warn("User document not found in Firestore for UID:", firebaseUser.uid);
+            // You might want to create a default profile here or log them out
+          }
+
+          // Combine Firebase user with Firestore profile
+          setCurrentUser({
+            ...firebaseUser,
+            profile: userProfile,
+            isOwner: userProfile?.isOwner,
+            username: userProfile?.username
+          });
+
         } else {
-          // Handle case where user exists in Auth but not Firestore (should ideally not happen with proper signup)
-          console.warn("User document not found in Firestore for UID:", firebaseUser.uid);
-          // You might want to create a default profile here or log them out
+          // User is signed out
+          setCurrentUser(null);
         }
-
-        // Combine Firebase user with Firestore profile
-        setCurrentUser({
-          ...firebaseUser,
-          profile: userProfile,
-          isOwner: userProfile?.isOwner,
-          username: userProfile?.username
-        });
-
-      } else {
-        // User is signed out
-        setCurrentUser(null);
+      } catch (error) {
+          console.error("Error fetching user profile:", error)
       }
       setIsLoading(false);
     });
@@ -83,45 +90,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []); // Run only once on mount
-
+  
   const login = async (email: string, password: string) => {
-    // Let onAuthStateChanged handle setting the user state
-    await signInWithEmailAndPassword(auth, email, password);
-    // No need to manually set state here
+      try {
+          await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+          throw error;
+      }
   };
 
   const signup = async (email: string, password: string, isOwner: boolean) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const firebaseUser = userCredential.user;
+      if (isOwner) {
+          // Check if an owner already exists
+          const ownerQuery = await db.collection('users').where('isOwner', '==', true).get();
+          if (!ownerQuery.empty) {
+              throw new Error('An owner account already exists.');
+          }
+      }
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
 
-    if (firebaseUser) {
-      // Create user profile document in Firestore
-      const userDocRef = doc(db, 'users', firebaseUser.uid);
-      const userProfile: UserProfile = {
-        username: email, // Use email as username or add another field
-        isOwner: isOwner,
-        createdAt: serverTimestamp(), // Use Firestore server timestamp
-        // Define default permissions based on isOwner status
-        permissions: isOwner ? {
-          contentManagement: true,
-          userManagement: true,
-          systemConfiguration: true,
-          mediaUploads: true, // Owner can upload
-          securitySettings: true,
-          siteCustomization: true,
-        } : {
-          contentManagement: false,
-          userManagement: false,
-          systemConfiguration: false,
-          mediaUploads: true, // Allow non-owners to upload too? Adjust as needed.
-          securitySettings: false,
-          siteCustomization: false,
+      if (firebaseUser) {
+          // Create user profile document in Firestore
+          const userDocRef = doc(db, 'users', firebaseUser.uid);
+          const userProfile: UserProfile = {
+              username: email, // Use email as username or add another field
+              isOwner: isOwner,
+              createdAt: serverTimestamp(), // Use Firestore server timestamp
+              // Define default permissions based on isOwner status
+              permissions: isOwner ? {
+                  contentManagement: true,
+                  userManagement: true,
+                  systemConfiguration: true,
+                  mediaUploads: true, // Owner can upload
+                  securitySettings: true,
+                  siteCustomization: true,
+              } : {
+                  contentManagement: false,
+                  userManagement: false,
+                  systemConfiguration: false,
+                  mediaUploads: true, // Allow non-owners to upload too? Adjust as needed.
+                  securitySettings: false,
+                  siteCustomization: false,
+              }
+          };
+          await setDoc(userDocRef, userProfile);
+      } else {
+          throw new Error('Failed to create user account.');
         }
-      };
-      await setDoc(userDocRef, userProfile);
-      // onAuthStateChanged will handle setting the currentUser state eventually
-      // You might want to immediately set a temporary state here if needed,
-      // but letting the listener handle it ensures consistency.
+  };
+  
+  const sendPasswordResetEmail = async (email: string) => {
+      await sendPasswordResetEmail(auth, email);
+  };
+
+  const saveTemplate = async (templateName: string, templateData: any, currentUser: AppUser) => {
+    if (currentUser) {
+        const templateDocRef = doc(db, 'templates');
+        await setDoc(templateDocRef, {
+            userId: currentUser.uid,
+            templateName: templateName,
+            templateData: templateData,
+            createdAt: serverTimestamp()
+        });
     } else {
       throw new Error("Failed to create user account.");
     }
@@ -134,10 +165,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = {
     currentUser,
+    sendPasswordResetEmail,
     login,
     signup,
     logout,
     isLoading,
+    saveTemplate
   };
 
   return (

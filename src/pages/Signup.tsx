@@ -66,6 +66,9 @@ const Signup = () => {
           case 'auth/weak-password':
             errorMessage = 'Password is too weak. Please choose a stronger password.';
             break;
+            default:
+              errorMessage = error.message;
+              break;
           // Add other Firebase Auth error codes as needed
         }
       }

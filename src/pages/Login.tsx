@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,14 +12,20 @@ const containerVariants = {
 
 const Login = () => {
   // Firebase Auth uses email, so let's rename the state variable
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [resetEmail, setResetEmail] = useState('');
+    const [resetEmailSent, setResetEmailSent] = useState(false);
 
-  const { login } = useAuth();
+  const { login, sendPasswordResetEmail } = useAuth();
   const navigate = useNavigate();
+    const modalRef = useRef<HTMLDivElement>(null);
 
+
+    
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -64,6 +70,26 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleForgotPassword = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await sendPasswordResetEmail(resetEmail);
+      setResetEmailSent(true);
+      setError('')
+    } catch (error) {
+        console.log(error);
+        setError('Failed to send password reset email. Please try again later.');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -193,6 +219,17 @@ const Login = () => {
             </div>
           </form>
 
+           <div className="mt-2">
+            <button
+              onClick={handleForgotPassword}
+              className="text-blue-600 hover:text-blue-500 text-sm"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
+
+
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -215,6 +252,65 @@ const Login = () => {
             </div>
           </div>
         </div>
+          {isModalOpen && (
+          <div
+            ref={modalRef}
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+          >
+            <div className="bg-white p-8 rounded-lg max-w-md">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Reset Password</h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                  <span className="block sm:inline">{error}</span>
+                </div>
+              )}
+                 {resetEmailSent ? (
+                   <div>
+                        <p>Password reset email has been sent!</p>
+                        <button onClick={handleCloseModal} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>Close</button>
+                    </div>
+                ) : (
+                  <form onSubmit={handleResetPassword}>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="resetEmail">
+                      Email
+                    </label>
+                    <input
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="resetEmail"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Send Reset Link</button>
+                </form>
+                )}
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );
