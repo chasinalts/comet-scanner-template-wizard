@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signOut,
   User as FirebaseUser // Rename to avoid conflict with local User interface if needed
 } from 'firebase/auth'; 
@@ -50,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Firebase's listener for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       setIsLoading(true);
       try {
         if (firebaseUser) {
@@ -158,6 +159,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signOut(auth);
     // onAuthStateChanged will handle setting currentUser to null
   };
+  
+    const passwordResetEmail = async (email: string) => {
+        try {
+            await sendPasswordResetEmail(auth, email);
+        } catch (error) {
+            throw error;
+        }
+    };
 
   const value = {
     currentUser,
@@ -165,7 +174,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
     login,
     isLoading,
-    saveTemplate
+    saveTemplate,
+    sendPasswordResetEmail: passwordResetEmail,
   };
 
   return (
