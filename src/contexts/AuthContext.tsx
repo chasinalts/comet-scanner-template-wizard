@@ -143,6 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const sendPasswordResetEmail = async (email: string) => {
       await sendPasswordResetEmail(email);
+      
   };
 
   const saveTemplate = async (templateName: string, templateData: any, currentUser: AppUser) => {
@@ -166,7 +167,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = {
     currentUser,
-    login,
     signup,
     logout,
     isLoading,
