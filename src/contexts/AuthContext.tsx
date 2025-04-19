@@ -1,11 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
   onAuthStateChanged,
-  signInWithEmailAndPassword,  createUserWithEmailAndPassword,
-    signOut,
-    sendPasswordResetEmail,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  signOut,
   User as FirebaseUser // Rename to avoid conflict with local User interface if needed
-} from 'firebase/auth';
+} from 'firebase/auth'; 
 import { doc, setDoc, getDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig'; // Import initialized auth and db
 
@@ -37,7 +36,6 @@ interface AuthContextType {
   currentUser: AppUser | null; // Use the combined AppUser type
   login: (email: string, password: string) => Promise<void>; // Use email for Firebase
   signup: (email: string, password: string, isOwner: boolean) => Promise<void>; // Use email for Firebase
-  sendPasswordResetEmail: (email: string) => Promise<void>;
   saveTemplate: (templateName: string, templateData: any, currentUser: AppUser) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
@@ -141,11 +139,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
   };
   
-  const sendPasswordResetEmail = async (email: string) => {
-      await sendPasswordResetEmail(email);
-      
-  };
-
   const saveTemplate = async (templateName: string, templateData: any, currentUser: AppUser) => {
     if (currentUser) {
         const templateDocRef = doc(db, 'templates');
@@ -169,6 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     currentUser,
     signup,
     logout,
+    login,
     isLoading,
     saveTemplate
   };
