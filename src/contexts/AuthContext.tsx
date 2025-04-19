@@ -1,10 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
   onAuthStateChanged,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  createUserWithEmailAndPassword,
-  signOut, 
+  signInWithEmailAndPassword,  createUserWithEmailAndPassword,
+    signOut,
+    sendPasswordResetEmail,
   User as FirebaseUser // Rename to avoid conflict with local User interface if needed
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
@@ -143,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
   
   const sendPasswordResetEmail = async (email: string) => {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(email);
   };
 
   const saveTemplate = async (templateName: string, templateData: any, currentUser: AppUser) => {
