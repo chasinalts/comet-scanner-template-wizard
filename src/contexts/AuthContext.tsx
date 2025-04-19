@@ -7,7 +7,7 @@ import {
   signOut, 
   User as FirebaseUser // Rename to avoid conflict with local User interface if needed
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig'; // Import initialized auth and db
 
 // Keep your custom User profile data structure
@@ -102,11 +102,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (email: string, password: string, isOwner: boolean) => {
       if (isOwner) {
           // Check if an owner already exists
-          const ownerQuery = await db.collection('users').where('isOwner', '==', true).get();
-          if (!ownerQuery.empty) {
+          const q = query(collection(db, 'users'), where('isOwner', '==', true));
+          const ownerQuery = await getDocs(q);
+          if (ownerQuery.docs.length > 0) {
               throw new Error('An owner account already exists.');
           }
       }
+      
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
@@ -165,7 +167,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = {
     currentUser,
-    sendPasswordResetEmail,
     login,
     signup,
     logout,
