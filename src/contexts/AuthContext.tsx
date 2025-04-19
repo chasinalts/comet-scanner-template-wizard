@@ -36,6 +36,7 @@ interface AuthContextType {
   currentUser: AppUser | null; // Use the combined AppUser type
   login: (email: string, password: string) => Promise<void>; // Use email for Firebase
   signup: (email: string, password: string, isOwner: boolean) => Promise<void>; // Use email for Firebase
+  sendPasswordResetEmail: (email: string) => Promise<void>;
   saveTemplate: (templateName: string, templateData: any, currentUser: AppUser) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
