@@ -29,6 +29,7 @@ interface UserProfile {
 interface AppUser extends FirebaseUser {
   profile: UserProfile | null; // Store fetched profile data here
   isOwner?: boolean; // Direct access to isOwner property
+  isAnonymous: boolean;
   username?: string; // Direct access to username property
 }
 
@@ -41,6 +42,7 @@ interface AuthContextType {
   saveTemplate: (templateName: string, templateData: any, currentUser: AppUser) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
+  guestLogin: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -167,6 +169,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             throw error;
         }
     };
+    
+    const guestLogin = async () => {
+      setIsLoading(true);
+        const guestUser: AppUser = {
+          uid: 'guest-user',
+          profile: null,
+          isAnonymous: true,
+          
+        } as AppUser
+        setCurrentUser(guestUser);
+        setIsLoading(false);
+    };
 
   const value = {
     currentUser,
@@ -175,6 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     isLoading,
     saveTemplate,
+    guestLogin,
     sendPasswordResetEmail: passwordResetEmail,
   };
 
