@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { FirebaseError } from 'firebase/app'; // Import FirebaseError for better error handling
-import ResetDataButton from '../components/ResetDataButton';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -242,14 +241,7 @@ const Login = () => {
             </button>
           </div>
 
-          <div className="mt-6 border-t border-gray-200 pt-4">
-            <div className="flex justify-center">
-              <ResetDataButton adminOnly={true} />
-            </div>
-            <p className="mt-2 text-xs text-center text-gray-500">
-              Administrator access required to reset all user data
-            </p>
-          </div>
+
 
 
 
