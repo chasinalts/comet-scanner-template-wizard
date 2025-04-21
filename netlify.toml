@@ -1,14 +1,14 @@
 [build]
   base = "/"
   publish = "dist"
-  command = "npm install && npm run build"
+  command = "node --trace-warnings $(which npm) install && node --trace-warnings $(which npm) run build"
 
 [build.environment]
   NODE_VERSION = "20"
 
 # Production context: all deploys from the main branch
 [context.production]
-  command = "npm install && npm run build"
+  command = "node --trace-warnings $(which npm) install && node --trace-warnings $(which npm) run build"
 
 # Redirects and headers are GLOBAL for all builds
 [[redirects]]
