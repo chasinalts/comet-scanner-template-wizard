@@ -244,10 +244,10 @@ const Login = () => {
 
           <div className="mt-6 border-t border-gray-200 pt-4">
             <div className="flex justify-center">
-              <ResetDataButton />
+              <ResetDataButton adminOnly={true} />
             </div>
             <p className="mt-2 text-xs text-center text-gray-500">
-              Use this button to clear all user data and start fresh
+              Administrator access required to reset all user data
             </p>
           </div>
 

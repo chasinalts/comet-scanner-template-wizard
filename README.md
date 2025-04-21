@@ -126,20 +126,21 @@ npm run test:netlify
 
 ### Resetting User Data
 
-If you need to clear all user data and start fresh:
+Resetting user data requires administrator credentials. Only administrators can perform this action.
 
 1. Using the UI:
    - Go to the login page
    - Click the "Reset All Data" button at the bottom of the page
+   - Enter administrator credentials when prompted
    - Confirm the action in the dialog
 
 2. Using the command line:
    ```bash
    npm run clear-data
    ```
-   This will clear all user data from localStorage.
+   This will prompt for administrator credentials before providing instructions.
 
-3. For Firebase data:
+3. For Firebase data (administrator access required):
    - Go to the Firebase Console (https://console.firebase.google.com/)
    - Select your project
    - Go to Authentication > Users and delete any users
