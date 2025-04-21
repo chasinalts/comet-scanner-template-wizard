@@ -21,15 +21,15 @@ A comprehensive setup wizard for scanner configuration built with React, TypeScr
 
 ## 📋 Prerequisites
 
-- Node.js (v16+)
-- npm or yarn
+- Node.js (v22+)
+- npm (v10+)
 
 ## 🔧 Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/comet-scanner-wizard.git
-   cd comet-scanner-wizard
+   git clone https://github.com/chasinalts/comet-scanner-template-wizard.git
+   cd comet-scanner-template-wizard
    ```
 
 2. Install dependencies:
@@ -57,9 +57,38 @@ This will:
 
 ## 🚀 Deployment
 
-The application is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+### Netlify Deployment
 
-You can also deploy manually:
+The application is configured for easy deployment to Netlify. When changes are pushed to the main branch, Netlify will automatically build and deploy the application.
+
+#### Manual Netlify Deployment
+
+1. Build the application:
+   ```bash
+   npm run build
+   ```
+
+2. Test the Netlify deployment locally:
+   ```bash
+   npm run test:netlify
+   ```
+
+3. Deploy to Netlify using the Netlify CLI:
+   ```bash
+   npx netlify deploy --prod
+   ```
+
+### GitHub Pages Deployment
+
+You can also deploy to GitHub Pages:
+
+```bash
+npm run deploy:github
+```
+
+### Manual Deployment
+
+For other hosting providers:
 
 ```bash
 npm run build:prod
@@ -67,13 +96,63 @@ npm run build:prod
 
 Then deploy the `dist` directory to your hosting provider.
 
-## 🧪 Performance Testing
+## 🧪 Testing
+
+### Performance Testing
 
 To run performance tests:
 
 ```bash
 npm run test:performance
 ```
+
+### TypeScript Type Checking
+
+To run TypeScript type checking:
+
+```bash
+npm run build:check
+```
+
+### Netlify Deployment Testing
+
+To test Netlify deployment locally:
+
+```bash
+npm run test:netlify
+```
+
+## 🔧 Troubleshooting
+
+### TypeScript Errors
+
+If you encounter TypeScript errors during the build process, you can:
+
+1. Skip TypeScript type checking during build:
+   ```bash
+   npm run build
+   ```
+   This will build the application without running TypeScript type checking.
+
+2. Fix TypeScript errors by updating the tsconfig.json file:
+   - Set `"strict": false` to disable strict type checking
+   - Set `"noUnusedLocals": false` and `"noUnusedParameters": false` to ignore unused variables
+   - Update the `moduleResolution` to `"bundler"` or `"node"`
+
+### Netlify Deployment Issues
+
+If you encounter issues with Netlify deployment:
+
+1. Check the Netlify build logs for errors
+2. Ensure the base directory is correctly set in netlify.toml
+3. Run the local Netlify deployment test:
+   ```bash
+   npm run test:netlify
+   ```
+4. Try using the direct Vite build script:
+   ```bash
+   npm run vite:build
+   ```
 
 ## 📝 License
 
