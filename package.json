@@ -16,7 +16,10 @@
     "deploy:github": "node scripts/deploy-github-pages.js",
     "deploy:aws": "node scripts/deploy-aws-s3.js",
     "netlify:build": "node scripts/netlify-build-simple.js",
-    "simple-build": "node simple-build.js"
+    "simple-build": "node simple-build.js",
+    "build:trace": "node --trace-warnings $(which npm) run build",
+    "dev:trace": "node --trace-warnings $(which npm) run dev",
+    "netlify:trace": "node scripts/trace-netlify-build.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
