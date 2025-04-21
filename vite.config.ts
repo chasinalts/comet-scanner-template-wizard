@@ -4,39 +4,9 @@ import react from '@vitejs/plugin-react'
 // import imagemin from 'vite-plugin-imagemin'
 
 export default defineConfig({
-  // Base path - comment this out for Netlify deployment
+  // Remove or comment out the base path
   // base: '/comet-scanner-wizard/',
-  plugins: [
-    react(),
-    // Uncomment after installing the plugin
-    // imagemin({
-    //   gifsicle: {
-    //     optimizationLevel: 7,
-    //     interlaced: false,
-    //   },
-    //   optipng: {
-    //     optimizationLevel: 7,
-    //   },
-    //   mozjpeg: {
-    //     quality: 80,
-    //   },
-    //   pngquant: {
-    //     quality: [0.8, 0.9],
-    //     speed: 4,
-    //   },
-    //   svgo: {
-    //     plugins: [
-    //       {
-    //         name: 'removeViewBox',
-    //       },
-    //       {
-    //         name: 'removeEmptyAttrs',
-    //         active: false,
-    //       },
-    //     ],
-    //   },
-    // }),
-  ],
+  plugins: [react()],
   server: {
     port: 3000,
     open: process.env.NODE_ENV !== 'production' // Only open in development
