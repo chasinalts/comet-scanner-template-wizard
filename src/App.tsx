@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import React from 'react';
+const { lazy, Suspense } = React;
 import { AuthProvider } from './contexts/AuthContext';
 import { WizardProvider } from './contexts/WizardContext';
 import { ToastProvider } from './components/ui/Toast';

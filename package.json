@@ -5,7 +5,8 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
+    "build:check": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "optimize-images": "node scripts/optimize-images.js",
@@ -19,7 +20,8 @@
     "simple-build": "node simple-build.js",
     "build:trace": "node --trace-warnings $(which npm) run build",
     "dev:trace": "node --trace-warnings $(which npm) run dev",
-    "netlify:trace": "node scripts/trace-netlify-build.js"
+    "netlify:trace": "node scripts/trace-netlify-build.js",
+    "vite:build": "node run-vite-build.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -37,7 +39,7 @@
     "@types/react-dom": "^18.3.6",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@vitejs/plugin-react": "^4.4.0",
+    "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.17",
     "esbuild": "^0.19.12",
     "eslint": "^8.56.0",

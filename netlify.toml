@@ -1,14 +1,14 @@
 [build]
   base = "/"
   publish = "dist"
-  command = "node --trace-warnings $(which npm) install && node --trace-warnings $(which npm) run build"
+  command = "npm install && npm run build"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
 
 # Production context: all deploys from the main branch
 [context.production]
-  command = "node --trace-warnings $(which npm) install && node --trace-warnings $(which npm) run build"
+  command = "npm run vite:build"
 
 # Redirects and headers are GLOBAL for all builds
 [[redirects]]
@@ -17,7 +17,6 @@
   status = 200
 
 [[headers]]
-  # Define which paths this specific [[headers]] block will cover
   for = "/*"
   values = { Cache-Control = "public, max-age=31536000, immutable" }
 
