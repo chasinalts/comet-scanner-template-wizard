@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { FirebaseError } from 'firebase/app'; // Import FirebaseError for better error handling
+import ResetDataButton from '../components/ResetDataButton';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -25,7 +26,7 @@ const Login = () => {
     const modalRef = useRef<HTMLDivElement>(null);
 
 
-    
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -226,9 +227,9 @@ const Login = () => {
                 }}
                 className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
               >
-                
+
                   Sign In As Guest
-                
+
               </button>
             </div>
 
@@ -239,6 +240,15 @@ const Login = () => {
             >
               Forgot Password?
             </button>
+          </div>
+
+          <div className="mt-6 border-t border-gray-200 pt-4">
+            <div className="flex justify-center">
+              <ResetDataButton />
+            </div>
+            <p className="mt-2 text-xs text-center text-gray-500">
+              Use this button to clear all user data and start fresh
+            </p>
           </div>
 
 

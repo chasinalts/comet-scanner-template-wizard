@@ -22,7 +22,8 @@
     "dev:trace": "node --trace-warnings $(which npm) run dev",
     "netlify:trace": "node scripts/trace-netlify-build.js",
     "vite:build": "node run-vite-build.js",
-    "test:netlify": "node scripts/test-netlify-deploy.js"
+    "test:netlify": "node scripts/test-netlify-deploy.js",
+    "clear-data": "node scripts/clear-user-data.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",

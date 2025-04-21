@@ -124,6 +124,27 @@ npm run test:netlify
 
 ## 🔧 Troubleshooting
 
+### Resetting User Data
+
+If you need to clear all user data and start fresh:
+
+1. Using the UI:
+   - Go to the login page
+   - Click the "Reset All Data" button at the bottom of the page
+   - Confirm the action in the dialog
+
+2. Using the command line:
+   ```bash
+   npm run clear-data
+   ```
+   This will clear all user data from localStorage.
+
+3. For Firebase data:
+   - Go to the Firebase Console (https://console.firebase.google.com/)
+   - Select your project
+   - Go to Authentication > Users and delete any users
+   - Go to Firestore Database and delete any user-related documents
+
 ### TypeScript Errors
 
 If you encounter TypeScript errors during the build process, you can:

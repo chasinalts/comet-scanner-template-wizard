@@ -68,7 +68,7 @@ const getSession = (sessionId: string): Session | null => {
   if (!sessionData) return null;
 
   const session: Session = JSON.parse(sessionData);
-  
+
   // Check session timeout
   if (Date.now() - session.lastActivity > SESSION_TIMEOUT) {
     localStorage.removeItem(`session_${sessionId}`);
@@ -82,35 +82,17 @@ const clearSession = (sessionId: string): void => {
   localStorage.removeItem(`session_${sessionId}`);
 };
 
-// Admin account initialization
+// Admin account initialization - removed hardcoded credentials
 const initializeAdminAccount = (): void => {
-  const adminUsername = 'ChasinAlts';
-  const adminPassword = 'Chaseburger856!';
-  
-  // Check if admin account already exists
-  if (!localStorage.getItem(`user_${adminUsername}`)) {
-    const adminUser = {
-      username: adminUsername,
-      password: adminPassword,
-      isOwner: true,
-      createdAt: Date.now(),
-      permissions: {
-        contentManagement: true,
-        userManagement: true,
-        systemConfiguration: true,
-        mediaUploads: true,
-        securitySettings: true,
-        siteCustomization: true,
-      }
-    };
-    localStorage.setItem(`user_${adminUsername}`, JSON.stringify(adminUser));
-  }
+  // Admin accounts should now be created through Firebase Authentication
+  // and managed through the Firebase Console
+  console.log('Admin account initialization is now handled through Firebase Authentication');
 };
 
 // Security utilities
 const isAccountLocked = (username: string): boolean => {
   const attempts = getLoginAttempts(username);
-  return attempts.count >= MAX_LOGIN_ATTEMPTS && 
+  return attempts.count >= MAX_LOGIN_ATTEMPTS &&
          Date.now() - attempts.lastAttempt < LOCKOUT_DURATION;
 };
 
