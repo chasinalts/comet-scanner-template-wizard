@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import './styles/holographic.css'; // Import holographic styles directly
 import { AuthProvider } from './contexts/AuthContext';
 import { verifyAdminSetup } from './utils/verifyAdminSetup';
 import { testAdminAccount } from './utils/testAdminSetup';

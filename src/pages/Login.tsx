@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { FirebaseError } from 'firebase/app'; // Import FirebaseError for better error handling
+import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -101,18 +102,22 @@ const Login = () => {
       className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 futuristic-grid-bg"
     >
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2
-          className="text-center text-3xl font-extrabold holographic-text holographic-title"
-          data-text="COMET Scanner Wizard"
-        >
-          COMET Scanner Wizard
-        </h2>
-        <h3
-          className="mt-2 text-center text-xl holographic-text holographic-subtitle"
-          data-text="Sign in to your account"
-        >
-          Sign in to your account
-        </h3>
+        <div className="text-center">
+          <HolographicText
+            text="COMET Scanner Wizard"
+            as="h2"
+            variant="title"
+            className="text-center font-extrabold"
+          />
+          <div className="mt-2">
+            <HolographicText
+              text="Sign in to your account"
+              as="h3"
+              variant="subtitle"
+              className="text-center"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -227,9 +232,13 @@ const Login = () => {
            <div className="mt-2">
             <button
               onClick={handleForgotPassword}
-              className="text-cyan-400 hover:text-cyan-300 text-sm holographic-text" data-text="Forgot Password?"
+              className="text-sm"
             >
-              Forgot Password?
+              <HolographicText
+                text="Forgot Password?"
+                as="span"
+                className="text-cyan-400 hover:text-cyan-300"
+              />
             </button>
           </div>
 
@@ -252,9 +261,13 @@ const Login = () => {
             <div className="mt-6 text-center">
               <Link
                 to="/signup"
-                className="text-cyan-400 hover:text-cyan-300 font-medium holographic-text" data-text="Create an account"
+                className="font-medium"
               >
-                Create an account
+                <HolographicText
+                  text="Create an account"
+                  as="span"
+                  className="text-cyan-400 hover:text-cyan-300"
+                />
               </Link>
             </div>
           </div>
@@ -266,7 +279,12 @@ const Login = () => {
           >
             <div className="futuristic-container p-8 rounded-lg max-w-md holo-glow">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold holographic-text" data-text="Reset Password">Reset Password</h2>
+                <HolographicText
+                  text="Reset Password"
+                  as="h2"
+                  variant="subtitle"
+                  className="text-xl font-semibold"
+                />
                 <button
                   onClick={handleCloseModal}
                   className="text-gray-500 hover:text-gray-700"
@@ -293,15 +311,22 @@ const Login = () => {
               )}
                  {resetEmailSent ? (
                    <div>
-                        <p>Password reset email has been sent!</p>
+                        <HolographicText
+                          text="Password reset email has been sent!"
+                          as="p"
+                          className="mb-4"
+                        />
                         <button onClick={handleCloseModal} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>Close</button>
                     </div>
                 ) : (
                   <form onSubmit={handleResetPassword}>
                   <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="resetEmail">
-                      Email
-                    </label>
+                    <HolographicText
+                      text="Email"
+                      as="label"
+                      className="block text-cyan-300 text-sm font-bold mb-2"
+                      htmlFor="resetEmail"
+                    />
                     <input
                       className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline futuristic-input"
                       id="resetEmail"
@@ -312,7 +337,13 @@ const Login = () => {
                       required
                     />
                   </div>
-                  <button type="submit" className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline futuristic-button">Send Reset Link</button>
+                  <button type="submit" className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline futuristic-button">
+                    <HolographicText
+                      text="Send Reset Link"
+                      as="span"
+                      animated={false}
+                    />
+                  </button>
                 </form>
                 )}
             </div>

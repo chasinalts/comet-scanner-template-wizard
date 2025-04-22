@@ -1,55 +1,66 @@
 /* Holographic Text Effects */
 .holographic-text {
   position: relative;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
-  text-shadow: 
-    0 0 5px rgba(0, 230, 255, 0.6),
-    0 0 10px rgba(0, 230, 255, 0.4),
-    0 0 15px rgba(0, 230, 255, 0.2),
-    0 0 20px rgba(140, 0, 255, 0.1);
+  text-shadow:
+    0 0 5px rgba(0, 230, 255, 0.7),
+    0 0 10px rgba(0, 230, 255, 0.5),
+    0 0 15px rgba(0, 230, 255, 0.3),
+    0 0 20px rgba(140, 0, 255, 0.2);
   animation: holoPulse 3s infinite alternate;
 }
 
-.holographic-text::before {
+.holographic-text::after {
   content: attr(data-text);
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  color: transparent;
-  background: linear-gradient(
-    45deg,
-    rgba(0, 255, 255, 0.5) 0%,
-    rgba(255, 0, 255, 0.5) 25%, 
-    rgba(0, 255, 255, 0.5) 50%,
-    rgba(255, 0, 255, 0.5) 75%,
-    rgba(0, 255, 255, 0.5) 100%
-  );
-  background-size: 200% 200%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  animation: holoGradient 5s ease infinite;
   z-index: -1;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 255, 255, 0.7) 0%,
+    rgba(255, 0, 255, 0.7) 25%,
+    rgba(0, 255, 255, 0.7) 50%,
+    rgba(255, 0, 255, 0.7) 75%,
+    rgba(0, 255, 255, 0.7) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: holoGradient 5s ease infinite;
 }
 
 .holographic-title {
   font-size: 2.5rem;
   letter-spacing: 2px;
   text-transform: uppercase;
+  color: white;
+  text-shadow:
+    0 0 10px rgba(0, 230, 255, 0.8),
+    0 0 20px rgba(0, 230, 255, 0.6),
+    0 0 30px rgba(0, 230, 255, 0.4),
+    0 0 40px rgba(140, 0, 255, 0.3);
 }
 
 .holographic-subtitle {
   font-size: 1.5rem;
   letter-spacing: 1px;
+  color: white;
+  text-shadow:
+    0 0 8px rgba(0, 230, 255, 0.7),
+    0 0 16px rgba(0, 230, 255, 0.5),
+    0 0 24px rgba(0, 230, 255, 0.3);
 }
 
 /* Futuristic UI Elements */
 .futuristic-container {
   background: linear-gradient(135deg, rgba(10, 10, 30, 0.9), rgba(5, 15, 40, 0.95));
   border: 1px solid rgba(0, 200, 255, 0.3);
-  box-shadow: 
+  box-shadow:
     0 0 10px rgba(0, 200, 255, 0.2),
     inset 0 0 15px rgba(0, 150, 255, 0.1);
   border-radius: 8px;
@@ -72,7 +83,7 @@
 .futuristic-button {
   background: linear-gradient(135deg, rgba(0, 100, 200, 0.8), rgba(0, 150, 255, 0.9)) !important;
   border: 1px solid rgba(0, 200, 255, 0.6) !important;
-  box-shadow: 
+  box-shadow:
     0 0 10px rgba(0, 150, 255, 0.3),
     inset 0 0 5px rgba(255, 255, 255, 0.2) !important;
   color: white !important;
@@ -101,7 +112,7 @@
 
 .futuristic-button:hover {
   background: linear-gradient(135deg, rgba(0, 120, 220, 0.9), rgba(0, 170, 255, 1)) !important;
-  box-shadow: 
+  box-shadow:
     0 0 15px rgba(0, 180, 255, 0.5),
     inset 0 0 8px rgba(255, 255, 255, 0.3) !important;
 }
@@ -122,30 +133,30 @@
 /* Animations */
 @keyframes holoPulse {
   0% {
-    text-shadow: 
-      0 0 5px rgba(0, 230, 255, 0.6),
-      0 0 10px rgba(0, 230, 255, 0.4),
-      0 0 15px rgba(0, 230, 255, 0.2),
-      0 0 20px rgba(140, 0, 255, 0.1);
+    text-shadow:
+      0 0 5px rgba(0, 230, 255, 0.7),
+      0 0 10px rgba(0, 230, 255, 0.5),
+      0 0 15px rgba(0, 230, 255, 0.3),
+      0 0 20px rgba(140, 0, 255, 0.2);
   }
   100% {
-    text-shadow: 
-      0 0 7px rgba(0, 230, 255, 0.7),
-      0 0 14px rgba(0, 230, 255, 0.5),
-      0 0 21px rgba(0, 230, 255, 0.3),
-      0 0 28px rgba(140, 0, 255, 0.2);
+    text-shadow:
+      0 0 10px rgba(0, 230, 255, 0.9),
+      0 0 20px rgba(0, 230, 255, 0.7),
+      0 0 30px rgba(0, 230, 255, 0.5),
+      0 0 40px rgba(140, 0, 255, 0.3);
   }
 }
 
 @keyframes holoGradient {
   0% {
-    background-position: 0% 50%;
+    background-position: 0% center;
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 100% center;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 0% center;
   }
 }
 
@@ -170,7 +181,7 @@
   left: -5px;
   right: -5px;
   bottom: -5px;
-  background: linear-gradient(45deg, 
+  background: linear-gradient(45deg,
     rgba(0, 255, 255, 0) 0%,
     rgba(0, 255, 255, 0.3) 50%,
     rgba(0, 255, 255, 0) 100%
@@ -204,7 +215,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(0, 150, 255, 0.1) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 150, 255, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
