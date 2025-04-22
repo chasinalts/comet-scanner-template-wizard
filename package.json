@@ -25,7 +25,8 @@
     "test:netlify": "node scripts/test-netlify-deploy.js",
     "clear-data": "node scripts/clear-user-data.js",
     "erase-all-now": "node scripts/erase-all-data-now.js",
-    "reset-instructions": "node scripts/manual-data-reset.js"
+    "reset-instructions": "node scripts/manual-data-reset.js",
+    "setup-owner": "node scripts/setup-owner-account.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
