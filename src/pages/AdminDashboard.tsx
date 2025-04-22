@@ -121,24 +121,33 @@ export default function AdminDashboard() {
       setUploadingImage({ questionId, optionId });
 
       // Use Firebase Storage for image uploads
-      handleFirebaseImageUpload(file, 'option', (imageUrl: string, imagePreview: string) => {
-        const currentQuestion = questions.find(q => q.id === questionId);
-        if (!currentQuestion) return;
+      handleFirebaseImageUpload(
+        file,
+        'option',
+        (imageUrl: string, imagePreview: string) => {
+          const currentQuestion = questions.find(q => q.id === questionId);
+          if (!currentQuestion) return;
 
-        updateQuestion(questionId, {
-          options: currentQuestion.options?.map((opt: QuestionOption) =>
-            opt.id === optionId ? {
-              ...opt,
-              imageUrl,
-              imagePreview,
-              scale: 1
-            } : opt
-          )
-        });
+          updateQuestion(questionId, {
+            options: currentQuestion.options?.map((opt: QuestionOption) =>
+              opt.id === optionId ? {
+                ...opt,
+                imageUrl,
+                imagePreview,
+                scale: 1
+              } : opt
+            )
+          });
 
-        showToast('success', 'Image uploaded successfully');
-        setUploadingImage(null);
-      });
+          showToast('success', 'Image uploaded successfully');
+          setUploadingImage(null);
+        },
+        (error) => {
+          console.error('Failed to upload option image:', error);
+          showToast('error', 'Failed to upload image. Please check your Firebase Storage CORS configuration.');
+          setUploadingImage(null);
+        }
+      );
     } catch (error) {
       showToast('error', 'Failed to upload image');
       setUploadingImage(null);
@@ -195,7 +204,7 @@ export default function AdminDashboard() {
           setUploadingImage(null);
         })
         .catch(error => {
-          showToast('error', 'Failed to upload banner image');
+          showToast('error', 'Failed to upload banner image. Please check your Firebase Storage CORS configuration.');
           console.error('Error uploading banner image:', error);
           setUploadingImage(null);
         });
@@ -229,7 +238,7 @@ export default function AdminDashboard() {
           setUploadingImage(null);
         })
         .catch(error => {
-          showToast('error', 'Failed to upload scanner image');
+          showToast('error', 'Failed to upload scanner image. Please check your Firebase Storage CORS configuration.');
           console.error('Error uploading scanner image:', error);
           setUploadingImage(null);
         });

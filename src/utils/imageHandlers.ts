@@ -23,15 +23,16 @@ export const handleImageUpload = (
 
 /**
  * Handles image upload using Firebase Storage with compression
- * Falls back to localStorage if Firebase Storage is not accessible
  * @param file The file to upload
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
+ * @param onError Optional callback function to be called when upload fails
  */
 export const handleFirebaseImageUpload = (
   file: File,
   type: string,
-  onSuccess: (imageUrl: string, imagePreview: string) => void
+  onSuccess: (imageUrl: string, imagePreview: string) => void,
+  onError?: (error: any) => void
 ) => {
   try {
     // Create a temporary preview URL for immediate display
@@ -48,50 +49,45 @@ export const handleFirebaseImageUpload = (
           maxSizeInMB: 1
         });
 
-        try {
-          // Try to upload to Firebase Storage first
-          const storagePath = `images/${type}`;
-          const imageUrl = await uploadFileToStorage(processedFile, storagePath);
+        // Upload to Firebase Storage
+        const storagePath = `images/${type}`;
+        const imageUrl = await uploadFileToStorage(processedFile, storagePath);
 
-          console.log('Image uploaded to Firebase:', {
-            originalSize: file.size,
-            processedSize: processedFile.size,
-            compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
-            imageUrl
-          });
+        console.log('Image uploaded to Firebase:', {
+          originalSize: file.size,
+          processedSize: processedFile.size,
+          compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
+          imageUrl
+        });
 
-          // Call the success callback with the Firebase URL and preview URL
-          onSuccess(imageUrl, imagePreview);
-        } catch (firebaseError) {
-          console.warn('Firebase Storage upload failed, falling back to localStorage:', firebaseError);
-
-          // Fallback to localStorage if Firebase Storage fails
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64data = reader.result as string;
-            console.log('Image stored in localStorage as base64');
-            onSuccess(base64data, imagePreview);
-          };
-          reader.onerror = () => {
-            console.error('FileReader failed, using blob URL as last resort');
-            onSuccess(imagePreview, imagePreview);
-          };
-          reader.readAsDataURL(processedFile);
-        }
+        // Call the success callback with the Firebase URL and preview URL
+        onSuccess(imageUrl, imagePreview);
 
         // Clean up the preview URL after a delay to ensure it's used
         setTimeout(() => {
           URL.revokeObjectURL(imagePreview);
         }, 5000);
       } catch (error) {
-        console.error('Error in image processing:', error);
-        // If all else fails, we can still use the local preview as a fallback
-        onSuccess(imagePreview, imagePreview);
+        console.error('Error in image processing or upload:', error);
+
+        // Clean up the preview URL
+        URL.revokeObjectURL(imagePreview);
+
+        // Call the error callback if provided
+        if (onError) {
+          onError(error);
+        } else {
+          throw error;
+        }
       }
     })();
   } catch (error) {
     console.error('Error in handleFirebaseImageUpload:', error);
-    throw error;
+    if (onError) {
+      onError(error);
+    } else {
+      throw error;
+    }
   }
 };
 

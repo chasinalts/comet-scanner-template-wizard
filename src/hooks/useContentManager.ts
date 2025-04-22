@@ -80,25 +80,33 @@ export const useContentManager = (): ContentManagerHook => {
     return new Promise((resolve, reject) => {
       try {
         // Use Firebase Storage for image uploads
-        handleFirebaseImageUpload(file, type, (imageUrl: string, _imagePreview: string) => {
-          try {
-            console.log(`Adding ${type} content with Firebase Storage URL`);
-            const id = addContent({
-              type,
-              title,
-              content: '',
-              imageUrl,
-              scale: 1
-            });
-            console.log(`${type} image added with ID:`, id);
-            resolve(id);
-          } catch (innerError) {
-            console.error(`Error adding ${type} content:`, innerError);
-            reject(innerError);
+        handleFirebaseImageUpload(
+          file,
+          type,
+          (imageUrl: string, _imagePreview: string) => {
+            try {
+              console.log(`Adding ${type} content with Firebase Storage URL`);
+              const id = addContent({
+                type,
+                title,
+                content: '',
+                imageUrl,
+                scale: 1
+              });
+              console.log(`${type} image added with ID:`, id);
+              resolve(id);
+            } catch (innerError) {
+              console.error(`Error adding ${type} content:`, innerError);
+              reject(innerError);
+            }
+          },
+          (error) => {
+            console.error(`Error uploading ${type} image to Firebase Storage:`, error);
+            reject(new Error(`Failed to upload to Firebase Storage. Please check your CORS configuration: ${error.message}`));
           }
-        });
+        );
       } catch (error) {
-        console.error(`Error uploading ${type} image:`, error);
+        console.error(`Error setting up ${type} image upload:`, error);
         reject(error);
       }
     });
