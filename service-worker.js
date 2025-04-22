@@ -73,18 +73,18 @@ self.addEventListener('fetch', (event) => {
         if (cachedResponse) {
           return cachedResponse;
         }
-        
+
         return fetch(event.request).then((response) => {
           // Don't cache non-successful responses
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
-          
+
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
-          
+
           return response;
         });
       })
@@ -95,16 +95,42 @@ self.addEventListener('fetch', (event) => {
   // For other assets - stale-while-revalidate strategy
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
+      // Return cached response immediately if available
+      if (cachedResponse) {
+        // Fetch in the background to update cache
+        fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then((cache) => {
+              // Clone before using
+              const responseToCache = networkResponse.clone();
+              cache.put(event.request, responseToCache);
+            }).catch(err => console.error('Cache update error:', err));
+          }
+        }).catch(err => console.error('Background fetch error:', err));
+
+        return cachedResponse;
+      }
+
+      // If no cache, fetch from network
+      return fetch(event.request).then((networkResponse) => {
+        // Don't cache non-successful responses
+        if (!networkResponse || networkResponse.status !== 200) {
+          return networkResponse;
+        }
+
+        // Clone the response before using it
+        const responseToCache = networkResponse.clone();
+
         // Update cache with fresh response
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
-        });
+          cache.put(event.request, responseToCache);
+        }).catch(err => console.error('Cache update error:', err));
+
         return networkResponse;
       });
-      
-      // Return cached response immediately, or wait for network
-      return cachedResponse || fetchPromise;
+    }).catch(err => {
+      console.error('Service worker fetch error:', err);
+      return new Response('Network error', { status: 503 });
     })
   );
 });
