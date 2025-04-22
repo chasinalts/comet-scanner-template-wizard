@@ -14,6 +14,7 @@ import { useAdminContent } from '../hooks/useAdminContent';
 import type { Question, QuestionOption } from '../types/questions';
 import type { Section } from '../hooks/useSections';
 import TrashIcon from '../components/ui/TrashIcon';
+import ImageThumbnail from '../components/ui/ImageThumbnail';
 import TemplateCreator from '../components/TemplateCreator';
 
 interface UploadingState {
@@ -379,52 +380,15 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Existing Scanner Images */}
               {getPaginatedScannerImages().map((image) => (
-                <div key={image.id} className="group border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200">
-                  <div className="p-4 space-y-4">
-                    <div className="relative aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-                      <img
-                        src={image.src}
-                        alt={image.alt}
-                        className="w-full h-full object-contain"
-                        style={{ transform: `scale(${image.scale || 1})` }}
-                      />
-                      <button
-                        onClick={() => handleDeleteImage(image.id)}
-                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Delete image"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Image Scale ({((image.scale || 1) * 100).toFixed(0)}%)
-                      </label>
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="2"
-                        step="0.1"
-                        value={image.scale || 1}
-                        onChange={handleImageScaleChange(image.id)}
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Display Text
-                      </label>
-                      <TextField
-                        value={image.displayText || ''}
-                        onChange={(e) => handleImageDisplayTextChange(image.id, e.target.value)}
-                        placeholder="Enter text to display"
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                </div>
+                <ImageThumbnail
+                  key={image.id}
+                  id={image.id}
+                  src={image.src}
+                  alt={image.alt}
+                  scale={image.scale || 1}
+                  onScaleChange={(id, scale) => updateImageScale(id, scale)}
+                  onDelete={handleDeleteImage}
+                />
               ))}
 
               {/* Upload New Scanner Image - Always show this */}
