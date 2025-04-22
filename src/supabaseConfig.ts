@@ -7,27 +7,23 @@ import { auth } from './firebaseConfig';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Create Supabase client with custom auth configuration
+// Create Supabase client with minimal configuration
+// We'll use anonymous access for storage with RLS policies
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: false, // Don't persist Supabase auth session since we use Firebase
     autoRefreshToken: false, // Don't auto-refresh tokens
-  },
-  global: {
-    headers: {
-      // This will be updated dynamically when needed
-    },
-  },
+  }
 });
 
 // Storage bucket name
 export const STORAGE_BUCKET = 'images';
 
 /**
- * Get the current Firebase auth token for use with Supabase
- * This is needed because we're using Firebase Auth with Supabase Storage
+ * Get the current Firebase user ID
+ * This is needed for our RLS policies
  */
-export const getFirebaseAuthToken = async () => {
+export const getFirebaseUserId = () => {
   try {
     const currentUser = auth.currentUser;
     if (!currentUser) {
@@ -35,30 +31,10 @@ export const getFirebaseAuthToken = async () => {
       return null;
     }
 
-    const token = await currentUser.getIdToken();
-    return token;
+    return currentUser.uid;
   } catch (error) {
-    console.error('Error getting Firebase auth token:', error);
+    console.error('Error getting Firebase user ID:', error);
     return null;
-  }
-};
-
-/**
- * Set the Firebase auth token in the Supabase client headers
- * This allows authenticated requests to Supabase
- */
-export const setSupabaseAuthToken = async () => {
-  try {
-    const token = await getFirebaseAuthToken();
-    if (token) {
-      // Set the Authorization header with the Firebase token
-      supabase.functions.setAuth(token);
-      return true;
-    }
-    return false;
-  } catch (error) {
-    console.error('Error setting Supabase auth token:', error);
-    return false;
   }
 };
 
@@ -68,18 +44,11 @@ export const setSupabaseAuthToken = async () => {
  */
 export const initializeStorage = async () => {
   try {
-    // Set the Firebase auth token in Supabase client
-    await setSupabaseAuthToken();
-
     // Check if the bucket exists
     const { data: buckets, error: listError } = await supabase.storage.listBuckets();
 
     if (listError) {
       console.error('Error listing buckets:', listError);
-      // If we get a 401/403 error, it might be an auth issue
-      if (listError.status === 401 || listError.status === 403) {
-        console.warn('Authentication error. Make sure you are signed in.');
-      }
       return false;
     }
 

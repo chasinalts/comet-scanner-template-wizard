@@ -1,4 +1,4 @@
-import { supabase, STORAGE_BUCKET, setSupabaseAuthToken } from '../supabaseConfig';
+import { supabase, STORAGE_BUCKET, getFirebaseUserId } from '../supabaseConfig';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -14,9 +14,9 @@ export const uploadFileToSupabase = async (
   cacheControl = 'public, max-age=31536000'
 ): Promise<string> => {
   try {
-    // Set Firebase auth token for authentication with Supabase
-    const authSuccess = await setSupabaseAuthToken();
-    if (!authSuccess) {
+    // Get Firebase user ID for metadata
+    const userId = getFirebaseUserId();
+    if (!userId) {
       throw new Error('Authentication required. Please sign in to upload files.');
     }
 
@@ -25,14 +25,19 @@ export const uploadFileToSupabase = async (
     const fileName = `${uuidv4()}.${fileExtension}`;
     const fullPath = `${path}/${fileName}`;
 
-    // Get the authenticated client
-    const authenticatedClient = supabase.storage.from(STORAGE_BUCKET);
+    // Get the storage client
+    const storageClient = supabase.storage.from(STORAGE_BUCKET);
 
     // Upload the file to Supabase Storage
-    const { data, error } = await authenticatedClient.upload(fullPath, file, {
+    const { data, error } = await storageClient.upload(fullPath, file, {
       cacheControl,
       upsert: false,
       contentType: file.type,
+      // Add metadata with user ID for RLS policies
+      duplex: 'half',
+      metadata: {
+        userId: userId
+      }
     });
 
     if (error) {
@@ -61,9 +66,9 @@ export const uploadFileToSupabase = async (
  */
 export const deleteFileFromSupabase = async (url: string): Promise<void> => {
   try {
-    // Set Firebase auth token for authentication with Supabase
-    const authSuccess = await setSupabaseAuthToken();
-    if (!authSuccess) {
+    // Get Firebase user ID for metadata
+    const userId = getFirebaseUserId();
+    if (!userId) {
       throw new Error('Authentication required. Please sign in to delete files.');
     }
 
@@ -80,11 +85,11 @@ export const deleteFileFromSupabase = async (url: string): Promise<void> => {
     // Get the path after the bucket name
     const path = pathParts.slice(bucketIndex + 1).join('/');
 
-    // Get the authenticated client
-    const authenticatedClient = supabase.storage.from(STORAGE_BUCKET);
+    // Get the storage client
+    const storageClient = supabase.storage.from(STORAGE_BUCKET);
 
     // Delete the file
-    const { error } = await authenticatedClient.remove([path]);
+    const { error } = await storageClient.remove([path]);
 
     if (error) {
       console.error('Error deleting file from Supabase Storage:', error);

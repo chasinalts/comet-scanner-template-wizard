@@ -8,7 +8,7 @@ import { verifyAdminSetup } from './utils/verifyAdminSetup';
 import { testAdminAccount } from './utils/testAdminSetup';
 import { registerServiceWorker } from './utils/serviceWorkerRegistration';
 import analytics from './utils/analytics';
-import { initializeStorage, setSupabaseAuthToken } from './supabaseConfig';
+import { initializeStorage } from './supabaseConfig';
 
 // Verify admin setup on application start
 verifyAdminSetup();
@@ -44,33 +44,16 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
 if (typeof window !== 'undefined') {
   analytics.init();
 
-  // Listen for Firebase auth state changes to update Supabase auth token
-  import('./firebaseConfig').then(({ auth }) => {
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        // User is signed in, set the Supabase auth token
-        await setSupabaseAuthToken();
-
-        // Initialize Supabase storage after authentication
-        initializeStorage()
-          .then(success => {
-            if (success) {
-              console.log('Supabase storage initialized successfully');
-            } else {
-              console.warn('Failed to initialize Supabase storage');
-            }
-          })
-          .catch(error => {
-            console.error('Error initializing Supabase storage:', error);
-          });
+  // Initialize Supabase storage
+  initializeStorage()
+    .then(success => {
+      if (success) {
+        console.log('Supabase storage initialized successfully');
       } else {
-        // User is signed out, still try to initialize storage for public access
-        console.log('No user signed in. Initializing Supabase storage for public access only.');
-        initializeStorage()
-          .catch(error => {
-            console.warn('Error initializing Supabase storage (public access):', error);
-          });
+        console.warn('Failed to initialize Supabase storage');
       }
+    })
+    .catch(error => {
+      console.error('Error initializing Supabase storage:', error);
     });
-  });
 }
