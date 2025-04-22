@@ -11,6 +11,8 @@ import { useWizard } from '../contexts/WizardContext';
 import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
 import type { Question, QuestionOption } from '../types/questions';
+import VirtualizedImageGallery from '../components/ui/VirtualizedImageGallery';
+import LazyImage from '../components/ui/LazyImage';
 import { TextField, CheckboxField } from '../components/ui/FormField'; // Assuming FormField exports these
 // import Button from '../components/ui/Button'; // Unused import
 
@@ -52,8 +54,6 @@ const ScannerWizard = () => {
 
   // Get scanner images with error handling
   const [scannerImages, setScannerImages] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const imagesPerPage = 6; // Show 6 images per page (2x3 grid)
 
   useEffect(() => {
     try {
@@ -65,20 +65,6 @@ const ScannerWizard = () => {
       setScannerImages([]);
     }
   }, [getScannerImages]);
-
-  // Get current page of images
-  const getCurrentPageImages = () => {
-    const startIndex = (currentPage - 1) * imagesPerPage;
-    return scannerImages.slice(startIndex, startIndex + imagesPerPage);
-  };
-
-  // Calculate total pages
-  const totalPages = Math.ceil(scannerImages.length / imagesPerPage);
-
-  // Handle page change
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
 
   const handleAnswerChange = (questionId: string, value: any) => {
     wizardDispatch({ type: 'SET_ANSWER', payload: { questionId, value } });
@@ -181,7 +167,7 @@ const ScannerWizard = () => {
             {bannerContent ? (
               <div className="relative w-full flex items-center justify-center overflow-hidden">
                 <div className="w-full" style={{ paddingBottom: '42.85%' }}>
-                  <img
+                  <LazyImage
                     src={bannerContent.src}
                     alt="COMET Scanner Banner"
                     className="absolute top-0 left-0 w-full h-full object-contain transition-transform duration-300"
@@ -189,6 +175,7 @@ const ScannerWizard = () => {
                       transform: `scale(${bannerContent.scale || 1})`,
                       transformOrigin: 'center center'
                     }}
+                    loadingStrategy="eager"
                   />
                 </div>
               </div>
@@ -212,68 +199,18 @@ const ScannerWizard = () => {
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-8 text-center">
                 Scanner Variations
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {getCurrentPageImages().map((image) => (
-                  <div
-                    key={image.id}
-                    className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-105"
-                    onClick={() => {
-                      setSelectedImage(image.src);
-                      setSelectedTitle(image.displayText || 'Scanner Variation');
-                    }}
-                  >
-                    <div className="aspect-video bg-gray-100 dark:bg-gray-700 relative overflow-hidden">
-                      <ResponsiveImageWithPlaceholder
-                        src={image.src}
-                        alt={image.alt}
-                        className="w-full h-full object-contain"                        
-                        style={{ transform: `scale(${image.scale || 1})` }}                                                
-                        gallerySize={true}
-                      />
-                    </div>
-                    {image.displayText && (
-                      <div className="p-4">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                          {image.displayText}
-                        </h3>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="flex justify-center mt-8">
-                  <nav className="flex items-center space-x-2">
-                    <button
-                      onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                      disabled={currentPage === 1}
-                      className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
-                    >
-                      Previous
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={`w-8 h-8 rounded flex items-center justify-center ${page === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-
-                    <button
-                      onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
-                      className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
-                    >
-                      Next
-                    </button>
-                  </nav>
-                </div>
-              )}
+              <VirtualizedImageGallery
+                images={scannerImages}
+                onImageClick={(image) => {
+                  setSelectedImage(image.src);
+                  setSelectedTitle(image.displayText || 'Scanner Variation');
+                }}
+                columnCount={3}
+                itemGap={16}
+                className="mb-8"
+                itemClassName="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105"
+                loadingStrategy="lazy"
+              />
             </motion.div>
           )}
 
@@ -318,10 +255,11 @@ const ScannerWizard = () => {
           >
             <div className="relative">
               <div className="flex justify-center items-center bg-white dark:bg-gray-800 rounded-lg p-4">
-                <img
+                <LazyImage
                   src={selectedImage}
                   alt={selectedTitle}
                   className="max-w-full max-h-[80vh] object-contain"
+                  loadingStrategy="eager"
                 />
               </div>
             </div>

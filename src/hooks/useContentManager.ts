@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ContentItem } from './useAdminContent';
-import { handleImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
+import { handleImageUpload, handleFirebaseImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
 
 export interface ContentManagerHook {
   contents: ContentItem[];
@@ -28,8 +28,9 @@ export const useContentManager = (): ContentManagerHook => {
   useEffect(() => {
     return () => {
       contents.forEach((content) => {
-        if (content.imageUrl && content.imageUrl.startsWith('blob:')) {
-          cleanupImageUrl(content.imageUrl);
+        if (content.imageUrl) {
+          const isFirebaseUrl = content.imageUrl.includes('firebasestorage.googleapis.com');
+          cleanupImageUrl(content.imageUrl, isFirebaseUrl);
         }
       });
     };
@@ -65,8 +66,9 @@ export const useContentManager = (): ContentManagerHook => {
       const contentToDelete = prev.find(item => item.id === id);
 
       // Cleanup image URL if it exists
-      if (contentToDelete?.imageUrl && contentToDelete.imageUrl.startsWith('blob:')) {
-        cleanupImageUrl(contentToDelete.imageUrl);
+      if (contentToDelete?.imageUrl) {
+        const isFirebaseUrl = contentToDelete.imageUrl.includes('firebasestorage.googleapis.com');
+        cleanupImageUrl(contentToDelete.imageUrl, isFirebaseUrl);
       }
 
       return prev.filter(item => item.id !== id);
@@ -77,8 +79,9 @@ export const useContentManager = (): ContentManagerHook => {
     console.log(`Starting upload of ${type} image:`, { fileName: file.name, fileSize: file.size, fileType: file.type });
     return new Promise((resolve, reject) => {
       try {
-        handleImageUpload(file, (imageUrl: string, _imagePreview: string) => {
-          console.log(`Adding ${type} content to storage`);
+        // Use Firebase Storage for image uploads
+        handleFirebaseImageUpload(file, type, (imageUrl: string, _imagePreview: string) => {
+          console.log(`Adding ${type} content with Firebase Storage URL`);
           const id = addContent({
             type,
             title,

@@ -6,6 +6,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../../components/ui/ThemeToggle';
 import ResponsiveImageWithPlaceholder from '../../components/ui/ResponsiveImageWithPlaceholder';
+import VirtualizedImageGallery from '../../components/ui/VirtualizedImageGallery';
+import LazyImage from '../../components/ui/LazyImage';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -62,7 +64,7 @@ const StepOne = () => {
             {bannerContent ? (
               <div className="relative w-full flex items-center justify-center overflow-hidden">
                 <div className="w-full" style={{ paddingBottom: '42.85%' }}>
-                  <ResponsiveImageWithPlaceholder
+                  <LazyImage
                     src={bannerContent.src}
                     alt="COMET Scanner Banner"
                     className="absolute top-0 left-0 w-full h-full object-contain transition-transform duration-300"
@@ -70,7 +72,7 @@ const StepOne = () => {
                       transform: `scale(${bannerContent.scale || 1})`,
                       transformOrigin: 'center center'
                     }}
-                    loading="eager"
+                    loadingStrategy="eager"
                     gallerySize={false}
                     sizes="(max-width: 768px) 100vw, 1200px"
                   />
@@ -109,38 +111,24 @@ const StepOne = () => {
               </h2>
             </motion.div>
 
-            {/* Scanner Variations Grid */}
+            {/* Scanner Variations Grid - Using Virtualized Gallery */}
             {scannerImages.length > 0 && (
               <motion.div
                 variants={itemVariants}
-                className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]"
+                className="w-full"
               >
-                {scannerImages.map((image: ImageContent) => (
-                  <div
-                    key={image.id}
-                    className="cursor-pointer group mb-4 break-inside-avoid"
-                    onClick={() => {
-                      setSelectedImage(image.src);
-                      setSelectedTitle(image.displayText || image.alt);
-                    }}
-                  >
-                    <div className="relative bg-gray-100 dark:bg-gray-800">
-                      <ResponsiveImageWithPlaceholder
-                        src={image.src}
-                        alt={image.alt}
-                        className="w-full h-auto transition-transform duration-300"
-                        style={{
-                          transform: `scale(${image.scale || 1})`,
-                          transformOrigin: 'center center'
-                        }}
-                        gallerySize={true}
-                        loading="lazy"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity" />
-                    </div>
-                  </div>
-                ))}
+                <VirtualizedImageGallery
+                  images={scannerImages}
+                  onImageClick={(image) => {
+                    setSelectedImage(image.src);
+                    setSelectedTitle(image.displayText || image.alt);
+                  }}
+                  columnCount={4}
+                  itemGap={16}
+                  className="mb-8"
+                  itemClassName="aspect-square"
+                  loadingStrategy="lazy"
+                />
               </motion.div>
             )}
             {scannerImages.length === 0 && (
@@ -171,11 +159,11 @@ const StepOne = () => {
           >
             <div className="relative">
               <div className="flex justify-center items-center bg-white dark:bg-gray-800 rounded-lg p-4">
-                <ResponsiveImageWithPlaceholder
+                <LazyImage
                   src={selectedImage}
                   alt={selectedTitle}
                   className="max-w-full max-h-[80vh] object-contain"
-                  loading="eager"
+                  loadingStrategy="eager"
                   gallerySize={false}
                   sizes="(max-width: 768px) 100vw, 1200px"
                 />

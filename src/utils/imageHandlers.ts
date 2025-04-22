@@ -1,3 +1,10 @@
+import { uploadFileToStorage, deleteFileFromStorage } from './firebaseStorage';
+import { processImageForUpload } from './imageCompression';
+
+/**
+ * Handles image upload using local storage (base64 encoding)
+ * @deprecated Use handleFirebaseImageUpload instead for better performance
+ */
 export const handleImageUpload = (
   file: File,
   onSuccess: (imageUrl: string, imagePreview: string) => void
@@ -7,16 +14,71 @@ export const handleImageUpload = (
 
   reader.onloadend = () => {
     const imageUrl = reader.result as string;
-    console.log('Image uploaded:', { file, imageUrl: imageUrl.substring(0, 50) + '...', imagePreview });
+    console.log('Image uploaded locally:', { file, imageUrl: imageUrl.substring(0, 50) + '...', imagePreview });
     onSuccess(imageUrl, imagePreview);
   };
 
   reader.readAsDataURL(file);
 };
 
-export const cleanupImageUrl = (url: string) => {
+/**
+ * Handles image upload using Firebase Storage with compression
+ * @param file The file to upload
+ * @param type The type of image (banner, scanner, etc.)
+ * @param onSuccess Callback function to be called when upload is successful
+ */
+export const handleFirebaseImageUpload = async (
+  file: File,
+  type: string,
+  onSuccess: (imageUrl: string, imagePreview: string) => void
+) => {
+  try {
+    // Create a temporary preview URL for immediate display
+    const imagePreview = URL.createObjectURL(file);
+
+    // Process and compress the image if needed
+    const processedFile = await processImageForUpload(file, {
+      maxWidth: 1920,
+      maxHeight: 1080,
+      quality: 0.85,
+      maxSizeInMB: 1
+    });
+
+    // Upload to Firebase Storage
+    const storagePath = `images/${type}`;
+    const imageUrl = await uploadFileToStorage(processedFile, storagePath);
+
+    console.log('Image uploaded to Firebase:', {
+      originalSize: file.size,
+      processedSize: processedFile.size,
+      compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
+      imageUrl
+    });
+
+    onSuccess(imageUrl, imagePreview);
+
+    // Clean up the preview URL
+    URL.revokeObjectURL(imagePreview);
+  } catch (error) {
+    console.error('Error in handleFirebaseImageUpload:', error);
+    throw error;
+  }
+};
+
+/**
+ * Cleans up a URL, revoking object URLs if necessary
+ * @param url The URL to clean up
+ * @param isFirebaseUrl Whether the URL is from Firebase Storage
+ */
+export const cleanupImageUrl = async (url: string, isFirebaseUrl = false) => {
   if (url.startsWith('blob:')) {
     URL.revokeObjectURL(url);
+  } else if (isFirebaseUrl && url.includes('firebasestorage.googleapis.com')) {
+    try {
+      await deleteFileFromStorage(url);
+    } catch (error) {
+      console.error('Error deleting file from Firebase Storage:', error);
+    }
   }
 };
 

@@ -1,12 +1,12 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import reactPlugin from '@vitejs/plugin-react'
 // Note: You'll need to install this plugin with: npm install vite-plugin-imagemin --save-dev
 // import imagemin from 'vite-plugin-imagemin'
 
 export default defineConfig({
   // Remove or comment out the base path
   // base: '/comet-scanner-wizard/',
-  plugins: [react()],
+  plugins: [reactPlugin()],
   server: {
     port: 3000,
     open: process.env.NODE_ENV !== 'production' // Only open in development

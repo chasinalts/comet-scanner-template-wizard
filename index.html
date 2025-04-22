@@ -9,7 +9,7 @@
 
     <!-- Preload critical assets -->
     <link rel="preload" href="/src/index.css" as="style" />
-    <link rel="preload" href="/src/main.tsx" as="script" type="module" />
+    <link rel="preload" href="/src/main.tsx" as="script" />
 
     <!-- Cache control -->
     <meta http-equiv="Cache-Control" content="max-age=86400" />
@@ -17,6 +17,9 @@
     <!-- PWA support -->
     <meta name="theme-color" content="#ffffff" />
     <link rel="manifest" href="/manifest.json" />
+
+    <!-- PWA support for mobile devices -->
+    <meta name="mobile-web-app-capable" content="yes" />
 
     <!-- iOS PWA support -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
