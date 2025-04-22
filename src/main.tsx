@@ -7,6 +7,7 @@ import { verifyAdminSetup } from './utils/verifyAdminSetup';
 import { testAdminAccount } from './utils/testAdminSetup';
 import { registerServiceWorker } from './utils/serviceWorkerRegistration';
 import analytics from './utils/analytics';
+import { initializeStorage } from './supabaseConfig';
 
 // Verify admin setup on application start
 verifyAdminSetup();
@@ -41,4 +42,17 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
 // Initialize performance analytics only in browser environment
 if (typeof window !== 'undefined') {
   analytics.init();
+
+  // Initialize Supabase storage
+  initializeStorage()
+    .then(success => {
+      if (success) {
+        console.log('Supabase storage initialized successfully');
+      } else {
+        console.warn('Failed to initialize Supabase storage');
+      }
+    })
+    .catch(error => {
+      console.error('Error initializing Supabase storage:', error);
+    });
 }

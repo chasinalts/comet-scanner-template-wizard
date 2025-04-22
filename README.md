@@ -124,7 +124,25 @@ npm run test:netlify
 
 ## 🔧 Troubleshooting
 
-### Firebase Storage CORS Configuration
+### Storage Configuration
+
+#### Supabase Storage (Recommended)
+
+This project uses Supabase Storage for image uploads. To configure Supabase Storage:
+
+1. Create a Supabase account at https://supabase.com
+2. Create a new project
+3. Go to the project settings and copy the URL and anon key
+4. Create a `.env` file in the root of the project with the following content:
+
+```
+VITE_SUPABASE_URL=https://your-supabase-project-url.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+5. The application will automatically create a storage bucket named `images` when it starts
+
+#### Firebase Storage CORS Configuration
 
 If you encounter CORS errors when uploading images to Firebase Storage, you need to configure CORS for your Firebase Storage bucket:
 

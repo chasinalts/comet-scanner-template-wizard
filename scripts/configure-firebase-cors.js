@@ -5,10 +5,15 @@
  * It provides instructions for both manual and CLI-based configuration
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-const readline = require('readline');
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import readline from 'readline';
+import { fileURLToPath } from 'url';
+
+// Get the current file's directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -24,7 +29,7 @@ const colors = {
   blink: '\x1b[5m',
   reverse: '\x1b[7m',
   hidden: '\x1b[8m',
-  
+
   black: '\x1b[30m',
   red: '\x1b[31m',
   green: '\x1b[32m',
@@ -33,7 +38,7 @@ const colors = {
   magenta: '\x1b[35m',
   cyan: '\x1b[36m',
   white: '\x1b[37m',
-  
+
   bgBlack: '\x1b[40m',
   bgRed: '\x1b[41m',
   bgGreen: '\x1b[42m',
@@ -68,9 +73,11 @@ const isUserLoggedIn = () => {
 const getCurrentProject = () => {
   try {
     // Read .firebaserc file
-    const firebaserc = JSON.parse(fs.readFileSync(path.join(process.cwd(), '.firebaserc'), 'utf8'));
+    const projectRoot = path.resolve(__dirname, '..');
+    const firebaserc = JSON.parse(fs.readFileSync(path.join(projectRoot, '.firebaserc'), 'utf8'));
     return firebaserc.projects.default;
   } catch (error) {
+    console.error('Error reading .firebaserc:', error.message);
     return null;
   }
 };
@@ -78,12 +85,13 @@ const getCurrentProject = () => {
 // Main function
 const main = async () => {
   console.log(`${colors.bright}${colors.cyan}Firebase Storage CORS Configuration Helper${colors.reset}\n`);
-  
+
   // Check if cors.json exists
-  const corsJsonPath = path.join(process.cwd(), 'cors.json');
+  const projectRoot = path.resolve(__dirname, '..');
+  const corsJsonPath = path.join(projectRoot, 'cors.json');
   if (!fs.existsSync(corsJsonPath)) {
     console.log(`${colors.yellow}cors.json file not found. Creating it...${colors.reset}`);
-    
+
     // Create cors.json file
     const corsJson = [
       {
@@ -93,57 +101,57 @@ const main = async () => {
         "responseHeader": ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition"]
       }
     ];
-    
+
     fs.writeFileSync(corsJsonPath, JSON.stringify(corsJson, null, 2));
     console.log(`${colors.green}cors.json file created successfully.${colors.reset}`);
   } else {
     console.log(`${colors.green}cors.json file already exists.${colors.reset}`);
   }
-  
+
   // Check if Firebase CLI is installed
   const firebaseCliInstalled = isFirebaseCliInstalled();
   if (!firebaseCliInstalled) {
     console.log(`\n${colors.yellow}Firebase CLI is not installed. You can install it with:${colors.reset}`);
     console.log(`npm install -g firebase-tools`);
-    
+
     console.log(`\n${colors.bright}${colors.white}Manual Configuration Instructions:${colors.reset}`);
     console.log(`1. Go to the Firebase Console: https://console.firebase.google.com/`);
     console.log(`2. Select your project`);
     console.log(`3. Go to "Storage" in the left sidebar`);
     console.log(`4. Click on the "Rules" tab`);
     console.log(`5. Update your rules to include CORS configuration from the firebase.storage.rules file`);
-    
+
     rl.close();
     return;
   }
-  
+
   console.log(`${colors.green}Firebase CLI is installed.${colors.reset}`);
-  
+
   // Check if user is logged in
   const userLoggedIn = isUserLoggedIn();
   if (!userLoggedIn) {
     console.log(`\n${colors.yellow}You are not logged in to Firebase. Please log in:${colors.reset}`);
     console.log(`firebase login`);
-    
+
     rl.close();
     return;
   }
-  
+
   console.log(`${colors.green}You are logged in to Firebase.${colors.reset}`);
-  
+
   // Get current project
   const currentProject = getCurrentProject();
   if (!currentProject) {
     console.log(`\n${colors.yellow}Could not determine the current Firebase project.${colors.reset}`);
     console.log(`Please set the project manually:`);
     console.log(`firebase use <project-id>`);
-    
+
     rl.close();
     return;
   }
-  
+
   console.log(`${colors.green}Current Firebase project: ${colors.bright}${currentProject}${colors.reset}`);
-  
+
   // Ask if user wants to update CORS configuration
   rl.question(`\n${colors.yellow}Do you want to update the Firebase Storage CORS configuration? (y/n) ${colors.reset}`, (answer) => {
     if (answer.toLowerCase() === 'y') {
@@ -159,7 +167,7 @@ const main = async () => {
     } else {
       console.log(`\n${colors.yellow}CORS configuration update skipped.${colors.reset}`);
     }
-    
+
     rl.close();
   });
 };

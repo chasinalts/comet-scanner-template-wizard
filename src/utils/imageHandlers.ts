@@ -1,5 +1,7 @@
 import { uploadFileToStorage, deleteFileFromStorage } from './firebaseStorage';
+import { uploadFileToSupabase, deleteFileFromSupabase } from './supabaseStorage';
 import { processImageForUpload } from './imageCompression';
+import { supabase } from '../supabaseConfig';
 
 /**
  * Handles image upload using local storage (base64 encoding)
@@ -22,13 +24,13 @@ export const handleImageUpload = (
 };
 
 /**
- * Handles image upload using Firebase Storage with compression
+ * Handles image upload using Supabase Storage with compression
  * @param file The file to upload
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  * @param onError Optional callback function to be called when upload fails
  */
-export const handleFirebaseImageUpload = (
+export const handleSupabaseImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void,
@@ -49,18 +51,18 @@ export const handleFirebaseImageUpload = (
           maxSizeInMB: 1
         });
 
-        // Upload to Firebase Storage
-        const storagePath = `images/${type}`;
-        const imageUrl = await uploadFileToStorage(processedFile, storagePath);
+        // Upload to Supabase Storage
+        const storagePath = type; // e.g., 'banner' or 'scanner'
+        const imageUrl = await uploadFileToSupabase(processedFile, storagePath);
 
-        console.log('Image uploaded to Firebase:', {
+        console.log('Image uploaded to Supabase:', {
           originalSize: file.size,
           processedSize: processedFile.size,
           compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
           imageUrl
         });
 
-        // Call the success callback with the Firebase URL and preview URL
+        // Call the success callback with the Supabase URL and preview URL
         onSuccess(imageUrl, imagePreview);
 
         // Clean up the preview URL after a delay to ensure it's used
@@ -82,7 +84,7 @@ export const handleFirebaseImageUpload = (
       }
     })();
   } catch (error) {
-    console.error('Error in handleFirebaseImageUpload:', error);
+    console.error('Error in handleSupabaseImageUpload:', error);
     if (onError) {
       onError(error);
     } else {
@@ -92,18 +94,39 @@ export const handleFirebaseImageUpload = (
 };
 
 /**
+ * Handles image upload using Firebase Storage with compression
+ * @param file The file to upload
+ * @param type The type of image (banner, scanner, etc.)
+ * @param onSuccess Callback function to be called when upload is successful
+ * @param onError Optional callback function to be called when upload fails
+ */
+export const handleFirebaseImageUpload = (
+  file: File,
+  type: string,
+  onSuccess: (imageUrl: string, imagePreview: string) => void,
+  onError?: (error: any) => void
+) => {
+  // Use Supabase Storage instead of Firebase Storage
+  return handleSupabaseImageUpload(file, type, onSuccess, onError);
+};
+
+/**
  * Cleans up a URL, revoking object URLs if necessary
  * @param url The URL to clean up
- * @param isFirebaseUrl Whether the URL is from Firebase Storage
+ * @param isCloudUrl Whether the URL is from a cloud storage provider
  */
-export const cleanupImageUrl = async (url: string, isFirebaseUrl = false) => {
+export const cleanupImageUrl = async (url: string, isCloudUrl = false) => {
   if (url.startsWith('blob:')) {
     URL.revokeObjectURL(url);
-  } else if (isFirebaseUrl && url.includes('firebasestorage.googleapis.com')) {
+  } else if (isCloudUrl) {
     try {
-      await deleteFileFromStorage(url);
+      if (url.includes('firebasestorage.googleapis.com')) {
+        await deleteFileFromStorage(url);
+      } else if (url.includes('supabase')) {
+        await deleteFileFromSupabase(url);
+      }
     } catch (error) {
-      console.error('Error deleting file from Firebase Storage:', error);
+      console.error('Error deleting file from cloud storage:', error);
     }
   }
 };
