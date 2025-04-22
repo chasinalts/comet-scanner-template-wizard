@@ -5,7 +5,7 @@ import {
   sendPasswordResetEmail,
   signOut,
   User as FirebaseUser // Rename to avoid conflict with local User interface if needed
-} from 'firebase/auth'; 
+} from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig'; // Import initialized auth and db
 
@@ -42,7 +42,7 @@ interface AuthContextType {
   saveTemplate: (templateName: string, templateData: any, currentUser: AppUser) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
-  guestLogin: () => Promise<void>;
+
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []); // Run only once on mount
-  
+
   const login = async (email: string, password: string) => {
       try {
           await signInWithEmailAndPassword(auth, email, password);
@@ -109,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               throw new Error('An owner account already exists.');
           }
       }
-      
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
@@ -142,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           throw new Error('Failed to create user account.');
         }
   };
-  
+
   const saveTemplate = async (templateName: string, templateData: any, currentUser: AppUser) => {
     if (currentUser) {
         const templateDocRef = doc(db, 'templates');
@@ -161,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signOut(auth);
     // onAuthStateChanged will handle setting currentUser to null
   };
-  
+
     const passwordResetEmail = async (email: string) => {
         try {
             await sendPasswordResetEmail(auth, email);
@@ -169,18 +169,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             throw error;
         }
     };
-    
-    const guestLogin = async () => {
-      setIsLoading(true);
-        const guestUser: AppUser = {
-          uid: 'guest-user',
-          profile: null,
-          isAnonymous: true,
-          
-        } as AppUser
-        setCurrentUser(guestUser);
-        setIsLoading(false);
-    };
+
+
 
   const value = {
     currentUser,
@@ -189,7 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     isLoading,
     saveTemplate,
-    guestLogin,
+
     sendPasswordResetEmail: passwordResetEmail,
   };
 
