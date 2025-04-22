@@ -14,6 +14,7 @@ import type { Question, QuestionOption } from '../types/questions';
 import VirtualizedImageGallery from '../components/ui/VirtualizedImageGallery';
 import LazyImage from '../components/ui/LazyImage';
 import { TextField, CheckboxField } from '../components/ui/FormField'; // Assuming FormField exports these
+import HolographicText from '../components/ui/HolographicText';
 // import Button from '../components/ui/Button'; // Unused import
 
 const containerVariants = {
@@ -141,7 +142,7 @@ const ScannerWizard = () => {
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
+      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200 futuristic-grid-bg">
         <ThemeToggle />
         <motion.div
           variants={containerVariants}
@@ -154,15 +155,18 @@ const ScannerWizard = () => {
             variants={itemVariants}
             className="py-12 px-4 text-center"
           >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white font-display tracking-tight">
-              COMET Scanner Template Wizard
-            </h1>
+            <HolographicText
+              text="COMET Scanner Template Wizard"
+              as="h1"
+              variant="title"
+              className="text-5xl md:text-6xl lg:text-7xl font-bold font-display tracking-tight"
+            />
           </motion.div>
 
           {/* Banner Section */}
           <motion.div
             variants={itemVariants}
-            className="relative w-full mb-12 bg-gray-100 dark:bg-gray-800"
+            className="relative w-full mb-12 bg-gray-100 dark:bg-gray-800 holo-glow"
           >
             {bannerContent ? (
               <div className="relative w-full flex items-center justify-center overflow-hidden">
@@ -182,9 +186,12 @@ const ScannerWizard = () => {
             ) : (
               <div className="w-full" style={{ paddingBottom: '42.85%' }}>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
-                  <span className="text-3xl text-white font-semibold">
-                    Visualize Your Data with COMET Scanner
-                  </span>
+                  <HolographicText
+                    text="Visualize Your Data with COMET Scanner"
+                    as="span"
+                    variant="subtitle"
+                    className="text-3xl font-semibold"
+                  />
                 </div>
               </div>
             )}
@@ -196,9 +203,12 @@ const ScannerWizard = () => {
               variants={itemVariants}
               className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16"
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-                Scanner Variations
-              </h2>
+              <HolographicText
+                text="Scanner Variations"
+                as="h2"
+                variant="title"
+                className="text-4xl md:text-5xl font-bold mb-8 text-center"
+              />
               <VirtualizedImageGallery
                 images={scannerImages}
                 onImageClick={(image) => {
@@ -219,17 +229,24 @@ const ScannerWizard = () => {
             {/* Left Column: Questions */}
             <div className="lg:col-span-2 space-y-8">
               <motion.div variants={itemVariants}>
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-                  Configure Your Template
-                </h2>
+                <HolographicText
+                  text="Configure Your Template"
+                  as="h2"
+                  variant="subtitle"
+                  className="text-3xl font-bold mb-6"
+                />
                 <div className="space-y-6">
                   {wizardState.questions.map((question: Question) => (
-                    <div key={question.id} className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                    <div key={question.id} className="p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 futuristic-container">
                       {renderQuestionInput(question)}
                     </div>
                   ))}
                   {wizardState.questions.length === 0 && (
-                     <p className="text-gray-500 dark:text-gray-400">No questions configured yet. Please set them up in the Admin Dashboard.</p>
+                     <HolographicText
+                       text="No questions configured yet. Please set them up in the Admin Dashboard."
+                       as="p"
+                       className="text-gray-500 dark:text-gray-400"
+                     />
                   )}
                 </div>
               </motion.div>
@@ -255,12 +272,14 @@ const ScannerWizard = () => {
           >
             <div className="relative">
               <div className="flex justify-center items-center bg-white dark:bg-gray-800 rounded-lg p-4">
-                <LazyImage
-                  src={selectedImage}
-                  alt={selectedTitle}
-                  className="max-w-full max-h-[80vh] object-contain"
-                  loadingStrategy="eager"
-                />
+                <div className="holo-glow">
+                  <LazyImage
+                    src={selectedImage}
+                    alt={selectedTitle}
+                    className="max-w-full max-h-[80vh] object-contain"
+                    loadingStrategy="eager"
+                  />
+                </div>
               </div>
             </div>
           </Modal>

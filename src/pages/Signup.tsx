@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { FirebaseError } from 'firebase/app'; // Import FirebaseError for better error handling
+import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -84,19 +85,29 @@ const Signup = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+      className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 futuristic-grid-bg"
     >
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">
-          Create your account
-        </h2>
-        <h3 className="mt-2 text-center text-xl text-gray-600">
-          Join COMET Scanner Wizard
-        </h3>
+        <div className="text-center">
+          <HolographicText
+            text="Create your account"
+            as="h2"
+            variant="title"
+            className="text-center font-extrabold"
+          />
+          <div className="mt-2">
+            <HolographicText
+              text="Join COMET Scanner Wizard"
+              as="h3"
+              variant="subtitle"
+              className="text-center"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10 futuristic-container holo-glow">
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -128,12 +139,12 @@ const Signup = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label
-                htmlFor="email" // Change htmlFor to email
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address {/* Change label text */}
-              </label>
+              <HolographicText
+                text="Email address"
+                as="label"
+                className="block text-sm font-medium text-cyan-300"
+                htmlFor="email"
+              />
               <div className="mt-1">
                 <input
                   id="email" // Change id to email
@@ -143,18 +154,18 @@ const Signup = () => {
                   required
                   value={email} // Bind value to email state
                   onChange={(e) => setEmail(e.target.value)} // Update email state
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
                 />
               </div>
             </div>
 
             <div>
-              <label
+              <HolographicText
+                text="Password"
+                as="label"
+                className="block text-sm font-medium text-cyan-300"
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
+              />
               <div className="mt-1">
                 <input
                   id="password"
@@ -164,18 +175,18 @@ const Signup = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
                 />
               </div>
             </div>
 
             <div>
-              <label
+              <HolographicText
+                text="Confirm Password"
+                as="label"
+                className="block text-sm font-medium text-cyan-300"
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm Password
-              </label>
+              />
               <div className="mt-1">
                 <input
                   id="confirmPassword"
@@ -185,7 +196,7 @@ const Signup = () => {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
                 />
               </div>
             </div>
@@ -198,24 +209,22 @@ const Signup = () => {
                 type="checkbox"
                 checked={isOwner}
                 onChange={(e) => setIsOwner(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded"
               />
-              <label
+              <HolographicText
+                text="Register as Owner"
+                as="label"
+                className="ml-2 block text-sm"
                 htmlFor="isOwner"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Register as Owner
-              </label>
+              />
             </div>
 
             <div>
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                  isLoading
-                    ? 'bg-blue-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button ${
+                  isLoading ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
                 {isLoading ? (
@@ -247,10 +256,10 @@ const Signup = () => {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-cyan-800" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
+                <span className="px-2 futuristic-dark-panel text-cyan-300">
                   Already have an account?
                 </span>
               </div>
@@ -259,9 +268,13 @@ const Signup = () => {
             <div className="mt-6 text-center">
               <Link
                 to="/login"
-                className="text-blue-600 hover:text-blue-500 font-medium"
+                className="font-medium"
               >
-                Sign in instead
+                <HolographicText
+                  text="Sign in instead"
+                  as="span"
+                  className="text-cyan-400 hover:text-cyan-300"
+                />
               </Link>
             </div>
           </div>

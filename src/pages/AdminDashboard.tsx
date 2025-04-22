@@ -16,6 +16,7 @@ import type { Section } from '../hooks/useSections';
 import TrashIcon from '../components/ui/TrashIcon';
 import ImageThumbnail from '../components/ui/ImageThumbnail';
 import TemplateCreator from '../components/TemplateCreator';
+import HolographicText from '../components/ui/HolographicText';
 
 interface UploadingState {
   questionId?: string;
@@ -294,20 +295,42 @@ export default function AdminDashboard() {
   };
 
   if (!currentUser?.isOwner) {
-    return <div className="p-8 text-center text-gray-900 dark:text-white">You don't have permission to access this page.</div>;
+    return <div className="p-8 text-center">
+      <HolographicText
+        text="You don't have permission to access this page."
+        as="p"
+        variant="subtitle"
+        className="text-center"
+      />
+    </div>;
   }
 
   return (
-    <div className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''}`}>
-      <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">Admin Dashboard</h1>
+    <div className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''} futuristic-grid-bg`}>
+      <HolographicText
+        text="Admin Dashboard"
+        as="h1"
+        variant="title"
+        className="text-3xl font-bold mb-8"
+      />
 
       {/* Image Management Section */}
       <section className="space-y-8">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Image Management</h2>
+        <HolographicText
+          text="Image Management"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-semibold"
+        />
 
         {/* Banner Image */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-          <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-4">Banner Image</h3>
+        <div className="rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 futuristic-container holo-glow">
+          <HolographicText
+            text="Banner Image"
+            as="h3"
+            variant="subtitle"
+            className="text-xl font-medium mb-4"
+          />
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
@@ -324,7 +347,11 @@ export default function AdminDashboard() {
                     </div>
                   ) : (
                     <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                      <p className="text-gray-500 dark:text-gray-400">No banner image uploaded</p>
+                      <HolographicText
+                        text="No banner image uploaded"
+                        as="p"
+                        className="text-gray-500 dark:text-gray-400"
+                      />
                     </div>
                   )}
                 </div>
@@ -333,9 +360,11 @@ export default function AdminDashboard() {
                 {getBannerImage() && (
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Image Scale ({((getBannerImage()?.scale || 1) * 100).toFixed(0)}%)
-                      </label>
+                      <HolographicText
+                        text={`Image Scale (${((getBannerImage()?.scale || 1) * 100).toFixed(0)}%)`}
+                        as="label"
+                        className="block text-sm font-medium text-cyan-300 mb-1"
+                      />
                       <input
                         type="range"
                         min="0.1"
@@ -349,9 +378,11 @@ export default function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Display Text
-                      </label>
+                      <HolographicText
+                        text="Display Text"
+                        as="label"
+                        className="block text-sm font-medium text-cyan-300 mb-1"
+                      />
                       <TextField
                         value={getBannerImage()?.displayText || ''}
                         onChange={(e) => handleImageDisplayTextChange(getBannerImage()?.id || '', e.target.value)}
@@ -389,9 +420,14 @@ export default function AdminDashboard() {
         </div>
 
         {/* Scanner Variations */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 futuristic-container holo-glow">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-medium text-gray-900 dark:text-white">Scanner Variations</h3>
+            <HolographicText
+              text="Scanner Variations"
+              as="h3"
+              variant="subtitle"
+              className="text-xl font-medium"
+            />
             <div className="text-sm text-gray-500 dark:text-gray-400">
               {getScannerImages().length} images
             </div>
@@ -413,7 +449,7 @@ export default function AdminDashboard() {
               ))}
 
               {/* Upload New Scanner Image - Always show this */}
-              <div className="border dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+              <div className="border dark:border-gray-700 rounded-lg shadow-sm p-4 futuristic-container">
                 <DragDropUpload
                   onFileSelect={handleScannerImageUpload}
                   accept="image/*"
@@ -463,7 +499,12 @@ export default function AdminDashboard() {
 
       {/* Template Builder Section */}
       <section className="space-y-8">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Template Builder</h2>
+        <HolographicText
+          text="Template Builder"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-semibold"
+        />
         <TemplateCreator />
         <div className="space-y-6">
           <Button onClick={addSection}>Add New Section</Button>
