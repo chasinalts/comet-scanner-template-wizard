@@ -153,12 +153,12 @@ const Login = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label
-                htmlFor="email" // Change htmlFor to email
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address {/* Change label text */}
-              </label>
+              <HolographicText
+                text="Email address"
+                as="label"
+                className="block text-sm font-medium text-cyan-300"
+                htmlFor="email"
+              />
               <div className="mt-1">
                 <input
                   id="email" // Change id to email
@@ -174,12 +174,12 @@ const Login = () => {
             </div>
 
             <div>
-              <label
+              <HolographicText
+                text="Password"
+                as="label"
+                className="block text-sm font-medium text-cyan-300"
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
+              />
               <div className="mt-1">
                 <input
                   id="password"
