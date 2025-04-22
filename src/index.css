@@ -1,9 +1,9 @@
+/* Import holographic styles */
+@import './styles/holographic.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import holographic styles */
-@import './styles/holographic.css';
 
 /* Custom base styles */
 @layer base {
