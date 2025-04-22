@@ -67,8 +67,9 @@ export const useContentManager = (): ContentManagerHook => {
 
       // Cleanup image URL if it exists
       if (contentToDelete?.imageUrl) {
-        const isFirebaseUrl = contentToDelete.imageUrl.includes('firebasestorage.googleapis.com');
-        cleanupImageUrl(contentToDelete.imageUrl, isFirebaseUrl);
+        const isCloudUrl = contentToDelete.imageUrl.includes('firebasestorage.googleapis.com') ||
+                          contentToDelete.imageUrl.includes('supabase');
+        cleanupImageUrl(contentToDelete.imageUrl, isCloudUrl);
       }
 
       return prev.filter(item => item.id !== id);
@@ -79,13 +80,13 @@ export const useContentManager = (): ContentManagerHook => {
     console.log(`Starting upload of ${type} image:`, { fileName: file.name, fileSize: file.size, fileType: file.type });
     return new Promise((resolve, reject) => {
       try {
-        // Use Firebase Storage for image uploads
+        // Use Supabase Storage for image uploads
         handleFirebaseImageUpload(
           file,
           type,
           (imageUrl: string, _imagePreview: string) => {
             try {
-              console.log(`Adding ${type} content with Firebase Storage URL`);
+              console.log(`Adding ${type} content with Supabase Storage URL`);
               const id = addContent({
                 type,
                 title,
@@ -101,8 +102,8 @@ export const useContentManager = (): ContentManagerHook => {
             }
           },
           (error) => {
-            console.error(`Error uploading ${type} image to Firebase Storage:`, error);
-            reject(new Error(`Failed to upload to Firebase Storage. Please check your CORS configuration: ${error.message}`));
+            console.error(`Error uploading ${type} image to Supabase Storage:`, error);
+            reject(new Error(`Failed to upload to Supabase Storage: ${error.message}`));
           }
         );
       } catch (error) {

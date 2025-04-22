@@ -144,7 +144,7 @@ export default function AdminDashboard() {
         },
         (error) => {
           console.error('Failed to upload option image:', error);
-          showToast('error', 'Failed to upload image. Please check your Firebase Storage CORS configuration.');
+          showToast('error', 'Failed to upload image to Supabase Storage.');
           setUploadingImage(null);
         }
       );
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
     try {
       setUploadingImage({ contentType: 'banner' });
 
-      // Use the uploadImage function which now uses Firebase Storage
+      // Use the uploadImage function which now uses Supabase Storage
       uploadImage(file, 'banner', 'Banner Image')
         .then(id => {
           setSelectedImageId(id);
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
           setUploadingImage(null);
         })
         .catch(error => {
-          showToast('error', 'Failed to upload banner image. Please check your Firebase Storage CORS configuration.');
+          showToast('error', 'Failed to upload banner image to Supabase Storage.');
           console.error('Error uploading banner image:', error);
           setUploadingImage(null);
         });
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
     try {
       setUploadingImage({ contentType: 'scanner' });
 
-      // Use the uploadImage function which now uses Firebase Storage
+      // Use the uploadImage function which now uses Supabase Storage
       uploadImage(file, 'scanner', 'Scanner Variation')
         .then(id => {
           setSelectedImageId(id);
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
           setUploadingImage(null);
         })
         .catch(error => {
-          showToast('error', 'Failed to upload scanner image. Please check your Firebase Storage CORS configuration.');
+          showToast('error', 'Failed to upload scanner image to Supabase Storage.');
           console.error('Error uploading scanner image:', error);
           setUploadingImage(null);
         });
