@@ -124,6 +124,56 @@ npm run test:netlify
 
 ## 🔧 Troubleshooting
 
+### Firebase Storage CORS Configuration
+
+If you encounter CORS errors when uploading images to Firebase Storage, you need to configure CORS for your Firebase Storage bucket:
+
+1. **Using Firebase Console (Recommended)**:
+   - Go to the Firebase Console: https://console.firebase.google.com/
+   - Select your project
+   - Go to "Storage" in the left sidebar
+   - Click on the "Rules" tab
+   - Update your rules to include CORS configuration:
+
+   ```
+   service firebase.storage {
+     match /b/{bucket}/o {
+       match /{allPaths=**} {
+         allow read, write: if request.auth != null;
+
+         // CORS configuration
+         options {
+           cors {
+             origin: ["https://cometscanners.netlify.app", "http://localhost:3000"];
+             method: ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"];
+             maxAgeSeconds: 3600;
+             responseHeader: ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition"];
+           }
+         }
+       }
+     }
+   }
+   ```
+
+2. **Using Firebase CLI**:
+   - Create a `cors.json` file with the following content:
+   ```json
+   [
+     {
+       "origin": ["https://cometscanners.netlify.app", "http://localhost:3000"],
+       "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
+       "maxAgeSeconds": 3600,
+       "responseHeader": ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition"]
+     }
+   ]
+   ```
+   - Run the following commands:
+   ```bash
+   firebase login
+   firebase use your-project-id
+   firebase storage:cors update cors.json
+   ```
+
 ### Resetting User Data
 
 Resetting user data requires administrator credentials. Only administrators can perform this action.

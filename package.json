@@ -26,7 +26,12 @@
     "clear-data": "node scripts/clear-user-data.js",
     "erase-all-now": "node scripts/erase-all-data-now.js",
     "reset-instructions": "node scripts/manual-data-reset.js",
-    "setup-owner": "node scripts/setup-owner-account.js"
+    "setup-owner": "node scripts/setup-owner-account.js",
+    "firebase:deploy": "firebase deploy",
+    "firebase:deploy:hosting": "firebase deploy --only hosting",
+    "firebase:deploy:storage": "firebase deploy --only storage",
+    "firebase:serve": "firebase serve --port 5000",
+    "configure:cors": "node scripts/configure-firebase-cors.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
