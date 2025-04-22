@@ -20,6 +20,27 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 export const STORAGE_BUCKET = 'images';
 
 /**
+ * Get a proxied URL for a Supabase Storage image to avoid CORS issues
+ * @param url The original Supabase Storage URL
+ * @returns A URL that can be used to load the image without CORS issues
+ */
+export const getProxiedImageUrl = (url: string): string => {
+  if (!url) return '';
+
+  // If it's already a blob URL, return it as is
+  if (url.startsWith('blob:')) return url;
+
+  // If it's a Supabase Storage URL, add a cache-busting parameter
+  if (url.includes('supabase.co/storage')) {
+    // Add a timestamp to prevent caching
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}t=${Date.now()}`;
+  }
+
+  return url;
+};
+
+/**
  * Get the current Firebase user ID
  * This is needed for our RLS policies
  */

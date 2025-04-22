@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLazyLoading } from '../../hooks/useLazyLoading';
 import { resizeImage } from '../../utils/imageHandlers';
+import { getProxiedImageUrl } from '../../supabaseConfig';
 
 interface LazyImageProps {
   src: string;
@@ -47,6 +48,9 @@ const LazyImage: React.FC<LazyImageProps> = ({
   // Check if this is a Firebase Storage URL
   const isFirebaseUrl = src.includes('firebasestorage.googleapis.com');
 
+  // Check if this is a Supabase Storage URL
+  const isSupabaseUrl = src.includes('supabase.co/storage');
+
   // Load image when it becomes visible
   useEffect(() => {
     // Skip if not visible yet or already loaded/errored
@@ -69,6 +73,16 @@ const LazyImage: React.FC<LazyImageProps> = ({
           setImageSrc(src);
           setIsLoaded(true);
           return;
+        }
+
+        // For Supabase Storage URLs, use our proxy function to avoid CORS issues
+        if (isSupabaseUrl) {
+          const proxiedUrl = getProxiedImageUrl(src);
+          setImageSrc(proxiedUrl);
+          if (!gallerySize) {
+            setIsLoaded(true);
+            return;
+          }
         }
 
         if (gallerySize) {
@@ -116,7 +130,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [isVisible, src, gallerySize, isFirebaseUrl]);
+  }, [isVisible, src, gallerySize, isFirebaseUrl, isSupabaseUrl]);
 
   // Handle image load event
   const handleImageLoad = () => {
@@ -132,7 +146,9 @@ const LazyImage: React.FC<LazyImageProps> = ({
   // Generate srcSet for responsive images
   const generateSrcSet = (): string | undefined => {
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
-      return `${src} 1x, ${src} 2x`;
+      // Use proxied URL for Supabase images
+      const baseUrl = isSupabaseUrl ? getProxiedImageUrl(src) : src;
+      return `${baseUrl} 1x, ${baseUrl} 2x`;
     }
     return undefined;
   };
