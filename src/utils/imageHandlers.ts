@@ -27,7 +27,7 @@ export const handleImageUpload = (
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  */
-export const handleFirebaseImageUpload = async (
+export const handleFirebaseImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void
@@ -36,29 +36,41 @@ export const handleFirebaseImageUpload = async (
     // Create a temporary preview URL for immediate display
     const imagePreview = URL.createObjectURL(file);
 
-    // Process and compress the image if needed
-    const processedFile = await processImageForUpload(file, {
-      maxWidth: 1920,
-      maxHeight: 1080,
-      quality: 0.85,
-      maxSizeInMB: 1
-    });
+    // Process the image in a non-blocking way
+    (async () => {
+      try {
+        // Process and compress the image if needed
+        const processedFile = await processImageForUpload(file, {
+          maxWidth: 1920,
+          maxHeight: 1080,
+          quality: 0.85,
+          maxSizeInMB: 1
+        });
 
-    // Upload to Firebase Storage
-    const storagePath = `images/${type}`;
-    const imageUrl = await uploadFileToStorage(processedFile, storagePath);
+        // Upload to Firebase Storage
+        const storagePath = `images/${type}`;
+        const imageUrl = await uploadFileToStorage(processedFile, storagePath);
 
-    console.log('Image uploaded to Firebase:', {
-      originalSize: file.size,
-      processedSize: processedFile.size,
-      compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
-      imageUrl
-    });
+        console.log('Image uploaded to Firebase:', {
+          originalSize: file.size,
+          processedSize: processedFile.size,
+          compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
+          imageUrl
+        });
 
-    onSuccess(imageUrl, imagePreview);
+        // Call the success callback with the Firebase URL and preview URL
+        onSuccess(imageUrl, imagePreview);
 
-    // Clean up the preview URL
-    URL.revokeObjectURL(imagePreview);
+        // Clean up the preview URL after a delay to ensure it's used
+        setTimeout(() => {
+          URL.revokeObjectURL(imagePreview);
+        }, 5000);
+      } catch (error) {
+        console.error('Error in image processing or upload:', error);
+        // If Firebase upload fails, we can still use the local preview as a fallback
+        onSuccess(imagePreview, imagePreview);
+      }
+    })();
   } catch (error) {
     console.error('Error in handleFirebaseImageUpload:', error);
     throw error;

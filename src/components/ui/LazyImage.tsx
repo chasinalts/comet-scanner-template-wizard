@@ -36,42 +36,58 @@ const LazyImage: React.FC<LazyImageProps> = ({
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(false);
-  
+
   // Use lazy loading hook with different margins based on loading strategy
   const { ref, isVisible } = useLazyLoading<HTMLDivElement>({
     rootMargin: loadingStrategy === 'eager' ? '400px' : '200px',
     threshold: 0,
     triggerOnce: true
   });
-  
+
   // Check if this is a Firebase Storage URL
   const isFirebaseUrl = src.includes('firebasestorage.googleapis.com');
-  
+
   // Load image when it becomes visible
   useEffect(() => {
     // Skip if not visible yet or already loaded/errored
-    if (!isVisible || imageSrc || error) return;
-    
+    if (!isVisible) return;
+
     let isMounted = true;
     let objectUrl: string | null = null;
-    
+
+    // Set a timeout to show loading state if image takes too long
+    const loadingTimeout = setTimeout(() => {
+      if (isMounted && !imageSrc && !error) {
+        console.log('Image loading taking longer than expected:', src);
+      }
+    }, 3000);
+
     const loadImage = async () => {
       try {
         // For Firebase Storage URLs, we can use them directly without additional processing
         if (isFirebaseUrl && !gallerySize) {
           setImageSrc(src);
+          setIsLoaded(true);
           return;
         }
-        
+
         if (gallerySize) {
-          // For gallery images, resize them for better performance
-          const response = await fetch(src);
-          const blob = await response.blob();
-          const resizedBlob = await resizeImage(blob, 400, 400);
-          
-          if (isMounted) {
-            objectUrl = URL.createObjectURL(resizedBlob);
-            setImageSrc(objectUrl);
+          try {
+            // For gallery images, resize them for better performance
+            const response = await fetch(src);
+            const blob = await response.blob();
+            const resizedBlob = await resizeImage(blob, 400, 400);
+
+            if (isMounted) {
+              objectUrl = URL.createObjectURL(resizedBlob);
+              setImageSrc(objectUrl);
+            }
+          } catch (resizeError) {
+            console.warn(`Failed to resize image, using original: ${src}`, resizeError);
+            if (isMounted) {
+              // Fallback to original image if resizing fails
+              setImageSrc(src);
+            }
           }
         } else {
           // For full-size images, use the original source
@@ -84,33 +100,35 @@ const LazyImage: React.FC<LazyImageProps> = ({
           // For Firebase URLs, try to use the original URL as fallback
           if (isFirebaseUrl) {
             setImageSrc(src);
+            setIsLoaded(true);
           }
         }
       }
     };
-    
+
     loadImage();
-    
+
     // Clean up on unmount
     return () => {
       isMounted = false;
+      clearTimeout(loadingTimeout);
       if (objectUrl) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [isVisible, src, gallerySize, isFirebaseUrl, imageSrc, error]);
-  
+  }, [isVisible, src, gallerySize, isFirebaseUrl]);
+
   // Handle image load event
   const handleImageLoad = () => {
     setIsLoaded(true);
   };
-  
+
   // Handle image error event
   const handleImageError = () => {
     setError(true);
     console.error(`Error loading image: ${src}`);
   };
-  
+
   // Generate srcSet for responsive images
   const generateSrcSet = (): string | undefined => {
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
@@ -118,10 +136,10 @@ const LazyImage: React.FC<LazyImageProps> = ({
     }
     return undefined;
   };
-  
+
   // Calculate aspect ratio placeholder if width and height are provided
   const aspectRatio = width && height ? (height / width) * 100 : 0;
-  
+
   return (
     <div
       ref={ref}
@@ -148,14 +166,14 @@ const LazyImage: React.FC<LazyImageProps> = ({
           srcSet={generateSrcSet()}
         />
       )}
-      
+
       {/* Show loading spinner or error icon */}
       {(!imageSrc || !isLoaded) && !error && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
         </div>
       )}
-      
+
       {error && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-red-500">

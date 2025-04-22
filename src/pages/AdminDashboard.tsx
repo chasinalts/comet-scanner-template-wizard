@@ -6,7 +6,7 @@ import Button from '../components/ui/Button';
 import DragDropUpload from '../components/ui/DragDropUpload';
 import { TextField, TextArea, CheckboxField, SelectField } from '../components/ui/FormField';
 import { useTheme } from '../contexts/ThemeContext';
-import { handleImageUpload } from '../utils/imageHandlers';
+import { handleImageUpload, handleFirebaseImageUpload } from '../utils/imageHandlers';
 import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
 import { useContentManager } from '../hooks/useContentManager';
@@ -120,29 +120,27 @@ export default function AdminDashboard() {
     try {
       setUploadingImage({ questionId, optionId });
 
-      await new Promise<void>((resolve) => {
-        handleImageUpload(file, (imageUrl: string, imagePreview: string) => {
-          const currentQuestion = questions.find(q => q.id === questionId);
-          if (!currentQuestion) return;
+      // Use Firebase Storage for image uploads
+      handleFirebaseImageUpload(file, 'option', (imageUrl: string, imagePreview: string) => {
+        const currentQuestion = questions.find(q => q.id === questionId);
+        if (!currentQuestion) return;
 
-          updateQuestion(questionId, {
-            options: currentQuestion.options?.map((opt: QuestionOption) =>
-              opt.id === optionId ? {
-                ...opt,
-                imageUrl,
-                imagePreview,
-                scale: 1
-              } : opt
-            )
-          });
-          resolve();
+        updateQuestion(questionId, {
+          options: currentQuestion.options?.map((opt: QuestionOption) =>
+            opt.id === optionId ? {
+              ...opt,
+              imageUrl,
+              imagePreview,
+              scale: 1
+            } : opt
+          )
         });
-      });
 
-      showToast('success', 'Image uploaded successfully');
+        showToast('success', 'Image uploaded successfully');
+        setUploadingImage(null);
+      });
     } catch (error) {
       showToast('error', 'Failed to upload image');
-    } finally {
       setUploadingImage(null);
     }
   };
@@ -180,7 +178,7 @@ export default function AdminDashboard() {
   };
 
   // Handle banner image upload
-  const handleBannerImageUpload = async (file: File) => {
+  const handleBannerImageUpload = (file: File) => {
     if (uploadingImage) {
       showToast('error', 'Please wait for the current upload to complete');
       return;
@@ -188,21 +186,28 @@ export default function AdminDashboard() {
 
     try {
       setUploadingImage({ contentType: 'banner' });
-      // setBannerPreviewFile(file); // Commented out to fix TypeScript errors
 
-      const id = await uploadImage(file, 'banner', 'Banner Image');
-      setSelectedImageId(id);
-      showToast('success', 'Banner image uploaded successfully');
+      // Use the uploadImage function which now uses Firebase Storage
+      uploadImage(file, 'banner', 'Banner Image')
+        .then(id => {
+          setSelectedImageId(id);
+          showToast('success', 'Banner image uploaded successfully');
+          setUploadingImage(null);
+        })
+        .catch(error => {
+          showToast('error', 'Failed to upload banner image');
+          console.error('Error uploading banner image:', error);
+          setUploadingImage(null);
+        });
     } catch (error) {
       showToast('error', 'Failed to upload banner image');
-      console.error('Error uploading banner image:', error);
-    } finally {
+      console.error('Error setting up banner image upload:', error);
       setUploadingImage(null);
     }
   };
 
   // Handle scanner image upload
-  const handleScannerImageUpload = async (file: File) => {
+  const handleScannerImageUpload = (file: File) => {
     if (uploadingImage) {
       showToast('error', 'Please wait for the current upload to complete');
       return;
@@ -210,20 +215,27 @@ export default function AdminDashboard() {
 
     try {
       setUploadingImage({ contentType: 'scanner' });
-      // setScannerPreviewFile(file); // Commented out to fix TypeScript errors
 
-      const id = await uploadImage(file, 'scanner', 'Scanner Variation');
-      setSelectedImageId(id);
+      // Use the uploadImage function which now uses Firebase Storage
+      uploadImage(file, 'scanner', 'Scanner Variation')
+        .then(id => {
+          setSelectedImageId(id);
 
-      // Debug: Log scanner images after upload
-      console.log('Scanner image uploaded with ID:', id);
-      console.log('Current scanner images:', getScannerImages());
+          // Debug: Log scanner images after upload
+          console.log('Scanner image uploaded with ID:', id);
+          console.log('Current scanner images:', getScannerImages());
 
-      showToast('success', 'Scanner image uploaded successfully');
+          showToast('success', 'Scanner image uploaded successfully');
+          setUploadingImage(null);
+        })
+        .catch(error => {
+          showToast('error', 'Failed to upload scanner image');
+          console.error('Error uploading scanner image:', error);
+          setUploadingImage(null);
+        });
     } catch (error) {
       showToast('error', 'Failed to upload scanner image');
-      console.error('Error uploading scanner image:', error);
-    } finally {
+      console.error('Error setting up scanner image upload:', error);
       setUploadingImage(null);
     }
   };

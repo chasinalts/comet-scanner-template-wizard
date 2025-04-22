@@ -75,22 +75,27 @@ export const useContentManager = (): ContentManagerHook => {
     });
   }, []);
 
-  const uploadImage = useCallback(async (file: File, type: 'banner' | 'scanner', title = 'Uploaded Image'): Promise<string> => {
+  const uploadImage = useCallback((file: File, type: 'banner' | 'scanner', title = 'Uploaded Image'): Promise<string> => {
     console.log(`Starting upload of ${type} image:`, { fileName: file.name, fileSize: file.size, fileType: file.type });
     return new Promise((resolve, reject) => {
       try {
         // Use Firebase Storage for image uploads
         handleFirebaseImageUpload(file, type, (imageUrl: string, _imagePreview: string) => {
-          console.log(`Adding ${type} content with Firebase Storage URL`);
-          const id = addContent({
-            type,
-            title,
-            content: '',
-            imageUrl,
-            scale: 1
-          });
-          console.log(`${type} image added with ID:`, id);
-          resolve(id);
+          try {
+            console.log(`Adding ${type} content with Firebase Storage URL`);
+            const id = addContent({
+              type,
+              title,
+              content: '',
+              imageUrl,
+              scale: 1
+            });
+            console.log(`${type} image added with ID:`, id);
+            resolve(id);
+          } catch (innerError) {
+            console.error(`Error adding ${type} content:`, innerError);
+            reject(innerError);
+          }
         });
       } catch (error) {
         console.error(`Error uploading ${type} image:`, error);
