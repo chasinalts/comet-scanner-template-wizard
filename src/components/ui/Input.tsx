@@ -30,15 +30,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const baseInputStyles = `
       block rounded-md border shadow-sm
       focus:outline-none focus:ring-2 focus:ring-offset-0
-      disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:cursor-not-allowed
+      disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-500 disabled:border-gray-200 dark:disabled:border-gray-600 disabled:cursor-not-allowed
       ${leftIcon ? 'pl-10' : 'pl-4'}
       ${rightIcon || isLoading ? 'pr-10' : 'pr-4'}
       ${fullWidth ? 'w-full' : 'w-auto'}
+      bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
     `;
 
     const variants = {
-      normal: 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
-      error: 'border-red-500 focus:border-red-500 focus:ring-red-500 text-red-900'
+      normal: 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500',
+      error: 'border-red-500 focus:border-red-500 focus:ring-red-500 text-red-900 dark:text-red-400'
     };
 
     const labelId = props.id ? `${props.id}-label` : undefined;
@@ -51,14 +52,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={props.id}
             id={labelId}
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
             {label}
           </label>
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
               {leftIcon}
             </div>
           )}
@@ -75,7 +76,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {(rightIcon || isLoading) && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
               {isLoading ? (
                 <motion.svg
                   animate={{ rotate: 360 }}
@@ -111,13 +112,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 id={errorId}
-                className="text-sm text-red-600"
+                className="text-sm text-red-600 dark:text-red-400"
               >
                 {error}
               </motion.p>
             )}
             {!error && helperText && (
-              <p id={helperId} className="text-sm text-gray-500">
+              <p id={helperId} className="text-sm text-gray-500 dark:text-gray-400">
                 {helperText}
               </p>
             )}
@@ -168,7 +169,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputProps, 'type
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="text-gray-400 hover:text-gray-500 focus:outline-none"
+            className="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 focus:outline-none"
           >
             {showPassword ? (
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -47,9 +47,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               <label
                 htmlFor={props.id}
                 id={labelId}
-                className={`text-sm font-medium ${
-                  props.disabled ? 'text-gray-400' : 'text-gray-700'
-                }`}
+                className={`text-sm font-medium ${props.disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}
               >
                 {label}
               </label>
@@ -67,7 +65,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
                   </motion.p>
                 )}
                 {!error && helperText && (
-                  <p id={helperId} className="text-sm text-gray-500">
+                  <p id={helperId} className="text-sm text-gray-500 dark:text-gray-400">
                     {helperText}
                   </p>
                 )}
@@ -119,9 +117,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               <label
                 htmlFor={props.id}
                 id={labelId}
-                className={`text-sm font-medium ${
-                  props.disabled ? 'text-gray-400' : 'text-gray-700'
-                }`}
+                className={`text-sm font-medium ${props.disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}
               >
                 {label}
               </label>
@@ -139,7 +135,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
                   </motion.p>
                 )}
                 {!error && helperText && (
-                  <p id={helperId} className="text-sm text-gray-500">
+                  <p id={helperId} className="text-sm text-gray-500 dark:text-gray-400">
                     {helperText}
                   </p>
                 )}
@@ -173,7 +169,7 @@ export const RadioGroup = ({
   return (
     <div role="radiogroup" aria-label={label}>
       {label && (
-        <div className="text-sm font-medium text-gray-700 mb-2">{label}</div>
+        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{label}</div>
       )}
       <div className={`space-${vertical ? 'y' : 'x'}-4`}>{children}</div>
       {(error || helperText) && (
@@ -188,7 +184,7 @@ export const RadioGroup = ({
             </motion.p>
           )}
           {!error && helperText && (
-            <p className="text-sm text-gray-500">{helperText}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{helperText}</p>
           )}
         </div>
       )}
