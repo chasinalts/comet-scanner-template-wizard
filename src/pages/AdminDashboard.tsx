@@ -6,7 +6,7 @@ import Button from '../components/ui/Button';
 import DragDropUpload from '../components/ui/DragDropUpload';
 import { TextField, TextArea, CheckboxField, SelectField } from '../components/ui/FormField';
 import { useTheme } from '../contexts/ThemeContext';
-import { handleImageUpload, handleFirebaseImageUpload } from '../utils/imageHandlers';
+import { handleImageUpload, handleSupabaseImageUpload } from '../utils/imageHandlers';
 import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
 import { useContentManager } from '../hooks/useContentManager';
@@ -120,8 +120,8 @@ export default function AdminDashboard() {
     try {
       setUploadingImage({ questionId, optionId });
 
-      // Use Firebase Storage for image uploads
-      handleFirebaseImageUpload(
+      // Use Supabase Storage for image uploads
+      handleSupabaseImageUpload(
         file,
         'option',
         (imageUrl: string, imagePreview: string) => {

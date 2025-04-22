@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ContentItem } from './useAdminContent';
-import { handleImageUpload, handleFirebaseImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
+import { handleImageUpload, handleSupabaseImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
 
 export interface ContentManagerHook {
   contents: ContentItem[];
@@ -67,8 +67,7 @@ export const useContentManager = (): ContentManagerHook => {
 
       // Cleanup image URL if it exists
       if (contentToDelete?.imageUrl) {
-        const isCloudUrl = contentToDelete.imageUrl.includes('firebasestorage.googleapis.com') ||
-                          contentToDelete.imageUrl.includes('supabase');
+        const isCloudUrl = contentToDelete.imageUrl.includes('supabase');
         cleanupImageUrl(contentToDelete.imageUrl, isCloudUrl);
       }
 
@@ -81,7 +80,7 @@ export const useContentManager = (): ContentManagerHook => {
     return new Promise((resolve, reject) => {
       try {
         // Use Supabase Storage for image uploads
-        handleFirebaseImageUpload(
+        handleSupabaseImageUpload(
           file,
           type,
           (imageUrl: string, _imagePreview: string) => {

@@ -1,13 +1,12 @@
-import { uploadFileToStorage, deleteFileFromStorage } from './firebaseStorage';
 import { uploadFileToSupabase, deleteFileFromSupabase } from './supabaseStorage';
 import { processImageForUpload } from './imageCompression';
 import { supabase } from '../supabaseConfig';
 
 /**
  * Handles image upload using local storage (base64 encoding)
- * @deprecated Use handleFirebaseImageUpload instead for better performance
+ * @deprecated Use handleSupabaseImageUpload instead for better performance
  */
-export const handleImageUpload = (
+export const handleLocalImageUpload = (
   file: File,
   onSuccess: (imageUrl: string, imagePreview: string) => void
 ) => {
@@ -94,19 +93,19 @@ export const handleSupabaseImageUpload = (
 };
 
 /**
- * Handles image upload using Firebase Storage with compression
+ * Handles image upload using Supabase Storage with compression
  * @param file The file to upload
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  * @param onError Optional callback function to be called when upload fails
  */
-export const handleFirebaseImageUpload = (
+export const handleImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void,
   onError?: (error: any) => void
 ) => {
-  // Use Supabase Storage instead of Firebase Storage
+  // Use Supabase Storage
   return handleSupabaseImageUpload(file, type, onSuccess, onError);
 };
 
@@ -120,13 +119,11 @@ export const cleanupImageUrl = async (url: string, isCloudUrl = false) => {
     URL.revokeObjectURL(url);
   } else if (isCloudUrl) {
     try {
-      if (url.includes('firebasestorage.googleapis.com')) {
-        await deleteFileFromStorage(url);
-      } else if (url.includes('supabase')) {
+      if (url.includes('supabase')) {
         await deleteFileFromSupabase(url);
       }
     } catch (error) {
-      console.error('Error deleting file from cloud storage:', error);
+      console.error('Error deleting file from Supabase Storage:', error);
     }
   }
 };
