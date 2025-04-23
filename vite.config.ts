@@ -7,6 +7,12 @@ export default defineConfig({
   // Remove or comment out the base path
   // base: '/comet-scanner-wizard/',
   plugins: [reactPlugin()],
+  resolve: {
+    alias: {
+      'react': './node_modules/react',
+      'react-dom': './node_modules/react-dom'
+    }
+  },
   server: {
     port: 3000,
     open: process.env.NODE_ENV !== 'production' // Only open in development
@@ -14,7 +20,8 @@ export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {
       target: 'es2020'
-    }
+    },
+    include: ['react', 'react-dom']
   },
   build: {
     target: 'es2020',
