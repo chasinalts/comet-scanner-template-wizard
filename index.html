@@ -8,7 +8,8 @@
     <title>COMET Scanner Wizard</title>
 
     <!-- Preload critical assets -->
-    <link rel="preload" href="/src/index.css" as="style" />
+
+    <link rel="stylesheet" href="/src/index.css" />
 
     <!-- Cache control -->
     <meta http-equiv="Cache-Control" content="max-age=86400" />
@@ -27,7 +28,11 @@
     <link rel="apple-touch-icon" href="/vite.svg" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        Loading COMET Scanner Wizard...
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
 
     <!-- Fallback for browsers without JavaScript -->
