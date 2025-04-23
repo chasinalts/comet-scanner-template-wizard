@@ -74,9 +74,9 @@ const OwnerSetup = () => {
       await signup(email, password, true);
       setSuccess(true);
 
-      // Redirect after a delay
+      // Redirect to admin dashboard after a delay
       setTimeout(() => {
-        navigate('/scanner');
+        navigate('/admin');
       }, 3000);
     } catch (error: any) {
       console.error("Owner setup failed:", error);
