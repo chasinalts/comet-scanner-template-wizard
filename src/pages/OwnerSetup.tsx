@@ -28,11 +28,11 @@ const OwnerSetup = () => {
       const { data, error } = await supabase
         .from('user_profiles')
         .select('id')
-        .eq('is_owner', true)
+        .eq('isOwner', true)
         .limit(1);
-      
+
       if (error) throw error;
-      
+
       return data && data.length > 0;
     } catch (error) {
       console.error('Error checking for existing owner:', error);
@@ -61,7 +61,7 @@ const OwnerSetup = () => {
     try {
       setError('');
       setIsLoading(true);
-      
+
       // Check if an owner already exists
       const ownerExists = await checkOwnerExists();
       if (ownerExists) {
@@ -73,7 +73,7 @@ const OwnerSetup = () => {
       // Create owner account
       await signup(email, password, true);
       setSuccess(true);
-      
+
       // Redirect after a delay
       setTimeout(() => {
         navigate('/scanner');
@@ -81,7 +81,7 @@ const OwnerSetup = () => {
     } catch (error: any) {
       console.error("Owner setup failed:", error);
       let errorMessage = 'Failed to create owner account. Please try again.';
-      
+
       if (error.message) {
         if (error.message.includes('already registered')) {
           errorMessage = 'This email address is already registered.';
@@ -93,7 +93,7 @@ const OwnerSetup = () => {
           errorMessage = error.message;
         }
       }
-      
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);
