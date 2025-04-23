@@ -1,21 +1,21 @@
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /{allPaths=**} {
-      // Allow read access to all users
-      allow read: if true;
-      
-      // Allow write access only to authenticated users
-      allow write: if request.auth != null;
-      
-      // CORS configuration
-      options {
-        cors {
-          origin: ["https://cometscanners.netlify.app", "http://localhost:3000"];
-          method: ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"];
-          maxAgeSeconds: 3600;
-          responseHeader: ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition"];
-        }
-      }
-    }
-  }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,7 +4,7 @@
   command = "npm install && npm run build"
 
 [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "18"  # Use a more stable version
 
 # Production context: all deploys from the main branch
 [context.production]
