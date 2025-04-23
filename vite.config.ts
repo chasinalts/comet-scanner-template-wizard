@@ -1,21 +1,17 @@
 import { defineConfig } from 'vite'
-import reactPlugin from '@vitejs/plugin-react'
-// Note: You'll need to install this plugin with: npm install vite-plugin-imagemin --save-dev
-// import imagemin from 'vite-plugin-imagemin'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
-  // Remove or comment out the base path
-  // base: '/comet-scanner-wizard/',
-  plugins: [reactPlugin()],
+  plugins: [react()],
   resolve: {
-    alias: [
-      { find: 'react', replacement: '/Users/chasecambre/CSTW/comet-scanner-template-wizard/node_modules/react' },
-      { find: 'react-dom', replacement: '/Users/chasecambre/CSTW/comet-scanner-template-wizard/node_modules/react-dom' }
-    ]
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   server: {
     port: 3000,
-    open: process.env.NODE_ENV !== 'production' // Only open in development
+    open: process.env.NODE_ENV !== 'production'
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -25,33 +21,24 @@ export default defineConfig({
   },
   build: {
     target: 'es2020',
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'esbuild',
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks: {
-          // Split vendor code into separate chunks
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-ui': ['framer-motion', '@headlessui/react', '@heroicons/react'],
-          'vendor-monaco': ['@monaco-editor/react']
         }
       }
-    },
-    // Enable source map for debugging in production
-    sourcemap: false,
-    // Minify the output
-    minify: 'esbuild',
-    // terserOptions: {
-    //   compress: {
-    //     drop_console: true,
-    //     drop_debugger: true
-    //   }
-    // },
-    // Reduce chunk size warnings threshold
-    chunkSizeWarningLimit: 1000
+    }
   },
-  // Add cache headers to assets
   preview: {
+    port: 5000,
     headers: {
-      'Cache-Control': 'public, max-age=31536000' // 1 year for static assets
+      'Cache-Control': 'public, max-age=31536000'
     }
   }
 })

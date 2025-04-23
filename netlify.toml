@@ -8,7 +8,7 @@
 
 # Production context: all deploys from the main branch
 [context.production]
-  command = "npm run vite:build"
+  command = "npm run netlify:clean-build"
 
 # Redirects and headers are GLOBAL for all builds
 [[redirects]]
