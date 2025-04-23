@@ -23,7 +23,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "skipDefaultLibCheck": true
   },
   "include": [
     "src/**/*.ts",

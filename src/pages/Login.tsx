@@ -40,10 +40,9 @@ const Login = () => {
       setIsLoading(true);
       // Call the updated login function from AuthContext
       await login(email, password);
-      // Navigate to the desired page upon successful login
-      // Let the AuthProvider's onAuthStateChanged listener handle redirection logic
-      // potentially based on user role or profile status, or navigate directly.
-      navigate('/wizard/step1'); // Or wherever appropriate
+      // Navigate to the scanner page upon successful login
+      // The AuthProvider's onAuthStateChanged listener will handle additional redirection logic if needed
+      navigate('/scanner');
     } catch (error: any) {
       console.error("Login failed:", error);
       let errorMessage = 'Failed to sign in. Please check your credentials.';

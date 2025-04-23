@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
 import { supabase } from '../supabaseConfig'; // Import Supabase client
-import { User, Session } from '@supabase/supabase-js';
+import { Session } from '@supabase/supabase-js';
 
 // User profile data structure
 interface UserProfile {
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Set up Supabase auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
+      async (_event, currentSession) => {
         setIsLoading(true);
         setSession(currentSession);
 
@@ -148,63 +148,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signup = async (email: string, password: string, isOwner: boolean) => {
     try {
-      // Check if an owner already exists if this is an owner signup
-      if (isOwner) {
-        const { data: existingOwners, error: queryError } = await supabase
-          .from('user_profiles')
-          .select('id')
-          .eq('isOwner', true);
-
-        if (queryError) throw queryError;
-
-        if (existingOwners && existingOwners.length > 0) {
-          throw new Error('An owner account already exists.');
-        }
-      }
-
-      // Sign up the user
+      // First create the auth user
       const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        // Important: Include the initial profile data in the metadata
+        options: {
+          data: {
+            isOwner: isOwner,
+            permissions: isOwner ? {
+              contentManagement: true,
+              userManagement: true,
+              systemConfiguration: true,
+              mediaUploads: true,
+              securitySettings: true,
+              siteCustomization: true,
+            } : {
+              contentManagement: false,
+              userManagement: false,
+              systemConfiguration: false,
+              mediaUploads: true,
+              securitySettings: false,
+              siteCustomization: false,
+            }
+          }
+        }
       });
 
       if (error) throw error;
 
       if (data.user) {
-        // Create user profile
-        const userProfile: UserProfile = {
-          id: data.user.id,
-          email: email,
-          isOwner: isOwner,
-          createdAt: new Date().toISOString(),
-          permissions: isOwner ? {
-            contentManagement: true,
-            userManagement: true,
-            systemConfiguration: true,
-            mediaUploads: true,
-            securitySettings: true,
-            siteCustomization: true,
-          } : {
-            contentManagement: false,
-            userManagement: false,
-            systemConfiguration: false,
-            mediaUploads: true,
-            securitySettings: false,
-            siteCustomization: false,
-          }
-        };
-
-        // Insert the profile into the database
+        // The profile insert will now work because the user is authenticated
+        // and the RLS policy allows users to insert their own profile
         const { error: profileError } = await supabase
           .from('user_profiles')
-          .insert(userProfile);
+          .insert({
+            id: data.user.id,  // Must match auth.uid()
+            email: email,
+            isOwner: isOwner,
+            createdAt: new Date().toISOString(),
+            permissions: isOwner ? {
+              contentManagement: true,
+              userManagement: true,
+              systemConfiguration: true,
+              mediaUploads: true,
+              securitySettings: true,
+              siteCustomization: true,
+            } : {
+              contentManagement: false,
+              userManagement: false,
+              systemConfiguration: false,
+              mediaUploads: true,
+              securitySettings: false,
+              siteCustomization: false,
+            }
+          });
 
-        if (profileError) {
-          console.error('Error creating user profile:', profileError);
-          throw profileError;
-        }
-      } else {
-        throw new Error('Failed to create user account.');
+        if (profileError) throw profileError;
       }
     } catch (error) {
       console.error('Error signing up:', error);

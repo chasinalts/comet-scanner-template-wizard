@@ -42,17 +42,17 @@ export const getProxiedImageUrl = (url: string): string => {
  * Get the current Supabase user ID
  * This is needed for our RLS policies
  */
-export const getUserId = () => {
+export const getUserId = async () => {
   try {
-    const session = supabase.auth.getSession();
-    const user = supabase.auth.getUser();
+    const { data: sessionData } = await supabase.auth.getSession();
+    const { data: userData } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (!userData || !userData.user) {
       console.warn('No user is logged in');
       return null;
     }
 
-    return user.data.user?.id || null;
+    return userData.user.id || null;
   } catch (error) {
     console.error('Error getting user ID:', error);
     return null;

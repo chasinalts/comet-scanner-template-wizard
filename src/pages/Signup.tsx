@@ -49,10 +49,9 @@ const Signup = () => {
       // Call the updated signup function from AuthContext
       // Always sign up as non-owner
       await signup(email, password, false);
-      // Navigate after successful signup
-      // Let the AuthProvider's onAuthStateChanged listener handle redirection logic
-      // or navigate directly.
-      navigate('/wizard/step1'); // Or wherever appropriate
+      // Navigate to the scanner page after successful signup
+      // The AuthProvider's onAuthStateChanged listener will handle additional redirection logic if needed
+      navigate('/scanner');
     } catch (error: any) {
       console.error("Signup failed:", error);
       let errorMessage = 'Failed to create account. Please try again.';

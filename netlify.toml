@@ -1,5 +1,5 @@
 [build]
-  base = "/"
+  base = "." # Use current directory as base
   publish = "dist"
   command = "npm install && npm run build"
 
