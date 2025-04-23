@@ -22,15 +22,43 @@ export const STORAGE_BUCKET = 'images';
  * @param url The original Supabase Storage URL
  * @returns A URL that can be used to load the image without CORS issues
  */
-export const getProxiedImageUrl = (url: string): string => {
+export const getProxiedImageUrl = async (url: string): Promise<string> => {
   if (!url) return '';
 
   // If it's already a blob URL, return it as is
   if (url.startsWith('blob:')) return url;
 
-  // If it's a Supabase Storage URL, add a cache-busting parameter
-  if (url.includes('supabase.co/storage')) {
-    // Add a timestamp to prevent caching
+  // If it's a Supabase Storage URL but not a signed URL, get a signed URL
+  if (url.includes('supabase.co/storage') && !url.includes('token=')) {
+    try {
+      // Extract the path from the URL
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split('/');
+      const bucketIndex = pathParts.findIndex(part => part === STORAGE_BUCKET);
+
+      if (bucketIndex === -1 || bucketIndex === pathParts.length - 1) {
+        console.error('Invalid Supabase Storage URL format:', url);
+        return url;
+      }
+
+      // Get the path after the bucket name
+      const path = pathParts.slice(bucketIndex + 1).join('/');
+
+      // Get a signed URL
+      const { data } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .createSignedUrl(path, 60 * 60); // 1 hour expiry
+
+      if (data?.signedUrl) {
+        return data.signedUrl;
+      }
+    } catch (error) {
+      console.error('Error getting signed URL:', error);
+    }
+  }
+
+  // If it's already a signed URL, add a cache-busting parameter
+  if (url.includes('token=')) {
     const separator = url.includes('?') ? '&' : '?';
     return `${url}${separator}t=${Date.now()}`;
   }
@@ -78,7 +106,7 @@ export const initializeStorage = async () => {
     // Create the bucket if it doesn't exist
     if (!bucketExists) {
       const { error } = await supabase.storage.createBucket(STORAGE_BUCKET, {
-        public: true, // Make files publicly accessible
+        public: false, // Make files private, accessible only through RLS policies
         fileSizeLimit: 5242880, // 5MB limit
       });
 

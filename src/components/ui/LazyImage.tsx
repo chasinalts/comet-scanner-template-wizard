@@ -77,11 +77,24 @@ const LazyImage: React.FC<LazyImageProps> = ({
 
         // For Supabase Storage URLs, use our proxy function to avoid CORS issues
         if (isSupabaseUrl) {
-          const proxiedUrl = getProxiedImageUrl(src);
-          setImageSrc(proxiedUrl);
-          if (!gallerySize) {
-            setIsLoaded(true);
-            return;
+          try {
+            const proxiedUrl = await getProxiedImageUrl(src);
+            if (isMounted) {
+              setImageSrc(proxiedUrl);
+              if (!gallerySize) {
+                setIsLoaded(true);
+                return;
+              }
+            }
+          } catch (error) {
+            console.error('Error getting proxied URL:', error);
+            if (isMounted) {
+              setImageSrc(src); // Fallback to original URL
+              if (!gallerySize) {
+                setIsLoaded(true);
+                return;
+              }
+            }
           }
         }
 
@@ -144,14 +157,30 @@ const LazyImage: React.FC<LazyImageProps> = ({
   };
 
   // Generate srcSet for responsive images
-  const generateSrcSet = (): string | undefined => {
+  const [srcSet, setSrcSet] = useState<string | undefined>(undefined);
+
+  // Generate srcSet when src changes
+  useEffect(() => {
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
-      // Use proxied URL for Supabase images
-      const baseUrl = isSupabaseUrl ? getProxiedImageUrl(src) : src;
-      return `${baseUrl} 1x, ${baseUrl} 2x`;
+      // For Supabase images, we need to get a signed URL
+      if (isSupabaseUrl) {
+        (async () => {
+          try {
+            const proxiedUrl = await getProxiedImageUrl(src);
+            setSrcSet(`${proxiedUrl} 1x, ${proxiedUrl} 2x`);
+          } catch (error) {
+            console.error('Error generating srcSet:', error);
+            setSrcSet(`${src} 1x, ${src} 2x`); // Fallback to original URL
+          }
+        })();
+      } else {
+        // For other images, use the original URL
+        setSrcSet(`${src} 1x, ${src} 2x`);
+      }
+    } else {
+      setSrcSet(undefined);
     }
-    return undefined;
-  };
+  }, [src, isSupabaseUrl]);
 
   // Calculate aspect ratio placeholder if width and height are provided
   const aspectRatio = width && height ? (height / width) * 100 : 0;
@@ -179,7 +208,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
           width={width}
           height={height}
           sizes={sizes}
-          srcSet={generateSrcSet()}
+          srcSet={srcSet}
         />
       )}
 

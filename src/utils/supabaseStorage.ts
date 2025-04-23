@@ -45,14 +45,18 @@ export const uploadFileToSupabase = async (
       throw error;
     }
 
-    // Get the public URL for the uploaded file
-    const { data: { publicUrl } } = supabase.storage
+    // Get the signed URL for the uploaded file (valid for authenticated users)
+    const { data: { signedUrl } } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .getPublicUrl(data.path);
+      .createSignedUrl(data.path, 60 * 60 * 24 * 365); // 1 year expiry
 
-    console.log('File uploaded successfully to Supabase Storage:', publicUrl);
+    if (!signedUrl) {
+      throw new Error('Failed to generate signed URL for uploaded file');
+    }
 
-    return publicUrl;
+    console.log('File uploaded successfully to Supabase Storage:', signedUrl);
+
+    return signedUrl;
   } catch (error) {
     console.error('Error uploading file to Supabase Storage:', error);
     throw error;
