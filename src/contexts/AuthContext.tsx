@@ -10,12 +10,12 @@ interface UserProfile {
   is_owner: boolean; // Changed to match database column name
   created_at?: string; // Changed to match database column name
   permissions?: {
-    contentManagement: boolean;
-    userManagement: boolean;
-    systemConfiguration: boolean;
-    mediaUploads: boolean;
-    securitySettings: boolean;
-    siteCustomization: boolean;
+    content_management: boolean;
+    user_management: boolean;
+    system_configuration: boolean;
+    media_uploads: boolean;
+    security_settings: boolean;
+    site_customization: boolean;
   };
 }
 
@@ -40,12 +40,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Set up Supabase auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, currentSession) => {
+      async (event, currentSession) => {
+        console.log('Auth state changed:', event, currentSession?.user?.id);
         setIsLoading(true);
         setSession(currentSession);
 
         if (currentSession?.user) {
           try {
+            console.log('User authenticated, fetching profile for ID:', currentSession.user.id);
             // Fetch user profile from Supabase
             const { data, error } = await supabase
               .from('user_profiles')
@@ -63,12 +65,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   is_owner: false, // Default to non-owner
                   created_at: new Date().toISOString(),
                   permissions: {
-                    contentManagement: false,
-                    userManagement: false,
-                    systemConfiguration: false,
-                    mediaUploads: false, // Only owners can upload media
-                    securitySettings: false,
-                    siteCustomization: false,
+                    content_management: false,
+                    user_management: false,
+                    system_configuration: false,
+                    media_uploads: false, // Only owners can upload media
+                    security_settings: false,
+                    site_customization: false,
                   }
                 };
 
@@ -102,19 +104,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Initial session check
     const initializeAuth = async () => {
       try {
+        console.log('Initializing auth - checking for existing session');
         const { data: { session: initialSession } } = await supabase.auth.getSession();
+        console.log('Initial session check result:', initialSession ? 'Session found' : 'No session');
+
         if (initialSession) {
           setSession(initialSession);
+          console.log('User ID from session:', initialSession.user.id);
 
           // Fetch user profile
-          const { data } = await supabase
+          const { data, error } = await supabase
             .from('user_profiles')
             .select('*')
             .eq('id', initialSession.user.id)
             .single();
 
-          if (data) {
+          if (error) {
+            console.error('Error fetching user profile during initialization:', error);
+          } else if (data) {
+            console.log('User profile found during initialization:', data);
             setCurrentUser(data as UserProfile);
+          } else {
+            console.warn('No user profile found during initialization');
           }
         }
       } catch (error) {
@@ -134,12 +145,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log('Attempting to sign in with Supabase auth');
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase auth error:', error);
+        throw error;
+      }
+
+      console.log('Supabase auth successful:', data);
+      return data;
     } catch (error) {
       console.error('Error logging in:', error);
       throw error;
@@ -162,19 +180,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             is_owner: isOwner, // Changed to match database column name
             permissions: isOwner ? {
-              contentManagement: true,
-              userManagement: true,
-              systemConfiguration: true,
-              mediaUploads: true,
-              securitySettings: true,
-              siteCustomization: true,
+              content_management: true,
+              user_management: true,
+              system_configuration: true,
+              media_uploads: true,
+              security_settings: true,
+              site_customization: true,
             } : {
-              contentManagement: false,
-              userManagement: false,
-              systemConfiguration: false,
-              mediaUploads: false,
-              securitySettings: false,
-              siteCustomization: false,
+              content_management: false,
+              user_management: false,
+              system_configuration: false,
+              media_uploads: false,
+              security_settings: false,
+              site_customization: false,
             }
           }
         }
@@ -197,22 +215,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .insert({
             id: data.user.id,  // Must match auth.uid()
             email: email,
-            is_owner: isOwner, // Changed to match database column name
+            is_owner: isOwner, // Using snake_case to match database column name
             created_at: new Date().toISOString(), // Changed to match database column name
             permissions: isOwner ? {
-              contentManagement: true,
-              userManagement: true,
-              systemConfiguration: true,
-              mediaUploads: true,
-              securitySettings: true,
-              siteCustomization: true,
+              content_management: true,
+              user_management: true,
+              system_configuration: true,
+              media_uploads: true,
+              security_settings: true,
+              site_customization: true,
             } : {
-              contentManagement: false,
-              userManagement: false,
-              systemConfiguration: false,
-              mediaUploads: false,
-              securitySettings: false,
-              siteCustomization: false,
+              content_management: false,
+              user_management: false,
+              system_configuration: false,
+              media_uploads: false,
+              security_settings: false,
+              site_customization: false,
             }
           });
 

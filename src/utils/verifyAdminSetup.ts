@@ -2,14 +2,14 @@ import { initializeAdminAccount } from './security';
 
 interface AdminUser {
   username: string;
-  isOwner: boolean;
+  is_owner: boolean;
   permissions: {
-    contentManagement: boolean;
-    userManagement: boolean;
-    systemConfiguration: boolean;
-    mediaUploads: boolean;
-    securitySettings: boolean;
-    siteCustomization: boolean;
+    content_management: boolean;
+    user_management: boolean;
+    system_configuration: boolean;
+    media_uploads: boolean;
+    security_settings: boolean;
+    site_customization: boolean;
   };
 }
 
@@ -26,7 +26,7 @@ export const verifyAdminSetup = (): boolean => {
 
   try {
     const admin = JSON.parse(adminData) as AdminUser;
-    
+
     // Verify username
     if (admin.username !== 'ChasinAlts') {
       console.error('Admin username mismatch');
@@ -34,19 +34,19 @@ export const verifyAdminSetup = (): boolean => {
     }
 
     // Verify owner status
-    if (!admin.isOwner) {
+    if (!admin.is_owner) {
       console.error('Admin is not set as owner');
       return false;
     }
 
     // Verify all required permissions
     const requiredPermissions = [
-      'contentManagement',
-      'userManagement',
-      'systemConfiguration',
-      'mediaUploads',
-      'securitySettings',
-      'siteCustomization'
+      'content_management',
+      'user_management',
+      'system_configuration',
+      'media_uploads',
+      'security_settings',
+      'site_customization'
     ];
 
     const hasAllPermissions = requiredPermissions.every(

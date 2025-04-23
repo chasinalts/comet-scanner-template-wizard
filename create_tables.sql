@@ -6,12 +6,12 @@ CREATE TABLE user_profiles (
     is_owner BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     permissions JSONB NOT NULL DEFAULT '{
-        "contentManagement": false,
-        "userManagement": false,
-        "systemConfiguration": false,
-        "mediaUploads": false,
-        "securitySettings": false,
-        "siteCustomization": false
+        "content_management": false,
+        "user_management": false,
+        "system_configuration": false,
+        "media_uploads": false,
+        "security_settings": false,
+        "site_customization": false
     }'::jsonb
 );
 

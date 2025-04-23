@@ -5,9 +5,9 @@ interface LoginAttempts {
 
 interface Session {
   username: string;
-  isOwner: boolean;
-  lastActivity: number;
-  createdAt: number;
+  is_owner: boolean;
+  last_activity: number;
+  created_at: number;
 }
 
 const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
@@ -47,9 +47,9 @@ const createSession = (username: string, isOwner: boolean): string => {
   const sessionId = Math.random().toString(36).substring(2);
   const session: Session = {
     username,
-    isOwner,
-    lastActivity: Date.now(),
-    createdAt: Date.now(),
+    is_owner: isOwner,
+    last_activity: Date.now(),
+    created_at: Date.now(),
   };
   localStorage.setItem(`session_${sessionId}`, JSON.stringify(session));
   return sessionId;
@@ -58,7 +58,7 @@ const createSession = (username: string, isOwner: boolean): string => {
 const updateSessionActivity = (sessionId: string): void => {
   const session = getSession(sessionId);
   if (session) {
-    session.lastActivity = Date.now();
+    session.last_activity = Date.now();
     localStorage.setItem(`session_${sessionId}`, JSON.stringify(session));
   }
 };
@@ -70,7 +70,7 @@ const getSession = (sessionId: string): Session | null => {
   const session: Session = JSON.parse(sessionData);
 
   // Check session timeout
-  if (Date.now() - session.lastActivity > SESSION_TIMEOUT) {
+  if (Date.now() - session.last_activity > SESSION_TIMEOUT) {
     localStorage.removeItem(`session_${sessionId}`);
     return null;
   }
@@ -108,7 +108,7 @@ const validateSessionAccess = (sessionId: string, requiredPermission?: string): 
   if (!userData) return false;
 
   const user = JSON.parse(userData);
-  return user.isOwner && user.permissions[requiredPermission];
+  return user.is_owner && user.permissions[requiredPermission];
 };
 
 export {

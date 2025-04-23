@@ -72,7 +72,7 @@ export const isOwner = async (): Promise<boolean> => {
 };
 
 /**
- * Checks if the current user has the mediaUploads permission
+ * Checks if the current user has the media_uploads permission
  * @returns A promise that resolves to a boolean indicating if the user can upload media
  */
 export const canUploadMedia = async (): Promise<boolean> => {

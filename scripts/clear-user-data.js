@@ -59,7 +59,7 @@ async function authenticateAdmin() {
     // Check if user is an admin in Firestore
     const userDoc = await getDoc(doc(db, 'users', user.uid));
 
-    if (userDoc.exists() && userDoc.data().isOwner === true) {
+    if (userDoc.exists() && userDoc.data().is_owner === true) {
       console.log('\n✅ Administrator authentication successful!\n');
       return true;
     } else {

@@ -25,7 +25,7 @@ const ResetDataButton = ({ adminOnly = true }: ResetDataButtonProps) => {
   const navigate = useNavigate();
 
   // Check if current user is an admin/owner
-  const isAdmin = currentUser?.isOwner === true;
+  const isAdmin = currentUser?.is_owner === true;
 
   // Function to clear all localStorage data
   const clearLocalStorage = () => {

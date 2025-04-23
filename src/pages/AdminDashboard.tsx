@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect } from 'react';
+import { useState, ChangeEvent, useEffect } from '../utils/react-imports';
 import { motion, Reorder, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';
@@ -6,14 +6,14 @@ import Button from '../components/ui/Button';
 import DragDropUpload from '../components/ui/DragDropUpload';
 import { TextField, TextArea, CheckboxField, SelectField } from '../components/ui/FormField';
 import { useTheme } from '../contexts/ThemeContext';
-import { handleImageUpload, handleSupabaseImageUpload } from '../utils/imageHandlers';
+import { handleSupabaseImageUpload } from '../utils/imageHandlers';
 import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
 import { useContentManager } from '../hooks/useContentManager';
 import { useAdminContent } from '../hooks/useAdminContent';
 import type { Question, QuestionOption } from '../types/questions';
 import type { Section } from '../hooks/useSections';
-import TrashIcon from '../components/ui/TrashIcon';
+// TrashIcon import removed as it's not used
 import ImageThumbnail from '../components/ui/ImageThumbnail';
 import TemplateCreator from '../components/TemplateCreator';
 import HolographicText from '../components/ui/HolographicText';
@@ -74,7 +74,7 @@ export default function AdminDashboard() {
   const IMAGES_PER_PAGE = 9; // Show 9 images per page (3x3 grid)
 
   const handleAddOption = (questionId: string) => {
-    const currentQuestion = questions.find(q => q.id === questionId);
+    const currentQuestion = questions.find((q: Question) => q.id === questionId);
     if (!currentQuestion) return;
 
     const newOption: QuestionOption = {
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
 
   const handleOptionTextChange = (questionId: string, optionId: string) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
-      const currentQuestion = questions.find(q => q.id === questionId);
+      const currentQuestion = questions.find((q: Question) => q.id === questionId);
       if (!currentQuestion) return;
 
       updateQuestion(questionId, {
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
 
   const handleOptionScaleChange = (questionId: string, optionId: string) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
-      const currentQuestion = questions.find(q => q.id === questionId);
+      const currentQuestion = questions.find((q: Question) => q.id === questionId);
       if (!currentQuestion) return;
 
       updateQuestion(questionId, {
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
         file,
         'option',
         (imageUrl: string, imagePreview: string) => {
-          const currentQuestion = questions.find(q => q.id === questionId);
+          const currentQuestion = questions.find((q: Question) => q.id === questionId);
           if (!currentQuestion) return;
 
           updateQuestion(questionId, {
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
   };
 
   const handleRemoveOptionImage = (questionId: string, optionId: string) => {
-    const currentQuestion = questions.find(q => q.id === questionId);
+    const currentQuestion = questions.find((q: Question) => q.id === questionId);
     if (!currentQuestion) return;
 
     updateQuestion(questionId, {
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
 
   const handleOptionSectionLink = (questionId: string, optionId: string) => {
     return (e: ChangeEvent<HTMLSelectElement>) => {
-      const currentQuestion = questions.find(q => q.id === questionId);
+      const currentQuestion = questions.find((q: Question) => q.id === questionId);
       if (!currentQuestion) return;
 
       updateQuestion(questionId, {
@@ -306,7 +306,7 @@ export default function AdminDashboard() {
     setScannerImagesPage(newPage);
   };
 
-  if (!currentUser?.isOwner) {
+  if (!currentUser?.is_owner) {
     return <div className="p-8 text-center">
       <HolographicText
         text="You don't have permission to access this page."
@@ -465,7 +465,7 @@ export default function AdminDashboard() {
                   src={image.src}
                   alt={image.alt}
                   scale={image.scale || 1}
-                  onScaleChange={(id, scale) => updateImageScale(id, scale)}
+                  onScaleChange={(id: string, scale: number) => updateImageScale(id, scale)}
                   onDelete={handleDeleteImage}
                 />
               ))}

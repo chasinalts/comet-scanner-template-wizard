@@ -38,12 +38,15 @@ const Login = () => {
     try {
       setError('');
       setIsLoading(true);
+      console.log('Attempting to login with email:', email);
       // Call the updated login function from AuthContext
       await login(email, password);
+      console.log('Login successful, navigating to scanner page');
       // Navigate to the scanner page upon successful login
       // The AuthProvider's onAuthStateChanged listener will handle additional redirection logic if needed
       navigate('/scanner');
     } catch (error: any) {
+      console.error('Login error details:', error);
       console.error("Login failed:", error);
       let errorMessage = 'Failed to sign in. Please check your credentials.';
       // Provide more specific feedback for common Supabase errors
