@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import React from 'react';
 const { lazy, Suspense } = React;
-import { AuthProvider } from './contexts/AuthContext';
+// AuthProvider is already imported in main.tsx
 import { WizardProvider } from './contexts/WizardContext';
 import { ToastProvider } from './components/ui/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -20,7 +20,6 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 function App() {
   return (
     <Router>
-      <AuthProvider>
         <WizardProvider>
           <ThemeProvider>
             <ToastProvider>
@@ -102,7 +101,6 @@ function App() {
             </ToastProvider>
           </ThemeProvider>
         </WizardProvider>
-      </AuthProvider>
     </Router>
   );
 }
