@@ -178,8 +178,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data.user) {
-        // The profile insert will now work because the user is authenticated
-        // and the RLS policy allows users to insert their own profile
+        // Sign in the user immediately after signup to ensure they're authenticated
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (signInError) throw signInError;
+
+        // Now the user is authenticated, create their profile
         const { error: profileError } = await supabase
           .from('user_profiles')
           .insert({
@@ -204,7 +211,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
           });
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+          throw profileError;
+        }
       }
     } catch (error) {
       console.error('Error signing up:', error);
