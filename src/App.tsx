@@ -9,6 +9,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import SuspenseFallback from './components/ui/SuspenseFallback';
 import PerformanceMonitor from './components/dev/PerformanceMonitor';
+import UpdateNotification from './components/ui/UpdateNotification';
+import CacheDebugger from './components/dev/CacheDebugger';
 
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
@@ -24,6 +26,8 @@ function App() {
             <ToastProvider>
               {/* Performance monitor (only visible in development) */}
               <PerformanceMonitor />
+              <UpdateNotification />
+              <CacheDebugger />
               <Routes>
                 {/* Public Routes */}
                 <Route

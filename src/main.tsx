@@ -22,6 +22,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 // Register service worker for caching only in production and browser environment
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
   registerServiceWorker();
+} else if (typeof window !== 'undefined') {
+  // In development, unregister any existing service workers to prevent caching issues
+  console.log('Development mode: unregistering service workers');
+  import('./utils/serviceWorkerRegistration').then(({ unregisterServiceWorker }) => {
+    unregisterServiceWorker();
+  });
 }
 
 // Initialize performance analytics only in browser environment
