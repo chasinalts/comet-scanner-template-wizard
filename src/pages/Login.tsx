@@ -268,16 +268,7 @@ const Login = () => {
                     className="text-cyan-400 hover:text-cyan-300"
                   />
                 </Link>
-                <Link
-                  to="/owner-setup"
-                  className="font-medium"
-                >
-                  <HolographicText
-                    text="Initial Owner Setup"
-                    as="span"
-                    className="text-cyan-400 hover:text-cyan-300"
-                  />
-                </Link>
+                {/* Owner setup link removed - owner account already created */}
               </div>
             </div>
           </div>

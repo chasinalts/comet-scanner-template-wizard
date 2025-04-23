@@ -258,9 +258,7 @@ const Signup = () => {
                     className="text-cyan-400 hover:text-cyan-300"
                   />
                 </Link>
-                <div className="text-xs text-cyan-200 mt-2">
-                  Need to set up an owner account? <Link to="/owner-setup" className="underline">Go to owner setup</Link>
-                </div>
+                {/* Owner setup link removed - owner account already created */}
               </div>
             </div>
           </div>

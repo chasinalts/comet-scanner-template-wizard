@@ -146,7 +146,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signup = async (email: string, password: string, isOwner: boolean) => {
+  const signup = async (email: string, password: string, isOwner: boolean = false) => {
+    // Prevent creating new owner accounts from UI
+    if (isOwner) {
+      console.warn('Attempt to create owner account prevented - owner already exists');
+      throw new Error('Owner account already exists. Please use a regular account.');
+    }
     try {
       // First create the auth user
       const { data, error } = await supabase.auth.signUp({
