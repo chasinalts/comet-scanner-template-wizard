@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, type FormEvent } from '../utils/react-imports';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -51,24 +51,14 @@ const Login = () => {
       let errorMessage = 'Failed to sign in. Please check your credentials.';
       // Provide more specific feedback for common Supabase errors
       if (error.message) {
-        switch (error.message) {
-          case 'Invalid login credentials':
-          case 'Email not confirmed':
-            errorMessage = 'Invalid email or password.';
-            break;
-          case 'auth/invalid-email':
-            errorMessage = 'Please enter a valid email address.';
-            break;
-          case 'auth/user-disabled':
-            errorMessage = 'This account has been disabled.';
-            break;
-          case 'auth/too-many-requests':
-             errorMessage = 'Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later.';
-             break;
-          // Add other Firebase Auth error codes as needed
+        // Handle specific Supabase errors
+        if (error.message === 'Invalid login credentials' || error.message === 'Email not confirmed') {
+          errorMessage = 'Invalid email or password.';
         }
+        // Add more Supabase-specific error handling here if needed
+        // e.g., rate limiting errors, etc.
       }
-      setError(errorMessage);
+      setError(errorMessage); // Set the potentially updated or default error message
     } finally {
       setIsLoading(false);
     }
