@@ -1,4 +1,4 @@
-import { supabase, STORAGE_BUCKET, getFirebaseUserId } from '../supabaseConfig';
+import { supabase, STORAGE_BUCKET, getUserId } from '../supabaseConfig';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -14,8 +14,8 @@ export const uploadFileToSupabase = async (
   cacheControl = 'public, max-age=31536000'
 ): Promise<string> => {
   try {
-    // Get Firebase user ID for metadata
-    const userId = getFirebaseUserId();
+    // Get user ID for metadata
+    const userId = getUserId();
     if (!userId) {
       throw new Error('Authentication required. Please sign in to upload files.');
     }
@@ -66,8 +66,8 @@ export const uploadFileToSupabase = async (
  */
 export const deleteFileFromSupabase = async (url: string): Promise<void> => {
   try {
-    // Get Firebase user ID for metadata
-    const userId = getFirebaseUserId();
+    // Get user ID for metadata
+    const userId = getUserId();
     if (!userId) {
       throw new Error('Authentication required. Please sign in to delete files.');
     }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { FirebaseError } from 'firebase/app'; // Import FirebaseError for better error handling
+// Import types from Supabase // Import FirebaseError for better error handling
 import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
@@ -52,25 +52,22 @@ const Signup = () => {
       // Let the AuthProvider's onAuthStateChanged listener handle redirection logic
       // or navigate directly.
       navigate('/wizard/step1'); // Or wherever appropriate
-    } catch (error) {
+    } catch (error: any) {
       console.error("Signup failed:", error);
       let errorMessage = 'Failed to create account. Please try again.';
-      // Provide more specific feedback for common Firebase errors
-      if (error instanceof FirebaseError) {
-        switch (error.code) {
-          case 'auth/email-already-in-use':
-            errorMessage = 'This email address is already registered.';
-            break;
-          case 'auth/invalid-email':
-            errorMessage = 'Please enter a valid email address.';
-            break;
-          case 'auth/weak-password':
-            errorMessage = 'Password is too weak. Please choose a stronger password.';
-            break;
-            default:
-              errorMessage = error.message;
-              break;
-          // Add other Firebase Auth error codes as needed
+      // Provide more specific feedback for common Supabase errors
+      if (error.message) {
+        if (error.message.includes('already registered')) {
+          errorMessage = 'This email address is already registered.';
+        } else if (error.message.includes('valid email')) {
+          errorMessage = 'Please enter a valid email address.';
+        } else if (error.message.includes('owner account already exists')) {
+          errorMessage = 'An owner account already exists.';
+        } else if (error.message.includes('weak password')) {
+          errorMessage = 'Password is too weak. Please choose a stronger password.';
+        } else {
+          // Use the error message directly if we don't have a specific handler
+          errorMessage = error.message;
         }
       }
       setError(errorMessage);

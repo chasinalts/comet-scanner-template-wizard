@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { auth } from './firebaseConfig';
 
 // Supabase configuration
 // Replace these with your actual Supabase URL and anon key
@@ -7,12 +6,11 @@ import { auth } from './firebaseConfig';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Create Supabase client with minimal configuration
-// We'll use anonymous access for storage with RLS policies
+// Create Supabase client with auth configuration
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: false, // Don't persist Supabase auth session since we use Firebase
-    autoRefreshToken: false, // Don't auto-refresh tokens
+    persistSession: true, // Store session in local storage
+    autoRefreshToken: true, // Auto refresh tokens
   }
 });
 
@@ -41,20 +39,22 @@ export const getProxiedImageUrl = (url: string): string => {
 };
 
 /**
- * Get the current Firebase user ID
+ * Get the current Supabase user ID
  * This is needed for our RLS policies
  */
-export const getFirebaseUserId = () => {
+export const getUserId = () => {
   try {
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-      console.warn('No Firebase user is logged in');
+    const session = supabase.auth.getSession();
+    const user = supabase.auth.getUser();
+
+    if (!user) {
+      console.warn('No user is logged in');
       return null;
     }
 
-    return currentUser.uid;
+    return user.data.user?.id || null;
   } catch (error) {
-    console.error('Error getting Firebase user ID:', error);
+    console.error('Error getting user ID:', error);
     return null;
   }
 };

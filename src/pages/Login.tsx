@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { FirebaseError } from 'firebase/app'; // Import FirebaseError for better error handling
+// Import types from Supabase
 import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
@@ -44,15 +44,14 @@ const Login = () => {
       // Let the AuthProvider's onAuthStateChanged listener handle redirection logic
       // potentially based on user role or profile status, or navigate directly.
       navigate('/wizard/step1'); // Or wherever appropriate
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login failed:", error);
       let errorMessage = 'Failed to sign in. Please check your credentials.';
-      // Provide more specific feedback for common Firebase errors
-      if (error instanceof FirebaseError) {
-        switch (error.code) {
-          case 'auth/user-not-found':
-          case 'auth/wrong-password':
-          case 'auth/invalid-credential': // General incorrect credentials
+      // Provide more specific feedback for common Supabase errors
+      if (error.message) {
+        switch (error.message) {
+          case 'Invalid login credentials':
+          case 'Email not confirmed':
             errorMessage = 'Invalid email or password.';
             break;
           case 'auth/invalid-email':

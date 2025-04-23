@@ -1,20 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signOut,
-  User as FirebaseUser // Rename to avoid conflict with local User interface if needed
-} from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
-import { auth, db } from '../firebaseConfig'; // Import initialized auth and db
+import { supabase } from '../supabaseConfig'; // Import Supabase client
+import { User, Session } from '@supabase/supabase-js';
 
-// Keep your custom User profile data structure
+// User profile data structure
 interface UserProfile {
-  username: string; // Or email, depending on what you use for login
+  id: string;
+  email: string;
+  username?: string;
   isOwner: boolean;
-  // Add other profile fields previously stored in localStorage if needed
-  createdAt?: any; // serverTimestamp() will populate this
+  createdAt?: string;
   permissions?: {
     contentManagement: boolean;
     userManagement: boolean;
@@ -25,161 +19,231 @@ interface UserProfile {
   };
 }
 
-// Combine Firebase User info with your UserProfile
-interface AppUser extends FirebaseUser {
-  profile: UserProfile | null; // Store fetched profile data here
-  isOwner?: boolean; // Direct access to isOwner property
-  isAnonymous: boolean;
-  username?: string; // Direct access to username property
-}
-
 
 interface AuthContextType {
-  currentUser: AppUser | null; // Use the combined AppUser type
-  login: (email: string, password: string) => Promise<void>; // Use email for Firebase
-  signup: (email: string, password: string, isOwner: boolean) => Promise<void>; // Use email for Firebase
+  currentUser: UserProfile | null;
+  session: Session | null;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, isOwner: boolean) => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
-  saveTemplate: (templateName: string, templateData: any, currentUser: AppUser) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
-
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Firebase's listener for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-      setIsLoading(true);
-      try {
-        if (firebaseUser) {
-          // User is signed in, fetch their profile from Firestore
-          const userDocRef = doc(db, 'users', firebaseUser.uid);
-          const userDocSnap = await getDoc(userDocRef);
+    // Set up Supabase auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, currentSession) => {
+        setIsLoading(true);
+        setSession(currentSession);
 
-          let userProfile: UserProfile | null = null;
-          if (userDocSnap.exists()) {
-            userProfile = userDocSnap.data() as UserProfile;
-          } else {
-            // Handle case where user exists in Auth but not Firestore (should ideally not happen with proper signup)
-            console.warn("User document not found in Firestore for UID:", firebaseUser.uid);
-            // You might want to create a default profile here or log them out
+        if (currentSession?.user) {
+          try {
+            // Fetch user profile from Supabase
+            const { data, error } = await supabase
+              .from('user_profiles')
+              .select('*')
+              .eq('id', currentSession.user.id)
+              .single();
+
+            if (error) {
+              console.error('Error fetching user profile:', error);
+              // If profile doesn't exist, create a default one
+              if (error.code === 'PGRST116') { // No rows returned
+                const newProfile: UserProfile = {
+                  id: currentSession.user.id,
+                  email: currentSession.user.email || '',
+                  isOwner: false, // Default to non-owner
+                  createdAt: new Date().toISOString(),
+                  permissions: {
+                    contentManagement: false,
+                    userManagement: false,
+                    systemConfiguration: false,
+                    mediaUploads: true, // Allow uploads by default
+                    securitySettings: false,
+                    siteCustomization: false,
+                  }
+                };
+
+                // Insert the new profile
+                const { error: insertError } = await supabase
+                  .from('user_profiles')
+                  .insert(newProfile);
+
+                if (insertError) {
+                  console.error('Error creating user profile:', insertError);
+                } else {
+                  setCurrentUser(newProfile);
+                }
+              }
+            } else if (data) {
+              // Profile exists, use it
+              setCurrentUser(data as UserProfile);
+            }
+          } catch (error) {
+            console.error('Error in auth state change:', error);
           }
-
-          // Combine Firebase user with Firestore profile
-          setCurrentUser({
-            ...firebaseUser,
-            profile: userProfile,
-            isOwner: userProfile?.isOwner,
-            username: userProfile?.username
-          });
-
         } else {
           // User is signed out
           setCurrentUser(null);
         }
-      } catch (error) {
-          console.error("Error fetching user profile:", error)
+
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    });
+    );
+
+    // Initial session check
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (initialSession) {
+          setSession(initialSession);
+
+          // Fetch user profile
+          const { data } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', initialSession.user.id)
+            .single();
+
+          if (data) {
+            setCurrentUser(data as UserProfile);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking initial session:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
 
     // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []); // Run only once on mount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const login = async (email: string, password: string) => {
-      try {
-          await signInWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-          throw error;
-      }
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error;
+    }
   };
 
   const signup = async (email: string, password: string, isOwner: boolean) => {
+    try {
+      // Check if an owner already exists if this is an owner signup
       if (isOwner) {
-          // Check if an owner already exists
-          const q = query(collection(db, 'users'), where('isOwner', '==', true));
-          const ownerQuery = await getDocs(q);
-          if (ownerQuery.docs.length > 0) {
-              throw new Error('An owner account already exists.');
-          }
+        const { data: existingOwners, error: queryError } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('isOwner', true);
+
+        if (queryError) throw queryError;
+
+        if (existingOwners && existingOwners.length > 0) {
+          throw new Error('An owner account already exists.');
+        }
       }
 
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const firebaseUser = userCredential.user;
+      // Sign up the user
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password
+      });
 
-      if (firebaseUser) {
-          // Create user profile document in Firestore
-          const userDocRef = doc(db, 'users', firebaseUser.uid);
-          const userProfile: UserProfile = {
-              username: email, // Use email as username or add another field
-              isOwner: isOwner,
-              createdAt: serverTimestamp(), // Use Firestore server timestamp
-              // Define default permissions based on isOwner status
-              permissions: isOwner ? {
-                  contentManagement: true,
-                  userManagement: true,
-                  systemConfiguration: true,
-                  mediaUploads: true, // Owner can upload
-                  securitySettings: true,
-                  siteCustomization: true,
-              } : {
-                  contentManagement: false,
-                  userManagement: false,
-                  systemConfiguration: false,
-                  mediaUploads: true, // Allow non-owners to upload too? Adjust as needed.
-                  securitySettings: false,
-                  siteCustomization: false,
-              }
-          };
-          await setDoc(userDocRef, userProfile);
-      } else {
-          throw new Error('Failed to create user account.');
+      if (error) throw error;
+
+      if (data.user) {
+        // Create user profile
+        const userProfile: UserProfile = {
+          id: data.user.id,
+          email: email,
+          isOwner: isOwner,
+          createdAt: new Date().toISOString(),
+          permissions: isOwner ? {
+            contentManagement: true,
+            userManagement: true,
+            systemConfiguration: true,
+            mediaUploads: true,
+            securitySettings: true,
+            siteCustomization: true,
+          } : {
+            contentManagement: false,
+            userManagement: false,
+            systemConfiguration: false,
+            mediaUploads: true,
+            securitySettings: false,
+            siteCustomization: false,
+          }
+        };
+
+        // Insert the profile into the database
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .insert(userProfile);
+
+        if (profileError) {
+          console.error('Error creating user profile:', profileError);
+          throw profileError;
         }
-  };
-
-  const saveTemplate = async (templateName: string, templateData: any, currentUser: AppUser) => {
-    if (currentUser) {
-        const templateDocRef = doc(db, 'templates');
-        await setDoc(templateDocRef, {
-            userId: currentUser.uid,
-            templateName: templateName,
-            templateData: templateData,
-            createdAt: serverTimestamp()
-        });
-    } else {
-      throw new Error("Failed to create user account.");
+      } else {
+        throw new Error('Failed to create user account.');
+      }
+    } catch (error) {
+      console.error('Error signing up:', error);
+      throw error;
     }
   };
 
   const logout = async () => {
-    await signOut(auth);
-    // onAuthStateChanged will handle setting currentUser to null
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
   };
 
-    const passwordResetEmail = async (email: string) => {
-        try {
-            await sendPasswordResetEmail(auth, email);
-        } catch (error) {
-            throw error;
-        }
-    };
+  const passwordResetEmail = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password',
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error sending password reset:', error);
+      throw error;
+    }
+  };
 
 
 
   const value = {
     currentUser,
+    session,
     signup,
     logout,
     login,
     isLoading,
-    saveTemplate,
-
     sendPasswordResetEmail: passwordResetEmail,
   };
 

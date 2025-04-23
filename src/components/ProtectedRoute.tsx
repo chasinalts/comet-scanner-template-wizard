@@ -48,8 +48,7 @@ const ProtectedRoute = ({ children, requireOwner = false }: ProtectedRouteProps)
 
   if (requireOwner && !currentUser.isOwner) {
     // If owner access is required but user is not an owner,
-    // redirect to the first step with an error state
-    // Redirect non-owners trying to access owner routes to the main scanner page
+    // redirect to the scanner page with an error state
     return (
       <Navigate
         to="/scanner"

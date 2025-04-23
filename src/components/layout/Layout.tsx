@@ -45,7 +45,7 @@ const Layout = ({ children }: LayoutProps) => {
                   COMET Scanner Wizard
                 </motion.h1>
               </div>
-              
+
               <AnimatePresence mode="wait">
                 {currentUser && (
                   <motion.div
@@ -60,7 +60,7 @@ const Layout = ({ children }: LayoutProps) => {
                           Owner
                         </span>
                       )}
-                      <span>{currentUser.username}</span>
+                      <span>{currentUser.email}</span>
                     </div>
                     <button
                       onClick={handleLogout}
@@ -86,7 +86,7 @@ const Layout = ({ children }: LayoutProps) => {
                 >
                   Scanner Templates
                 </Link>
-                
+
                 {currentUser.isOwner && (
                   <Link
                     to="/admin"
