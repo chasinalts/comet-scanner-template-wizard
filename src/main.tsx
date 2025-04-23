@@ -1,5 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 import './styles/holographic.css'; // Import holographic styles directly
@@ -11,7 +12,7 @@ import { initializeStorage } from './supabaseConfig';
 
 // Supabase handles authentication now
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <AuthProvider>
       <App />

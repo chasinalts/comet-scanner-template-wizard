@@ -8,10 +8,10 @@ export default defineConfig({
   // base: '/comet-scanner-wizard/',
   plugins: [reactPlugin()],
   resolve: {
-    alias: {
-      'react': './node_modules/react',
-      'react-dom': './node_modules/react-dom'
-    }
+    alias: [
+      { find: 'react', replacement: '/Users/chasecambre/CSTW/comet-scanner-template-wizard/node_modules/react' },
+      { find: 'react-dom', replacement: '/Users/chasecambre/CSTW/comet-scanner-template-wizard/node_modules/react-dom' }
+    ]
   },
   server: {
     port: 3000,
