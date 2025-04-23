@@ -16,7 +16,7 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isOwner, setIsOwner] = useState(false); // Keep this for your application logic
+  // Owner option removed - all regular signups are non-owners // Keep this for your application logic
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,7 +47,8 @@ const Signup = () => {
       setError('');
       setIsLoading(true);
       // Call the updated signup function from AuthContext
-      await signup(email, password, isOwner);
+      // Always sign up as non-owner
+      await signup(email, password, false);
       // Navigate after successful signup
       // Let the AuthProvider's onAuthStateChanged listener handle redirection logic
       // or navigate directly.
@@ -198,23 +199,7 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Keep the isOwner checkbox as it's used in the signup function */}
-            <div className="flex items-center">
-              <input
-                id="isOwner"
-                name="isOwner"
-                type="checkbox"
-                checked={isOwner}
-                onChange={(e) => setIsOwner(e.target.checked)}
-                className="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded"
-              />
-              <HolographicText
-                text="Register as Owner"
-                as="label"
-                className="ml-2 block text-sm"
-                htmlFor="isOwner"
-              />
-            </div>
+            {/* Owner option removed */}
 
             <div>
               <button
@@ -263,16 +248,21 @@ const Signup = () => {
             </div>
 
             <div className="mt-6 text-center">
-              <Link
-                to="/login"
-                className="font-medium"
-              >
-                <HolographicText
-                  text="Sign in instead"
-                  as="span"
-                  className="text-cyan-400 hover:text-cyan-300"
-                />
-              </Link>
+              <div className="flex flex-col space-y-2">
+                <Link
+                  to="/login"
+                  className="font-medium"
+                >
+                  <HolographicText
+                    text="Sign in instead"
+                    as="span"
+                    className="text-cyan-400 hover:text-cyan-300"
+                  />
+                </Link>
+                <div className="text-xs text-cyan-200 mt-2">
+                  Need to set up an owner account? <Link to="/owner-setup" className="underline">Go to owner setup</Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>

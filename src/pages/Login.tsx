@@ -258,16 +258,28 @@ const Login = () => {
             </div>
 
             <div className="mt-6 text-center">
-              <Link
-                to="/signup"
-                className="font-medium"
-              >
-                <HolographicText
-                  text="Create an account"
-                  as="span"
-                  className="text-cyan-400 hover:text-cyan-300"
-                />
-              </Link>
+              <div className="flex flex-col space-y-2">
+                <Link
+                  to="/signup"
+                  className="font-medium"
+                >
+                  <HolographicText
+                    text="Create an account"
+                    as="span"
+                    className="text-cyan-400 hover:text-cyan-300"
+                  />
+                </Link>
+                <Link
+                  to="/owner-setup"
+                  className="font-medium"
+                >
+                  <HolographicText
+                    text="Initial Owner Setup"
+                    as="span"
+                    className="text-cyan-400 hover:text-cyan-300"
+                  />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -13,6 +13,7 @@ import PerformanceMonitor from './components/dev/PerformanceMonitor';
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
+const OwnerSetup = lazy(() => import('./pages/OwnerSetup'));
 const ScannerWizard = lazy(() => import('./pages/ScannerWizard'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
@@ -43,6 +44,16 @@ function App() {
                     <Layout>
                       <Suspense fallback={<SuspenseFallback message="Loading signup page..." />}>
                         <Signup />
+                      </Suspense>
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/owner-setup"
+                  element={
+                    <Layout>
+                      <Suspense fallback={<SuspenseFallback message="Loading owner setup page..." />}>
+                        <OwnerSetup />
                       </Suspense>
                     </Layout>
                   }
