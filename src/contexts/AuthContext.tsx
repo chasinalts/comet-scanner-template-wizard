@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     contentManagement: false,
                     userManagement: false,
                     systemConfiguration: false,
-                    mediaUploads: true, // Allow uploads by default
+                    mediaUploads: false, // Only owners can upload media
                     securitySettings: false,
                     siteCustomization: false,
                   }
@@ -167,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               contentManagement: false,
               userManagement: false,
               systemConfiguration: false,
-              mediaUploads: true,
+              mediaUploads: false,
               securitySettings: false,
               siteCustomization: false,
             }
@@ -205,7 +205,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               contentManagement: false,
               userManagement: false,
               systemConfiguration: false,
-              mediaUploads: true,
+              mediaUploads: false,
               securitySettings: false,
               siteCustomization: false,
             }

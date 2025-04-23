@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useEffect } from 'react';
 import { motion, Reorder, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';
@@ -17,6 +17,7 @@ import TrashIcon from '../components/ui/TrashIcon';
 import ImageThumbnail from '../components/ui/ImageThumbnail';
 import TemplateCreator from '../components/TemplateCreator';
 import HolographicText from '../components/ui/HolographicText';
+import { isOwner } from '../utils/permissionChecks';
 
 interface UploadingState {
   questionId?: string;
@@ -28,6 +29,17 @@ export default function AdminDashboard() {
   const { currentUser } = useAuth();
   const { showToast } = useToast();
   const { theme } = useTheme();
+  const [canUpload, setCanUpload] = useState<boolean>(false);
+
+  // Check if the user is an owner
+  useEffect(() => {
+    const checkOwnerStatus = async () => {
+      const ownerStatus = await isOwner();
+      setCanUpload(ownerStatus);
+    };
+
+    checkOwnerStatus();
+  }, [currentUser]);
   const {
     questions,
     addQuestion,
@@ -405,15 +417,25 @@ export default function AdminDashboard() {
               </div>
 
               <div>
-                {/* Banner Image Upload */}
-                <DragDropUpload
-                  onFileSelect={handleBannerImageUpload}
-                  accept="image/*"
-                  title="Upload Banner Image"
-                  description="Drag and drop or click to upload a banner image"
-                  maxSize={5}
-                  isLoading={uploadingImage?.contentType === 'banner'}
-                />
+                {canUpload ? (
+                  /* Banner Image Upload */
+                  <DragDropUpload
+                    onFileSelect={handleBannerImageUpload}
+                    accept="image/*"
+                    title="Upload Banner Image"
+                    description="Drag and drop or click to upload a banner image"
+                    maxSize={5}
+                    isLoading={uploadingImage?.contentType === 'banner'}
+                  />
+                ) : (
+                  <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg text-center">
+                    <HolographicText
+                      text="Only owners can upload media"
+                      as="p"
+                      className="text-amber-500"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -448,17 +470,27 @@ export default function AdminDashboard() {
                 />
               ))}
 
-              {/* Upload New Scanner Image - Always show this */}
-              <div className="border dark:border-gray-700 rounded-lg shadow-sm p-4 futuristic-container">
-                <DragDropUpload
-                  onFileSelect={handleScannerImageUpload}
-                  accept="image/*"
-                  title="Add Scanner Variation"
-                  description="Drag and drop or click to upload"
-                  maxSize={5}
-                  isLoading={uploadingImage?.contentType === 'scanner'}
-                />
-              </div>
+              {/* Upload New Scanner Image - Only show if user can upload */}
+              {canUpload ? (
+                <div className="border dark:border-gray-700 rounded-lg shadow-sm p-4 futuristic-container">
+                  <DragDropUpload
+                    onFileSelect={handleScannerImageUpload}
+                    accept="image/*"
+                    title="Add Scanner Variation"
+                    description="Drag and drop or click to upload"
+                    maxSize={5}
+                    isLoading={uploadingImage?.contentType === 'scanner'}
+                  />
+                </div>
+              ) : (
+                <div className="border dark:border-gray-700 rounded-lg shadow-sm p-4 futuristic-container text-center">
+                  <HolographicText
+                    text="Only owners can upload media"
+                    as="p"
+                    className="text-amber-500"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Pagination Controls */}
@@ -702,7 +734,7 @@ export default function AdminDashboard() {
                                         </Button>
                                       </div>
                                     </div>
-                                  ) : (
+                                  ) : canUpload ? (
                                     <DragDropUpload
                                       onFileSelect={(file: File) => handleOptionImageUpload(question.id, option.id, file)}
                                       accept="image/*"
@@ -712,6 +744,10 @@ export default function AdminDashboard() {
                                       variant="compact"
                                       isLoading={uploadingImage?.questionId === question.id && uploadingImage?.optionId === option.id}
                                     />
+                                  ) : (
+                                    <div className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg text-center">
+                                      <p className="text-amber-500 text-sm">Only owners can upload media</p>
+                                    </div>
                                   )}
                                 </div>
                               </div>

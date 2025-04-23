@@ -1,5 +1,6 @@
 import { supabase, STORAGE_BUCKET, getUserId } from '../supabaseConfig';
 import { v4 as uuidv4 } from 'uuid';
+import { isOwner } from './permissionChecks';
 
 /**
  * Uploads a file to Supabase Storage
@@ -18,6 +19,12 @@ export const uploadFileToSupabase = async (
     const userId = getUserId();
     if (!userId) {
       throw new Error('Authentication required. Please sign in to upload files.');
+    }
+
+    // Check if the user is an owner
+    const ownerStatus = await isOwner();
+    if (!ownerStatus) {
+      throw new Error('You do not have permission to upload files. Only owners can upload media.');
     }
 
     // Generate a unique filename to prevent collisions
@@ -74,6 +81,12 @@ export const deleteFileFromSupabase = async (url: string): Promise<void> => {
     const userId = getUserId();
     if (!userId) {
       throw new Error('Authentication required. Please sign in to delete files.');
+    }
+
+    // Check if the user is an owner
+    const ownerStatus = await isOwner();
+    if (!ownerStatus) {
+      throw new Error('You do not have permission to delete files. Only owners can manage media.');
     }
 
     // Extract the path from the URL
