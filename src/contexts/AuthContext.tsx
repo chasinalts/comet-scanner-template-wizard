@@ -7,8 +7,8 @@ interface UserProfile {
   id: string;
   email: string;
   username?: string;
-  isOwner: boolean;
-  createdAt?: string;
+  is_owner: boolean; // Changed to match database column name
+  created_at?: string; // Changed to match database column name
   permissions?: {
     contentManagement: boolean;
     userManagement: boolean;
@@ -60,8 +60,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const newProfile: UserProfile = {
                   id: currentSession.user.id,
                   email: currentSession.user.email || '',
-                  isOwner: false, // Default to non-owner
-                  createdAt: new Date().toISOString(),
+                  is_owner: false, // Default to non-owner
+                  created_at: new Date().toISOString(),
                   permissions: {
                     contentManagement: false,
                     userManagement: false,
@@ -155,7 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Important: Include the initial profile data in the metadata
         options: {
           data: {
-            isOwner: isOwner,
+            is_owner: isOwner, // Changed to match database column name
             permissions: isOwner ? {
               contentManagement: true,
               userManagement: true,
@@ -192,8 +192,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .insert({
             id: data.user.id,  // Must match auth.uid()
             email: email,
-            isOwner: isOwner,
-            createdAt: new Date().toISOString(),
+            is_owner: isOwner, // Changed to match database column name
+            created_at: new Date().toISOString(), // Changed to match database column name
             permissions: isOwner ? {
               contentManagement: true,
               userManagement: true,
@@ -232,7 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const passwordResetEmail = async (email: string) => {
+  const sendPasswordResetEmail = async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/reset-password',
@@ -254,7 +254,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
     login,
     isLoading,
-    sendPasswordResetEmail: passwordResetEmail,
+    sendPasswordResetEmail,
   };
 
   return (

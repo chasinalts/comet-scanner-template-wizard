@@ -46,7 +46,7 @@ const ProtectedRoute = ({ children, requireOwner = false }: ProtectedRouteProps)
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requireOwner && !currentUser.isOwner) {
+  if (requireOwner && !currentUser.is_owner) {
     // If owner access is required but user is not an owner,
     // redirect to the scanner page with an error state
     return (
