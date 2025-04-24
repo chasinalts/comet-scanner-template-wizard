@@ -18,6 +18,8 @@ const Signup = lazy(() => import('./pages/Signup'));
 const ScannerWizard = lazy(() => import('./pages/ScannerWizard'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
+import Home from './pages/Home';
+
 function App() {
   return (
     <Router>
@@ -29,6 +31,17 @@ function App() {
               <UpdateNotification />
               <CacheDebugger />
               <Routes>
+                {/* Home Page Route */}
+                <Route
+                  path="/"
+                  element={
+                    <Layout>
+                      <Suspense fallback={<SuspenseFallback message="Loading home page..." />}>
+                        <Home />
+                      </Suspense>
+                    </Layout>
+                  }
+                />
                 {/* Public Routes */}
                 <Route
                   path="/login"

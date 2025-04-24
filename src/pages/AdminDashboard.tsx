@@ -25,6 +25,8 @@ interface UploadingState {
   contentType?: 'banner' | 'scanner';
 }
 
+import { supabase } from '../supabaseConfig';
+
 export default function AdminDashboard() {
   const { currentUser } = useAuth();
   const { showToast } = useToast();
@@ -262,6 +264,26 @@ export default function AdminDashboard() {
     }
   };
 
+  // Handle gallery image upload
+  const handleGalleryImageUpload = async (file: File) => {
+    if (uploadingImage) {
+      showToast('error', 'Please wait for the current upload to complete');
+      return;
+    }
+    try {
+      setUploadingImage({ contentType: 'gallery' });
+      // Upload to Supabase Storage images/gallery
+      const { error } = await supabase.storage.from('images').upload(`gallery/${file.name}`, file, { upsert: true });
+      if (error) throw error;
+      showToast('success', 'Gallery image uploaded successfully');
+      setUploadingImage(null);
+      setRefreshGallery(r => !r);
+    } catch (error) {
+      showToast('error', 'Failed to upload gallery image');
+      setUploadingImage(null);
+    }
+  };
+
   // Handle image scale change
   const handleImageScaleChange = (id: string) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
@@ -286,6 +308,20 @@ export default function AdminDashboard() {
       setSelectedImageId(null);
     }
     showToast('success', 'Image deleted successfully');
+  };
+
+  // Delete gallery image
+  const handleDeleteGalleryImage = async (imgUrl: string) => {
+    const path = imgUrl.split('/gallery/')[1];
+    if (!path) return;
+    try {
+      const { error } = await supabase.storage.from('images').remove([`gallery/${path}`]);
+      if (error) throw error;
+      showToast('success', 'Gallery image deleted');
+      setRefreshGallery(r => !r);
+    } catch (error) {
+      showToast('error', 'Failed to delete gallery image');
+    }
   };
 
   // Get paginated scanner images
