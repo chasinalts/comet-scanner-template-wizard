@@ -44,7 +44,7 @@ const Login = () => {
       console.log('Login successful, navigating to scanner page');
       // Navigate to the scanner page upon successful login
       // The AuthProvider's onAuthStateChanged listener will handle additional redirection logic if needed
-      navigate('/scanner');
+      navigate('/');
     } catch (error: any) {
       console.error('Login error details:', error);
       console.error("Login failed:", error);

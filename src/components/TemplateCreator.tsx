@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-// TODO: Replace Firestore logic with Supabase queries.
+import { supabase } from '../supabaseConfig';
 
 interface Template {
   id: string;
@@ -16,7 +16,7 @@ const TemplateCreator: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { saveTemplate, currentUser } = useAuth();
+  const { currentUser } = useAuth();
 
   const handleSaveTemplate = async () => {
     if (!templateName.trim()) {
@@ -28,15 +28,38 @@ const TemplateCreator: React.FC = () => {
     setError('');
     try {
       if (currentUser) {
-        await saveTemplate(templateName, templateData, currentUser);
+        const { error } = await supabase
+          .from('templates')
+          .insert([
+            {
+              user_id: currentUser.id,
+              templateName,
+              templateData,
+            },
+          ]);
+        if (error) throw error;
         setTemplateName('');
         setTemplateData({});
+        // Optionally, refresh templates list
+        const { data, error: fetchError } = await supabase
+          .from('templates')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .order('created_at', { ascending: false });
+        if (!fetchError) {
+          const templates: Template[] = (data || []).map((row: any) => ({
+            id: row.id,
+            templateName: row.templateName,
+            templateData: row.templateData,
+            createdAt: row.created_at,
+          }));
+          setUserTemplates(templates);
+        }
       }
-      
     } catch (err) {
-        setError('Failed to save template.');
+      setError('Failed to save template.');
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -45,15 +68,22 @@ const TemplateCreator: React.FC = () => {
             if (currentUser) {
                 setIsLoading(true);
                 try {
-                    const q = query(collection(db, 'templates'), where('userId', '==', currentUser.uid));
-                    const querySnapshot = await getDocs(q);
-                    const templates: Template[] = querySnapshot.docs.map(doc => ({
-                        id: doc.id,
-                        templateName: doc.data().templateName,
-                        templateData: doc.data().templateData,
-                        createdAt: doc.data().createdAt,
-                    }));
-                    setUserTemplates(templates);
+                    // Fetch templates for the current user from Supabase
+                const { data, error } = await supabase
+                  .from('templates')
+                  .select('*')
+                  .eq('user_id', currentUser.id)
+                  .order('created_at', { ascending: false });
+                if (error) {
+                  throw error;
+                }
+                const templates: Template[] = (data || []).map((row: any) => ({
+                  id: row.id,
+                  templateName: row.templateName,
+                  templateData: row.templateData,
+                  createdAt: row.created_at,
+                }));
+                setUserTemplates(templates);
                 } catch (error) {
                     setError('Failed to load templates.');
                 } finally {

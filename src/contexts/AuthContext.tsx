@@ -153,12 +153,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Supabase auth error:', error);
-        throw error;
+        alert(`Login Error: ${error.message}`);
+        throw new Error(`Supabase auth error: ${error.message}`);
+      }
+
+      if (!data || !data.session) {
+        console.error('No session returned from login:', data);
+        alert('Login failed: No session returned from Supabase.');
+        throw new Error('Login failed: No session returned from Supabase.');
       }
 
       console.log('Supabase auth successful:', data);
+      // Optionally, navigate to a dashboard or home page here
       return data;
     } catch (error) {
+      if (error instanceof Error) {
+        alert(`Login Error: ${error.message}`);
+      }
       console.error('Error logging in:', error);
       throw error;
     }
@@ -198,48 +209,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase signUp error:', error);
+        throw new Error(`Supabase signUp error: ${error.message}`);
+      }
 
-      if (data.user) {
-        // Sign in the user immediately after signup to ensure they're authenticated
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
+      if (!data || !data.user) {
+        console.error('No user object returned from signUp:', data);
+        throw new Error('Signup failed: No user object returned from Supabase.');
+      }
+
+      // Sign in the user immediately after signup to ensure they're authenticated
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      if (signInError) {
+        console.error('Supabase signIn error after signUp:', signInError);
+        throw new Error(`Supabase signIn error after signUp: ${signInError.message}`);
+      }
+
+      // Now the user is authenticated, create their profile
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .insert({
+          id: data.user.id,  // Must match auth.uid()
+          email: email,
+          is_owner: isOwner, // Using snake_case to match database column name
+          created_at: new Date().toISOString(), // Changed to match database column name
+          permissions: isOwner ? {
+            content_management: true,
+            user_management: true,
+            system_configuration: true,
+            media_uploads: true,
+            security_settings: true,
+            site_customization: true,
+          } : {
+            content_management: false,
+            user_management: false,
+            system_configuration: false,
+            media_uploads: false,
+            security_settings: false,
+            site_customization: false,
+          }
         });
 
-        if (signInError) throw signInError;
-
-        // Now the user is authenticated, create their profile
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .insert({
-            id: data.user.id,  // Must match auth.uid()
-            email: email,
-            is_owner: isOwner, // Using snake_case to match database column name
-            created_at: new Date().toISOString(), // Changed to match database column name
-            permissions: isOwner ? {
-              content_management: true,
-              user_management: true,
-              system_configuration: true,
-              media_uploads: true,
-              security_settings: true,
-              site_customization: true,
-            } : {
-              content_management: false,
-              user_management: false,
-              system_configuration: false,
-              media_uploads: false,
-              security_settings: false,
-              site_customization: false,
-            }
-          });
-
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-          throw profileError;
-        }
+      if (profileError) {
+        console.error('Error creating profile in user_profiles:', profileError);
+        throw new Error(`Error creating profile in user_profiles: ${profileError.message}`);
       }
     } catch (error) {
+      // Add more detailed error reporting for debugging
+      if (error instanceof Error) {
+        alert(`Signup Error: ${error.message}`);
+      }
       console.error('Error signing up:', error);
       throw error;
     }
@@ -278,6 +301,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     isLoading,
     sendPasswordResetEmail,
+    // Optionally, add a loginSuccess callback for navigation
   };
 
   return (
@@ -286,6 +310,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
 
 export function useAuth() {
   const context = useContext(AuthContext);

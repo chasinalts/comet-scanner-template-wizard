@@ -51,7 +51,7 @@ const Signup = () => {
       await signup(email, password, false);
       // Navigate to the scanner page after successful signup
       // The AuthProvider's onAuthStateChanged listener will handle additional redirection logic if needed
-      navigate('/scanner');
+      navigate('/');
     } catch (error: any) {
       console.error("Signup failed:", error);
       let errorMessage = 'Failed to create account. Please try again.';
@@ -66,15 +66,19 @@ const Signup = () => {
         } else if (error.message.includes('weak password')) {
           errorMessage = 'Password is too weak. Please choose a stronger password.';
         } else {
-          // Use the error message directly if we don't have a specific handler
-          errorMessage = error.message;
-        }
+        // Use the error message directly if we don't have a specific handler
+        errorMessage = error.message;
       }
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
     }
-  };
+    // Show the error in an alert for debugging
+    if (errorMessage) {
+      alert(`Signup Error: ${errorMessage}`);
+    }
+    setError(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <motion.div
