@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from '../utils/react-imports';
+
+import HolographicText from '../components/ui/HolographicText';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseConfig';
@@ -61,7 +63,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-cyan-900 to-blue-700 flex flex-col items-center py-8 px-2">
-      <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center drop-shadow-lg">COMET SCANNER TEMPLATE WIZARD</h1>
+      <HolographicText text="COMET SCANNER TEMPLATE WIZARD" as="h1" variant="title" className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center drop-shadow-lg" />
       {/* Banner Section */}
       <div className="w-full max-w-3xl mb-6 flex flex-col items-center">
         {bannerUrl ? (
@@ -79,12 +81,12 @@ const Home: React.FC = () => {
       </div>
       {/* COMET Explanation */}
       <section className="max-w-2xl bg-white/10 rounded-lg p-6 mb-8 shadow-lg">
-        <h2 className="text-2xl font-bold text-cyan-200 mb-2 text-center">What is COMET?</h2>
+        <HolographicText text="What is COMET?" as="h2" variant="subtitle" className="text-2xl font-bold text-cyan-200 mb-2 text-center" />
         <pre className="whitespace-pre-line text-white text-lg font-mono leading-snug">{COMET_EXPLANATION}</pre>
       </section>
       {/* Image Gallery */}
       <section className="w-full max-w-5xl mb-8">
-        <h2 className="text-xl font-semibold text-cyan-100 mb-4 text-center">COMET Scanner Possibilities</h2>
+        <HolographicText text="COMET Scanner Possibilities" as="h2" variant="subtitle" className="text-xl font-semibold text-cyan-100 mb-4 text-center" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-gradient-to-br from-cyan-800/30 to-blue-900/30 p-2 rounded-xl shadow-inner">
           {galleryImages.map((img, i) => (
             <img

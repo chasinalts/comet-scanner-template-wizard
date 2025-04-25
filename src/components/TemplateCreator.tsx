@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from '../utils/react-imports';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../supabaseConfig';
 
 interface Template {
   id: string;
-  templateName: string;
-  templateData: any;
-  createdAt: any;
+  template_name: string;
+  template_data: any;
+  created_at: any;
 }
 
 const TemplateCreator: React.FC = () => {
-  const [templateName, setTemplateName] = useState('');
-  const [templateData, setTemplateData] = useState({}); // You might want a more specific structure here
+  const [template_name, setTemplateName] = useState('');
+  const [template_data, setTemplateData] = useState({}); // You might want a more specific structure here
   const [userTemplates, setUserTemplates] = useState<Template[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,7 @@ const TemplateCreator: React.FC = () => {
   const { currentUser } = useAuth();
 
   const handleSaveTemplate = async () => {
-    if (!templateName.trim()) {
+    if (!template_name.trim()) {
       setError('Template name cannot be empty.');
       return;
     }
@@ -33,8 +33,8 @@ const TemplateCreator: React.FC = () => {
           .insert([
             {
               user_id: currentUser.id,
-              templateName,
-              templateData,
+              template_name,
+              template_data,
             },
           ]);
         if (error) throw error;
@@ -49,9 +49,9 @@ const TemplateCreator: React.FC = () => {
         if (!fetchError) {
           const templates: Template[] = (data || []).map((row: any) => ({
             id: row.id,
-            templateName: row.templateName,
-            templateData: row.templateData,
-            createdAt: row.created_at,
+            template_name: row.template_name,
+            template_data: row.template_data,
+            created_at: row.created_at,
           }));
           setUserTemplates(templates);
         }
@@ -79,9 +79,9 @@ const TemplateCreator: React.FC = () => {
                 }
                 const templates: Template[] = (data || []).map((row: any) => ({
                   id: row.id,
-                  templateName: row.templateName,
-                  templateData: row.templateData,
-                  createdAt: row.created_at,
+                  template_name: row.template_name,
+                  template_data: row.template_data,
+                  created_at: row.created_at,
                 }));
                 setUserTemplates(templates);
                 } catch (error) {
@@ -107,14 +107,14 @@ const TemplateCreator: React.FC = () => {
       )}
 
       <div className="mb-4">
-        <label htmlFor="templateName" className="block text-gray-700 text-sm font-bold mb-2">
+        <label htmlFor="template_name" className="block text-gray-700 text-sm font-bold mb-2">
           Template Name
         </label>
         <input
           type="text"
-          id="templateName"
+          id="template_name"
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          value={templateName}
+          value={template_name}
           onChange={(e) => setTemplateName(e.target.value)}
           placeholder="Enter template name"
         />
@@ -140,9 +140,9 @@ const TemplateCreator: React.FC = () => {
         <ul>
           {userTemplates.map((template) => (
             <li key={template.id} className="mt-2 p-2 border rounded">
-              <p className="font-semibold">Template Name: {template.templateName}</p>
-              {/* <p>Created At: {template.createdAt.toDate().toLocaleString()}</p> */}
-              {/* You can display other templateData here */}
+              <p className="font-semibold">Template Name: {template.template_name}</p>
+              {/* <p>Created At: {template.created_at.toDate().toLocaleString()}</p> */}
+              {/* You can display other template_data here */}
             </li>
           ))}
         </ul>

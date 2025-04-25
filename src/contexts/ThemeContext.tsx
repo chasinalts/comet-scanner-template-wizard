@@ -18,17 +18,21 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     localStorage.setItem('theme', theme);
 
-    // Remove all theme classes
+    // Always remove both theme classes
     document.documentElement.classList.remove('light', 'dark');
     document.body.classList.remove('futuristic-theme');
 
-    // Add the appropriate theme class
-    if (theme === 'futuristic') {
-      document.documentElement.classList.add('dark'); // Base on dark theme
-      document.body.classList.add('futuristic-theme');
-    } else {
-      document.documentElement.classList.add(theme);
+    // Set the correct theme class directly to avoid duplicates
+    if (theme === 'futuristic' || theme === 'dark') {
+      document.documentElement.className = 'dark';
+      if (theme === 'futuristic') {
+        document.body.classList.add('futuristic-theme');
+      }
+    } else if (theme === 'light') {
+      document.documentElement.className = 'light';
     }
+    // eslint-disable-next-line no-console
+    console.log('Theme effect:', theme, document.documentElement.classList.value);
   }, [theme]);
 
   const toggleTheme = () => {

@@ -1,5 +1,5 @@
-import React, { useState, useCallback, ChangeEvent, JSX } from 'react';
-import type { ReactNode } from 'react';
+import React, { useState, useCallback, ChangeEvent } from '../../utils/react-imports';
+import type { ReactNode } from '../../utils/react-imports';
 import { motion, Reorder, AnimatePresence } from 'framer-motion';
 import { useWizard } from '../../contexts/WizardContext';
 import type { Question } from '../../types/questions';
@@ -32,6 +32,7 @@ interface BooleanQuestion extends Question {
 }
 
 import Button, { IconButton, ButtonGroup } from '../../components/ui/Button';
+import HolographicText from '../../components/ui/HolographicText';
 import { TextField, SelectField, CheckboxField, TextArea } from '../../components/ui/FormField';
 import Input from '../../components/ui/Input'; // For option editing
 
@@ -254,37 +255,7 @@ const StepThree: React.FC = () => {
               value={(question as BooleanQuestion).trueLabel}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const newTrueLabel = e.target.value;
-                handleUpdateQuestion(question.id, { trueLabel: newTrueLabel } as Partial<BooleanQuestion>);
-              }}
-            />
-            <TextField
-              label="Label for 'False'"
-              value={(question as BooleanQuestion).falseLabel}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleUpdateQuestion(question.id, { falseLabel: e.target.value } as Partial<BooleanQuestion>)
-              }
-            />
-          </>
-        )}
-      </motion.div>
-    );
-  };
-
-  return (
     <motion.div
-      variants={containerVariants}
-      initial="initial"
-      animate="animate"
-      className="space-y-6"
-    >
-      <motion.div variants={itemVariants}>
-        <h2 className="text-2xl font-bold mb-2">Step 3: Build Questions</h2>
-        <p className="text-gray-600 mb-6">
-          Create questions to gather necessary information from the user.
-          You can link questions to specific code sections created in the previous step.
-        </p>
-      </motion.div>
-
       <motion.div variants={itemVariants}>
         <ButtonGroup>
           <Button onClick={() => handleAddQuestion('text')}>Add Text Question</Button>
@@ -300,16 +271,16 @@ const StepThree: React.FC = () => {
         className="space-y-4"
       >
         {state.questions.map((question: Question): ReactNode => (
-         <Reorder.Item
-           key={question.id}
-           value={question}
-           variants={itemVariants}
-           initial="initial"
-           animate="animate"
-           exit="exit"
-           className="bg-white rounded-lg shadow p-4 border border-gray-200"
-           whileDrag={{ scale: 1.02, boxShadow: "0px 5px 15px rgba(0,0,0,0.1)" }}
-         >
+          <Reorder.Item
+            key={question.id}
+            value={question}
+            variants={itemVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="bg-white rounded-lg shadow p-4 border border-gray-200"
+            whileDrag={{ scale: 1.02, boxShadow: "0px 5px 15px rgba(0,0,0,0.1)" }}
+          >
             <div className="flex items-start justify-between mb-3">
               <TextArea
                 value={question.text}

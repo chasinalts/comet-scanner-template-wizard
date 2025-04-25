@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from '../../utils/react-imports';
+import HolographicText from '../../components/ui/HolographicText';
 import { motion } from 'framer-motion';
 import Modal from '../../components/ui/Modal';
 import { useAdminContent, type ImageContent } from '../../hooks/useAdminContent';
@@ -49,11 +50,8 @@ const StepOne = () => {
             variants={itemVariants}
             className="py-12 px-4 text-center"
           >
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white font-display tracking-tight">
-              COMET Scanner
-              <br />
-              Template Wizard
-            </h1>
+            <HolographicText text="COMET Scanner" as="h1" variant="title" className="text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white font-display tracking-tight" />
+<HolographicText text="Template Wizard" as="h1" variant="title" className="text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white font-display tracking-tight" />
           </motion.div>
 
           {/* Banner Section */}
@@ -106,9 +104,7 @@ const StepOne = () => {
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300 dark:border-gray-700" />
               </div>
-              <h2 className="relative inline-block px-4 text-4xl font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-900">
-                COMET Scanner Variations
-              </h2>
+              <HolographicText text="COMET Scanner Variations" as="h2" variant="subtitle" className="relative inline-block px-4 text-4xl font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-900" />
             </motion.div>
 
             {/* Scanner Variations Grid - Using Virtualized Gallery */}

@@ -76,7 +76,9 @@ const ThemeToggle = () => {
 
   return (
     <motion.button
+      type="button"
       onClick={toggleTheme}
+      data-testid="theme-toggle"
       className={`
         fixed top-4 right-4 p-2 rounded-full
         flex items-center justify-center
