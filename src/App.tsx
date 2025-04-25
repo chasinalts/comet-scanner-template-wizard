@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import React from 'react';
 const { lazy, Suspense } = React;
+import ErrorBoundary from './components/ErrorBoundary';
 // AuthProvider is already imported in main.tsx
 import { WizardProvider } from './contexts/WizardContext';
 import { ToastProvider } from './components/ui/Toast';
@@ -20,9 +21,12 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 import Home from './pages/Home';
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 function App() {
   return (
-    <Router>
+    <ErrorBoundary>
+      <Router>
         <WizardProvider>
           <ThemeProvider>
             <ToastProvider>
@@ -55,8 +59,6 @@ function App() {
                     </Layout>
                   }
                 />
-                {/* Redirect unauthenticated root to login */}
-                <Route path="*" element={<Navigate to="/login" replace />} />
                 <Route
                   path="/signup"
                   element={
@@ -87,7 +89,7 @@ function App() {
                 <Route
                   path="/dashboard"
                   element={
-                    <ProtectedRoute ownerOnly>
+                    <ProtectedRoute>
                       <Layout>
                         <Suspense fallback={<SuspenseFallback message="Loading admin dashboard..." />}>
                           <AdminDashboard />
@@ -97,22 +99,14 @@ function App() {
                   }
                 />
 
-                {/* Redirect root to scanner or login based on auth state */}
-                <Route
-                  path="/"
-                  element={<Navigate to="/scanner" replace />}
-                />
-
-                {/* Catch all route - redirect to scanner */}
-                <Route
-                  path="*"
-                  element={<Navigate to="/scanner" replace />}
-                />
+                {/* Catch all route - redirect to login */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
             </ToastProvider>
           </ThemeProvider>
         </WizardProvider>
-    </Router>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { clearAllCachesAndServiceWorkers } from '../../utils/serviceWorkerRegistration';
+// Service worker and cache clearing logic is now inline below, since serviceWorkerRegistration no longer exists.
 
 const CacheDebugger: React.FC = () => {
   const [isClearing, setIsClearing] = useState(false);
@@ -16,7 +16,16 @@ const CacheDebugger: React.FC = () => {
     setMessage('Clearing caches and service workers...');
     
     try {
-      await clearAllCachesAndServiceWorkers();
+      // Clear all caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+      }
+      // Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(reg => reg.unregister()));
+      }
       setMessage('Successfully cleared all caches and service workers. Reloading in 2 seconds...');
       
       // Reload the page after a short delay

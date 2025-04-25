@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { updateServiceWorker } from '../../utils/serviceWorkerRegistration';
+import React, { useState, useEffect } from 'react';
+// Service worker update logic is now inline below, since serviceWorkerRegistration no longer exists.
 
 const UpdateNotification: React.FC = () => {
   const [showUpdateNotification, setShowUpdateNotification] = useState(false);
@@ -18,10 +19,17 @@ const UpdateNotification: React.FC = () => {
   }, []);
 
   const handleUpdate = () => {
-    updateServiceWorker();
-    setShowUpdateNotification(false);
-    // Force reload to ensure the user gets the latest version
-    window.location.reload();
+    // Unregister all service workers and reload
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(reg => reg.unregister());
+        setShowUpdateNotification(false);
+        window.location.reload();
+      });
+    } else {
+      setShowUpdateNotification(false);
+      window.location.reload();
+    }
   };
 
   if (!showUpdateNotification) return null;
