@@ -13,7 +13,6 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
   // Fetch banner and gallery images from Supabase Storage
@@ -39,24 +38,7 @@ const Home: React.FC = () => {
     fetchImages();
   }, []);
 
-  // Banner upload handler (owner only)
-  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    setUploading(true);
-    setError('');
-    try {
-      const file = e.target.files[0];
-      const { error: uploadError } = await supabase.storage.from('images').upload(`banner/${file.name}`, file, { upsert: true });
-      if (uploadError) throw uploadError;
-      // Update banner
-      const { data: bannerUrlData } = await supabase.storage.from('images').getPublicUrl(`banner/${file.name}`);
-      setBannerUrl(bannerUrlData.publicUrl);
-    } catch (err: any) {
-      setError('Failed to upload banner.');
-    } finally {
-      setUploading(false);
-    }
-  };
+
 
   // Clicking gallery image expands it fullscreen
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);

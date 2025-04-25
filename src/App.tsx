@@ -31,15 +31,17 @@ function App() {
               <UpdateNotification />
               <CacheDebugger />
               <Routes>
-                {/* Home Page Route */}
+                {/* Home Page Route - Protected */}
                 <Route
                   path="/"
                   element={
-                    <Layout>
-                      <Suspense fallback={<SuspenseFallback message="Loading home page..." />}>
-                        <Home />
-                      </Suspense>
-                    </Layout>
+                    <ProtectedRoute>
+                      <Layout>
+                        <Suspense fallback={<SuspenseFallback message='Loading home page...' />}>
+                          <Home />
+                        </Suspense>
+                      </Layout>
+                    </ProtectedRoute>
                   }
                 />
                 {/* Public Routes */}
@@ -53,6 +55,8 @@ function App() {
                     </Layout>
                   }
                 />
+                {/* Redirect unauthenticated root to login */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
                 <Route
                   path="/signup"
                   element={
@@ -79,11 +83,11 @@ function App() {
                   }
                 />
 
-                {/* Owner-Only Routes */}
+                {/* Protected Admin Dashboard Route */}
                 <Route
-                  path="/admin"
+                  path="/dashboard"
                   element={
-                    <ProtectedRoute requireOwner>
+                    <ProtectedRoute ownerOnly>
                       <Layout>
                         <Suspense fallback={<SuspenseFallback message="Loading admin dashboard..." />}>
                           <AdminDashboard />
