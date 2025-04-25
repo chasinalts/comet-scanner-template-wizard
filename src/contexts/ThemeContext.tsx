@@ -31,8 +31,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     } else if (theme === 'light') {
       document.documentElement.className = 'light';
     }
-    // eslint-disable-next-line no-console
-    console.log('Theme effect:', theme, document.documentElement.classList.value);
   }, [theme]);
 
   const toggleTheme = () => {

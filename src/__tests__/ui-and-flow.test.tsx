@@ -92,25 +92,17 @@ describe('UI and Flow Integration Tests', () => {
     // So we will check document.documentElement
     // Initial state: only 'dark' should be present
     expect(document.documentElement.className).toBe('dark');
-    // Debug log
-    // eslint-disable-next-line no-console
-    console.log('Initial:', document.documentElement.className);
+
     fireEvent.click(themeButton);
-    // Debug log
-    // eslint-disable-next-line no-console
-    console.log('After first click:', document.documentElement.className);
+
     // After first click: theme should be 'dark'
     expect(document.documentElement.className).toBe('dark');
     fireEvent.click(themeButton);
-    // Debug log
-    // eslint-disable-next-line no-console
-    console.log('After second click:', document.documentElement.className);
+
     // After second click: theme should be 'light'
     expect(document.documentElement.className).toBe('light');
     fireEvent.click(themeButton);
-    // Debug log
-    // eslint-disable-next-line no-console
-    console.log('After third click:', document.documentElement.className);
+
     // After third click: theme should be 'dark' (futuristic)
     expect(document.documentElement.className).toBe('dark');
   });
