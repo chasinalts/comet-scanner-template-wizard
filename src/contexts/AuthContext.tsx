@@ -1,6 +1,24 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
 import { supabase } from '../supabaseConfig'; // Import Supabase client
-import { Session } from '@supabase/supabase-js';
+import {
+  Session,
+  PostgrestError,
+  AuthError,
+  AuthChangeEvent,
+  User
+} from '@supabase/supabase-js';
+
+// Define explicit types for Supabase auth responses
+interface AuthResponse {
+  data: {
+    session: Session | null;
+    user: User | null;
+  };
+  error: AuthError | null;
+}
+
+// Define explicit types for the auth state change callback
+type AuthStateChangeCallback = (event: AuthChangeEvent, session: Session | null) => void;
 
 // User profile data structure
 interface UserProfile {
@@ -23,7 +41,7 @@ interface UserProfile {
 interface AuthContextType {
   currentUser: UserProfile | null;
   session: Session | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ session: Session } | undefined>;
   signup: (email: string, password: string, isOwner: boolean) => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -35,71 +53,72 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Set up Supabase auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        console.log('Auth state changed:', event, currentSession?.user?.id);
-        setIsLoading(true);
-        setSession(currentSession);
+    const handler: AuthStateChangeCallback = async (event, currentSession) => {
+      console.log('Auth state changed:', event, currentSession?.user?.id);
+      setIsLoading(true);
+      setSession(currentSession);
 
-        if (currentSession?.user) {
-          try {
-            console.log('User authenticated, fetching profile for ID:', currentSession.user.id);
-            // Fetch user profile from Supabase
-            const { data, error } = await supabase
-              .from('user_profiles')
-              .select('*')
-              .eq('id', currentSession.user.id)
-              .single();
+      if (currentSession?.user) {
+        try {
+          console.log('User authenticated, fetching profile for ID:', currentSession.user.id);
+          // Fetch user profile from Supabase
+          const { data, error }: { data: UserProfile | null; error: PostgrestError | null } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', currentSession.user.id)
+            .single();
 
-            if (error) {
-              console.error('Error fetching user profile:', error);
-              // If profile doesn't exist, create a default one
-              if (error.code === 'PGRST116') { // No rows returned
-                const newProfile: UserProfile = {
-                  id: currentSession.user.id,
-                  email: currentSession.user.email || '',
-                  is_owner: false, // Default to non-owner
-                  created_at: new Date().toISOString(),
-                  permissions: {
-                    content_management: false,
-                    user_management: false,
-                    system_configuration: false,
-                    media_uploads: false, // Only owners can upload media
-                    security_settings: false,
-                    site_customization: false,
-                  }
-                };
-
-                // Insert the new profile
-                const { error: insertError } = await supabase
-                  .from('user_profiles')
-                  .insert(newProfile);
-
-                if (insertError) {
-                  console.error('Error creating user profile:', insertError);
-                } else {
-                  setCurrentUser(newProfile);
+          if (error) {
+            console.error('Error fetching user profile:', error);
+            // If profile doesn't exist, create a default one
+            if (error.code === 'PGRST116') { // No rows returned
+              const newProfile: UserProfile = {
+                id: currentSession.user.id,
+                email: currentSession.user.email || '',
+                is_owner: false, // Default to non-owner
+                created_at: new Date().toISOString(),
+                permissions: {
+                  content_management: false,
+                  user_management: false,
+                  system_configuration: false,
+                  media_uploads: false, // Only owners can upload media
+                  security_settings: false,
+                  site_customization: false,
                 }
-              }
-            } else if (data) {
-              // Profile exists, use it
-              setCurrentUser(data as UserProfile);
-            }
-          } catch (error) {
-            console.error('Error in auth state change:', error);
-          }
-        } else {
-          // User is signed out
-          setCurrentUser(null);
-        }
+              };
 
-        setIsLoading(false);
+              // Insert the new profile
+              const { error: insertError } = await supabase
+                .from('user_profiles')
+                .insert(newProfile);
+
+              if (insertError) {
+                console.error('Error creating user profile:', insertError);
+              } else {
+                setCurrentUser(newProfile);
+              }
+            }
+          } else if (data) {
+            // Profile exists, use it
+            setCurrentUser(data);
+          }
+        } catch (error) {
+          console.error('Error in auth state change:', error);
+        }
+      } else {
+        // User is signed out
+        setCurrentUser(null);
       }
-    );
+
+      setIsLoading(false);
+    };
+
+    // Subscribe to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(handler);
 
     // Initial session check
     const initializeAuth = async () => {
@@ -113,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log('User ID from session:', initialSession.user.id);
 
           // Fetch user profile
-          const { data, error } = await supabase
+          const { data, error }: { data: UserProfile | null; error: PostgrestError | null } = await supabase
             .from('user_profiles')
             .select('*')
             .eq('id', initialSession.user.id)
@@ -123,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.error('Error fetching user profile during initialization:', error);
           } else if (data) {
             console.log('User profile found during initialization:', data);
-            setCurrentUser(data as UserProfile);
+            setCurrentUser(data);
           } else {
             console.warn('No user profile found during initialization');
           }
@@ -143,13 +162,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<{ session: Session } | undefined> => {
     try {
       console.log('Attempting to sign in with Supabase auth');
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+
+      // Use the AuthResponse interface for proper typing
+      const response: AuthResponse = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = response;
 
       if (error) {
         console.error('Supabase auth error:', error);
@@ -164,8 +183,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       console.log('Supabase auth successful:', data);
-      // Optionally, navigate to a dashboard or home page here
-      return data;
+      // Return the session data
+      return { session: data.session };
     } catch (error) {
       if (error instanceof Error) {
         alert(`Login Error: ${error.message}`);
@@ -175,7 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signup = async (email: string, password: string, isOwner: boolean = false) => {
+  const signup = async (email: string, password: string, isOwner: boolean = false): Promise<void> => {
     // Prevent creating new owner accounts from UI
     if (isOwner) {
       console.warn('Attempt to create owner account prevented - owner already exists');
@@ -183,7 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     try {
       // First create the auth user
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error }: AuthResponse = await supabase.auth.signUp({
         email,
         password,
         // Important: Include the initial profile data in the metadata
@@ -220,7 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Sign in the user immediately after signup to ensure they're authenticated
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError }: AuthResponse = await supabase.auth.signInWithPassword({
         email,
         password
       });
@@ -268,9 +287,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error }: { error: AuthError | null } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
       console.error('Error signing out:', error);
@@ -278,9 +297,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const sendPasswordResetEmail = async (email: string) => {
+  const sendPasswordResetEmail = async (email: string): Promise<void> => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error }: { error: AuthError | null } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/reset-password',
       });
 

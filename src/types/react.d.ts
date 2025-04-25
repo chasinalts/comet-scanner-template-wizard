@@ -1,11 +1,12 @@
 // Type definitions for React
 import * as React from 'react';
 
+// This augments the 'react' module to ensure our custom imports work correctly
 declare module 'react' {
   // Re-export all React exports
   export * from 'react';
 
-  // Explicitly export commonly used types and hooks
+  // Explicitly export commonly used hooks
   export const useState: typeof React.useState;
   export const useEffect: typeof React.useEffect;
   export const useRef: typeof React.useRef;
@@ -27,7 +28,23 @@ declare module 'react' {
   export type InputHTMLAttributes<T> = React.InputHTMLAttributes<T>;
   export type SelectHTMLAttributes<T> = React.SelectHTMLAttributes<T>;
   export type DragEvent<T> = React.DragEvent<T>;
-  export type JSX = React.JSX;
+
+  // Fix for JSX type
+  export namespace JSX {
+    interface Element extends React.ReactElement<any, any> {}
+    interface ElementClass extends React.Component<any> {
+      render(): React.ReactNode;
+    }
+    interface ElementAttributesProperty { props: {}; }
+    interface ElementChildrenAttribute { children: {}; }
+
+    interface IntrinsicAttributes extends React.Attributes {}
+    interface IntrinsicClassAttributes<T> extends React.ClassAttributes<T> {}
+
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
 
   // Default export
   export default React;
