@@ -4,7 +4,17 @@ import type { Question, QuestionOption } from '../types/questions';
 import type { Section } from '../hooks/useSections';
 import { memoize } from '../utils/memoization';
 
-const LiveCodePreview: React.FC = () => {
+interface LiveCodePreviewProps {
+  skippedQuestions?: Set<string>;
+  fullTemplateMode?: boolean;
+  fullTemplateCode?: string;
+}
+
+const LiveCodePreview: React.FC<LiveCodePreviewProps> = ({
+  skippedQuestions = new Set(),
+  fullTemplateMode = false,
+  fullTemplateCode = ''
+}) => {
   const { state } = useWizard();
   const { answers, sections, questions } = state;
 
@@ -48,12 +58,22 @@ const LiveCodePreview: React.FC = () => {
     return { code, includedIds };
   }, []);
 
-  const processAnswers = useCallback((answersObj: Record<string, any>, questionList: Question[], sectionList: Section[], includedIds: Set<string>) => {
+  const processAnswers = useCallback((
+    answersObj: Record<string, any>,
+    questionList: Question[],
+    sectionList: Section[],
+    includedIds: Set<string>,
+    skippedQuestionIds: Set<string>
+  ) => {
     let code = '';
 
+    // Process answered questions
     Object.entries(answersObj).forEach(([questionId, answerValue]) => {
       const question = findQuestionById(questionList, questionId);
       if (!question) return;
+
+      // Skip if this question is in the skipped list
+      if (skippedQuestionIds.has(questionId)) return;
 
       let sectionIdToInclude: string | undefined;
 
@@ -85,24 +105,59 @@ const LiveCodePreview: React.FC = () => {
       }
     });
 
+    // Process skipped questions
+    if (skippedQuestionIds.size > 0) {
+      code += '// --- Skipped Questions ---\n';
+      skippedQuestionIds.forEach(questionId => {
+        const question = findQuestionById(questionList, questionId);
+        if (question) {
+          code += `// SKIPPED: ${question.text.substring(0, 50)}${question.text.length > 50 ? '...' : ''}\n`;
+
+          // If the skipped question has a linked section, add a placeholder comment
+          if (question.linkedSectionId) {
+            const section = findSectionById(sectionList, question.linkedSectionId);
+            if (section && !includedIds.has(section.id)) {
+              code += `// Would have included section: ${section.title}\n`;
+            }
+          }
+        }
+      });
+      code += '\n';
+    }
+
     return code;
   }, [findQuestionById, findSectionById, replacePlaceholders]);
 
   const generatedCode = useMemo(() => {
+    // If in full template mode, just return the full template code
+    if (fullTemplateMode && fullTemplateCode) {
+      return fullTemplateCode;
+    }
+
     // Get mandatory sections
     const mandatorySections = getMandatorySections(sections);
 
     // Generate code for mandatory sections
     const { code: mandatoryCode, includedIds } = generateMandatoryCode(mandatorySections);
 
-    // Process answers and add linked sections
-    const answersCode = processAnswers(answers, questions, sections, includedIds);
+    // Process answers and add linked sections, including skipped questions
+    const answersCode = processAnswers(answers, questions, sections, includedIds, skippedQuestions);
 
     // Combine the code
     const finalCode = mandatoryCode + answersCode;
 
     return finalCode.trim() || '// No code generated yet. Answer questions or mark sections as mandatory.';
-  }, [answers, sections, questions, getMandatorySections, generateMandatoryCode, processAnswers]);
+  }, [
+    fullTemplateMode,
+    fullTemplateCode,
+    answers,
+    sections,
+    questions,
+    skippedQuestions,
+    getMandatorySections,
+    generateMandatoryCode,
+    processAnswers
+  ]);
 
   return (
     <div className="sticky top-4 h-[calc(100vh-2rem)] overflow-hidden rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">

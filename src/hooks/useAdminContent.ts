@@ -9,6 +9,7 @@ export interface ContentItem {
   imageUrl?: string;
   scale?: number;
   displayText?: string;
+  isFullTemplate?: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -28,7 +29,12 @@ export interface AdminContentHook {
     id: string;
     title: string;
     code: string;
+    isFullTemplate?: boolean;
   }>;
+  getFullTemplate: () => {
+    code: string;
+    isEnabled: boolean;
+  };
   getQuestions: () => Array<{
     id: string;
     title: string;
@@ -122,7 +128,8 @@ export const useAdminContent = (): AdminContentHook => {
       items.map(item => ({
         id: item.id,
         title: item.title,
-        code: item.content
+        code: item.content,
+        isFullTemplate: item.isFullTemplate
       }))
     ),
     []
@@ -133,6 +140,14 @@ export const useAdminContent = (): AdminContentHook => {
     const sorted = sortByUpdatedAt(filtered);
     return transformToTemplates(sorted);
   }, [contents, filterTemplates, sortByUpdatedAt, transformToTemplates]);
+
+  // Get the full template code from localStorage
+  const getFullTemplate = useCallback(() => {
+    return {
+      code: localStorage.getItem('fullTemplateCode') || '',
+      isEnabled: localStorage.getItem('fullTemplateEnabled') === 'true'
+    };
+  }, []);
 
   // Memoize the filter and transform functions for questions
   const filterQuestions = useMemo(() =>
@@ -162,9 +177,10 @@ export const useAdminContent = (): AdminContentHook => {
     getBannerImage,
     getScannerImages,
     getTemplates,
+    getFullTemplate,
     getQuestions,
     hasContent: contents.length > 0
-  }), [getBannerImage, getScannerImages, getTemplates, getQuestions, contents.length]);
+  }), [getBannerImage, getScannerImages, getTemplates, getFullTemplate, getQuestions, contents.length]);
 
   return result;
 };

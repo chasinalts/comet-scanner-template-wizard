@@ -13,14 +13,16 @@ interface WizardState {
   };
   answers: Answers; // Store user answers here
   // We might not need sections/questions here if managed elsewhere, but keep if needed for context
-  sections: Section[]; 
+  sections: Section[];
   questions: Question[];
 }
 
-type WizardAction = 
+type WizardAction =
   | { type: 'SET_STEP'; payload: number }
   | { type: 'SET_PROGRESS'; payload: Partial<WizardState['progress']> }
   | { type: 'SET_ANSWER'; payload: { questionId: string; value: AnswerValue } }
+  | { type: 'SET_ANSWERS'; payload: Answers } // Action to set all answers at once
+  | { type: 'CLEAR_ANSWERS' } // Action to clear all answers
   | { type: 'SET_SECTIONS'; payload: Section[] } // Action to update sections
   | { type: 'SET_QUESTIONS'; payload: Question[] }; // Action to update questions
 
@@ -61,6 +63,16 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
           ...state.answers,
           [action.payload.questionId]: action.payload.value
         }
+      };
+    case 'SET_ANSWERS':
+      return {
+        ...state,
+        answers: action.payload
+      };
+    case 'CLEAR_ANSWERS':
+      return {
+        ...state,
+        answers: {}
       };
     case 'SET_SECTIONS':
       return { ...state, sections: action.payload };

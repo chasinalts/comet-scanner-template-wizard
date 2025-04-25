@@ -497,6 +497,47 @@ export default function AdminDashboard() {
         </div>
       </section>
 
+      {/* Full Template Code Section */}
+      <section className="space-y-8">
+        <HolographicText
+          text="Full Template Code"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-semibold"
+        />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between mb-4">
+            <HolographicText
+              text="Complete Pre-defined Template"
+              as="h3"
+              variant="subtitle"
+              className="text-xl font-medium"
+            />
+            <CheckboxField
+              label="Make Available to Users"
+              checked={localStorage.getItem('fullTemplateEnabled') === 'true'}
+              onChange={(e) => {
+                localStorage.setItem('fullTemplateEnabled', e.target.checked.toString());
+                showToast('success', `Full template ${e.target.checked ? 'enabled' : 'disabled'} for users`);
+              }}
+            />
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            This is the complete template code that will be provided to users who choose the "Full Template" option.
+          </p>
+          <TextArea
+            value={localStorage.getItem('fullTemplateCode') || '// Enter your complete template code here'}
+            onChange={(e) => {
+              localStorage.setItem('fullTemplateCode', e.target.value);
+              showToast('success', 'Full template code saved');
+            }}
+            className="w-full font-mono text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+            rows={15}
+            placeholder="Enter the complete template code here..."
+          />
+        </div>
+      </section>
+
       {/* Template Builder Section */}
       <section className="space-y-8">
         <HolographicText

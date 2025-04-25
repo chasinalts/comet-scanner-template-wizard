@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Modal from '../components/ui/Modal';
 import { useAdminContent } from '../hooks/useAdminContent';
@@ -14,9 +14,10 @@ import { useSections } from '../hooks/useSections';
 import type { Question, QuestionOption } from '../types/questions';
 import VirtualizedImageGallery from '../components/ui/VirtualizedImageGallery';
 import LazyImage from '../components/ui/LazyImage';
-import { TextField, CheckboxField } from '../components/ui/FormField'; // Assuming FormField exports these
+import { TextField, CheckboxField } from '../components/ui/FormField';
 import HolographicText from '../components/ui/HolographicText';
-// import Button from '../components/ui/Button'; // Unused import
+import Button from '../components/ui/Button';
+import InitialUserChoice from '../components/InitialUserChoice';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -33,15 +34,29 @@ const itemVariants = {
 };
 
 const ScannerWizard = () => {
-  const { getBannerImage, getScannerImages } = useAdminContent();
-  const { } = useAuth(); // Auth context is used but currentUser is not needed
+  const { getBannerImage, getScannerImages, getTemplates, getFullTemplate } = useAdminContent();
+  const { currentUser } = useAuth();
   const { theme } = useTheme();
   const { state: wizardState, dispatch: wizardDispatch } = useWizard();
   const { questions } = useQuestions(); // Load questions managed by admin
   const { sections } = useSections(); // Load sections managed by admin
-  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
-  const [selectedTitle, setSelectedTitle] = React.useState<string>('');
-  const [showFloatingPreview, setShowFloatingPreview] = React.useState(true);
+
+  // UI state
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle] = useState<string>('');
+  const [showFloatingPreview, setShowFloatingPreview] = useState(true);
+
+  // Wizard flow state
+  const [wizardMode, setWizardMode] = useState<'initial' | 'fullTemplate' | 'wizard'>('initial');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [skippedQuestions, setSkippedQuestions] = useState<Set<string>>(new Set());
+
+  // Template state
+  const [fullTemplateCode, setFullTemplateCode] = useState<string>('');
+  const [fullTemplateEnabled, setFullTemplateEnabled] = useState<boolean>(false);
+  const [savedTemplates, setSavedTemplates] = useState<any[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [templateName, setTemplateName] = useState<string>('');
 
   // Load admin-managed questions and sections into wizard context
   React.useEffect(() => {
@@ -56,7 +71,7 @@ const ScannerWizard = () => {
   const bannerContent = getBannerImage();
 
   // Get scanner images with error handling
-  const [scannerImages, setScannerImages] = React.useState<any[]>([]);
+  const [scannerImages, setScannerImages] = useState<any[]>([]);
 
   React.useEffect(() => {
     try {
@@ -68,6 +83,115 @@ const ScannerWizard = () => {
       setScannerImages([]);
     }
   }, [getScannerImages]);
+
+  // Load full template code if available
+  React.useEffect(() => {
+    try {
+      // Get full template from admin settings
+      const { code, isEnabled } = getFullTemplate();
+      setFullTemplateCode(code);
+      setFullTemplateEnabled(isEnabled);
+
+      // Also load saved templates for the current user
+      // This would typically come from a database call
+      // For now, we'll use localStorage as a placeholder
+      const userTemplates = localStorage.getItem(`user_templates_${currentUser?.id}`);
+      if (userTemplates) {
+        setSavedTemplates(JSON.parse(userTemplates));
+      }
+    } catch (error) {
+      console.error('Error loading templates:', error);
+    }
+  }, [getFullTemplate, currentUser]);
+
+  // Navigation functions
+  const goToNextQuestion = () => {
+    if (currentQuestionIndex < wizardState.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const goToPreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  const skipCurrentQuestion = () => {
+    const currentQuestionId = wizardState.questions[currentQuestionIndex]?.id;
+    if (currentQuestionId) {
+      const newSkipped = new Set(skippedQuestions);
+      newSkipped.add(currentQuestionId);
+      setSkippedQuestions(newSkipped);
+
+      // Move to next question
+      if (currentQuestionIndex < wizardState.questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      }
+    }
+  };
+
+  // Template management functions
+  const saveTemplate = () => {
+    if (!templateName.trim()) {
+      alert('Please enter a template name');
+      return;
+    }
+
+    const newTemplate = {
+      id: `template-${Date.now()}`,
+      name: templateName,
+      code: wizardMode === 'fullTemplate' ? fullTemplateCode : '', // For full template mode
+      answers: wizardState.answers, // For wizard mode
+      skippedQuestions: Array.from(skippedQuestions),
+      createdAt: new Date().toISOString(),
+      userId: currentUser?.id
+    };
+
+    const updatedTemplates = [...savedTemplates, newTemplate];
+    setSavedTemplates(updatedTemplates);
+
+    // Save to localStorage (in a real app, this would be a database call)
+    if (currentUser?.id) {
+      localStorage.setItem(`user_templates_${currentUser.id}`, JSON.stringify(updatedTemplates));
+    }
+
+    setTemplateName('');
+    alert('Template saved successfully!');
+  };
+
+  const deleteTemplate = (templateId: string) => {
+    const updatedTemplates = savedTemplates.filter(t => t.id !== templateId);
+    setSavedTemplates(updatedTemplates);
+
+    // Update localStorage
+    if (currentUser?.id) {
+      localStorage.setItem(`user_templates_${currentUser.id}`, JSON.stringify(updatedTemplates));
+    }
+
+    if (selectedTemplateId === templateId) {
+      setSelectedTemplateId(null);
+    }
+  };
+
+  const loadTemplate = (templateId: string) => {
+    const template = savedTemplates.find(t => t.id === templateId);
+    if (template) {
+      setSelectedTemplateId(templateId);
+
+      // If it's a full template, just set the mode
+      if (template.code) {
+        setWizardMode('fullTemplate');
+        setFullTemplateCode(template.code);
+      }
+      // If it's a wizard template, restore answers and skipped questions
+      else if (template.answers) {
+        setWizardMode('wizard');
+        wizardDispatch({ type: 'SET_ANSWERS', payload: template.answers });
+        setSkippedQuestions(new Set(template.skippedQuestions || []));
+      }
+    }
+  };
 
   const handleAnswerChange = (questionId: string, value: any) => {
     wizardDispatch({ type: 'SET_ANSWER', payload: { questionId, value } });
@@ -227,41 +351,180 @@ const ScannerWizard = () => {
           )}
 
           {/* Main Content Area */}
-          <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column: Questions */}
-            <div className="lg:col-span-2 space-y-8">
-              <motion.div variants={itemVariants}>
+          <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            {/* Initial Choice */}
+            {wizardMode === 'initial' && (
+              <InitialUserChoice
+                onChooseFullTemplate={() => setWizardMode('fullTemplate')}
+                onChooseWizard={() => setWizardMode('wizard')}
+                fullTemplateAvailable={!!fullTemplateCode && fullTemplateEnabled}
+              />
+            )}
+
+            {/* Full Template View */}
+            {wizardMode === 'fullTemplate' && (
+              <div className="space-y-8">
                 <HolographicText
-                  text="Configure Your Template"
+                  text="Complete COMET Scanner Template"
                   as="h2"
                   variant="subtitle"
-                  className="text-3xl font-bold mb-6"
+                  className="text-3xl font-bold mb-6 text-center"
                 />
-                <div className="space-y-6">
-                  {wizardState.questions.map((question: Question) => (
-                    <div key={question.id} className="p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 futuristic-container">
-                      {renderQuestionInput(question)}
+
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+                  <pre className="overflow-auto p-4 bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-200 font-mono rounded-lg max-h-[60vh]">
+                    <code>{fullTemplateCode}</code>
+                  </pre>
+                </div>
+
+                {/* Template Save Controls */}
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-center mt-8">
+                  <TextField
+                    value={templateName}
+                    onChange={(e) => setTemplateName(e.target.value)}
+                    placeholder="Enter a name for this template"
+                    className="w-full md:w-64"
+                  />
+                  <Button onClick={saveTemplate}>Save Template</Button>
+                </div>
+              </div>
+            )}
+
+            {/* Wizard Mode */}
+            {wizardMode === 'wizard' && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Questions */}
+                <div className="lg:col-span-2 space-y-8">
+                  <motion.div variants={itemVariants}>
+                    <HolographicText
+                      text="Configure Your Template"
+                      as="h2"
+                      variant="subtitle"
+                      className="text-3xl font-bold mb-6"
+                    />
+
+                    {wizardState.questions.length > 0 ? (
+                      <div className="space-y-6">
+                        {/* Current Question */}
+                        <div className="p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 futuristic-container">
+                          {renderQuestionInput(wizardState.questions[currentQuestionIndex])}
+                        </div>
+
+                        {/* Navigation Controls */}
+                        <div className="flex justify-between mt-6">
+                          <Button
+                            onClick={goToPreviousQuestion}
+                            disabled={currentQuestionIndex === 0}
+                            variant="secondary"
+                          >
+                            Previous
+                          </Button>
+
+                          <Button
+                            onClick={skipCurrentQuestion}
+                            variant="outline"
+                          >
+                            Skip
+                          </Button>
+
+                          <Button
+                            onClick={goToNextQuestion}
+                            disabled={currentQuestionIndex === wizardState.questions.length - 1}
+                          >
+                            Next
+                          </Button>
+                        </div>
+
+                        {/* Progress Indicator */}
+                        <div className="mt-4 text-center">
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Question {currentQuestionIndex + 1} of {wizardState.questions.length}
+                          </p>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-2">
+                            <div
+                              className="bg-blue-600 h-2.5 rounded-full"
+                              style={{ width: `${((currentQuestionIndex + 1) / wizardState.questions.length) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        {/* Template Save Controls */}
+                        <div className="flex flex-col md:flex-row gap-4 items-center justify-center mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                          <TextField
+                            value={templateName}
+                            onChange={(e) => setTemplateName(e.target.value)}
+                            placeholder="Enter a name for this template"
+                            className="w-full md:w-64"
+                          />
+                          <Button onClick={saveTemplate}>Save Progress</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <HolographicText
+                        text="No questions configured yet. Please set them up in the Admin Dashboard."
+                        as="p"
+                        className="text-gray-500 dark:text-gray-400"
+                      />
+                    )}
+                  </motion.div>
+                </div>
+
+                {/* Right Column: Live Preview Toggle Button */}
+                <div className="lg:col-span-1 flex flex-col items-end">
+                  <button
+                    className="mb-4 px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 transition"
+                    onClick={() => setShowFloatingPreview(v => !v)}
+                  >
+                    {showFloatingPreview ? 'Hide' : 'Show'} Live Preview
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Saved Templates Section */}
+            <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <HolographicText
+                text="Saved Templates"
+                as="h2"
+                variant="subtitle"
+                className="text-2xl font-bold mb-6"
+              />
+
+              {savedTemplates.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {savedTemplates.map(template => (
+                    <div
+                      key={template.id}
+                      className={`p-4 rounded-lg border ${selectedTemplateId === template.id
+                        ? 'border-blue-500 ring-2 ring-blue-500'
+                        : 'border-gray-200 dark:border-gray-700'}
+                        bg-white dark:bg-gray-800 shadow hover:shadow-md transition-all cursor-pointer`}
+                      onClick={() => loadTemplate(template.id)}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-medium text-gray-900 dark:text-white">{template.name}</h3>
+                        <button
+                          className="text-red-500 hover:text-red-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteTemplate(template.id);
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Created: {new Date(template.createdAt).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Type: {template.code ? 'Full Template' : 'Wizard Template'}
+                      </p>
                     </div>
                   ))}
-                  {wizardState.questions.length === 0 && (
-                    <HolographicText
-                      text="No questions configured yet. Please set them up in the Admin Dashboard."
-                      as="p"
-                      className="text-gray-500 dark:text-gray-400"
-                    />
-                  )}
                 </div>
-              </motion.div>
-            </div>
-
-            {/* Right Column: Live Preview Toggle Button */}
-            <div className="lg:col-span-1 flex flex-col items-end">
-              <button
-                className="mb-4 px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 transition"
-                onClick={() => setShowFloatingPreview(v => !v)}
-              >
-                {showFloatingPreview ? 'Hide' : 'Show'} Live Preview
-              </button>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400">No saved templates yet. Create and save a template to see it here.</p>
+              )}
             </div>
           </div>
         </motion.div>
@@ -269,7 +532,11 @@ const ScannerWizard = () => {
         {/* Floating Live Preview Window */}
         {showFloatingPreview && (
           <LiveFloatingPreview title="Live Code Preview" onClose={() => setShowFloatingPreview(false)}>
-            <LiveCodePreview />
+            <LiveCodePreview
+              skippedQuestions={skippedQuestions}
+              fullTemplateMode={wizardMode === 'fullTemplate'}
+              fullTemplateCode={fullTemplateCode}
+            />
           </LiveFloatingPreview>
         )}
 
