@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Modal from '../components/ui/Modal';
 import { useAdminContent } from '../hooks/useAdminContent';
@@ -7,6 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import ResponsiveImageWithPlaceholder from '../components/ui/ResponsiveImageWithPlaceholder';
 import ThemeToggle from '../components/ui/ThemeToggle';
 import LiveCodePreview from '../components/LiveCodePreview';
+import LiveFloatingPreview from '../components/LiveFloatingPreview';
 import { useWizard } from '../contexts/WizardContext';
 import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
@@ -38,15 +39,16 @@ const ScannerWizard = () => {
   const { state: wizardState, dispatch: wizardDispatch } = useWizard();
   const { questions } = useQuestions(); // Load questions managed by admin
   const { sections } = useSections(); // Load sections managed by admin
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedTitle, setSelectedTitle] = useState<string>('');
+  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+  const [selectedTitle, setSelectedTitle] = React.useState<string>('');
+  const [showFloatingPreview, setShowFloatingPreview] = React.useState(true);
 
   // Load admin-managed questions and sections into wizard context
-  useEffect(() => {
+  React.useEffect(() => {
     wizardDispatch({ type: 'SET_QUESTIONS', payload: questions });
   }, [questions, wizardDispatch]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     wizardDispatch({ type: 'SET_SECTIONS', payload: sections });
   }, [sections, wizardDispatch]);
 
@@ -54,9 +56,9 @@ const ScannerWizard = () => {
   const bannerContent = getBannerImage();
 
   // Get scanner images with error handling
-  const [scannerImages, setScannerImages] = useState<any[]>([]);
+  const [scannerImages, setScannerImages] = React.useState<any[]>([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     try {
       const images = getScannerImages();
       setScannerImages(images);
@@ -242,22 +244,34 @@ const ScannerWizard = () => {
                     </div>
                   ))}
                   {wizardState.questions.length === 0 && (
-                     <HolographicText
-                       text="No questions configured yet. Please set them up in the Admin Dashboard."
-                       as="p"
-                       className="text-gray-500 dark:text-gray-400"
-                     />
+                    <HolographicText
+                      text="No questions configured yet. Please set them up in the Admin Dashboard."
+                      as="p"
+                      className="text-gray-500 dark:text-gray-400"
+                    />
                   )}
                 </div>
               </motion.div>
             </div>
 
-            {/* Right Column: Live Preview */}
-            <div className="lg:col-span-1">
-              <LiveCodePreview />
+            {/* Right Column: Live Preview Toggle Button */}
+            <div className="lg:col-span-1 flex flex-col items-end">
+              <button
+                className="mb-4 px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 transition"
+                onClick={() => setShowFloatingPreview(v => !v)}
+              >
+                {showFloatingPreview ? 'Hide' : 'Show'} Live Preview
+              </button>
             </div>
           </div>
         </motion.div>
+
+        {/* Floating Live Preview Window */}
+        {showFloatingPreview && (
+          <LiveFloatingPreview title="Live Code Preview" onClose={() => setShowFloatingPreview(false)}>
+            <LiveCodePreview />
+          </LiveFloatingPreview>
+        )}
 
         {/* Lightbox Modal */}
         {selectedImage && (

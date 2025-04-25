@@ -66,7 +66,12 @@ export const verifyAdminSetup = (): boolean => {
 };
 
 // Function to log admin account status - useful for debugging
-export const getAdminAccountStatus = (): Record<string, any> => {
+interface AdminAccountStatus {
+  exists: boolean;
+  [key: string]: unknown;
+}
+
+export const getAdminAccountStatus = (): AdminAccountStatus => {
   const adminData = localStorage.getItem('user_ChasinAlts');
   if (!adminData) {
     return { exists: false };
@@ -74,7 +79,7 @@ export const getAdminAccountStatus = (): Record<string, any> => {
 
   try {
     const admin = JSON.parse(adminData);
-    const { password, ...safeAdminData } = admin;
+    const { /* password, */ ...safeAdminData } = admin;
     return {
       exists: true,
       ...safeAdminData

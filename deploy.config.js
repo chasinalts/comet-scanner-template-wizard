@@ -5,6 +5,9 @@
  * Use it with deployment scripts or CI/CD pipelines.
  */
 
+/* eslint-env node */
+/* eslint-disable no-undef */
+
 module.exports = {
   // Production environment
   production: {
