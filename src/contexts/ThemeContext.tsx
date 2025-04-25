@@ -1,48 +1,30 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, ReactNode } from 'react';
 
-type Theme = 'dark' | 'light' | 'futuristic';
+type Theme = 'futuristic';
 
 interface ThemeContextType {
   theme: Theme;
-  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('theme');
-    return (savedTheme as Theme) || 'futuristic'; // Default to futuristic theme
-  });
+  // Always use futuristic theme
+  const theme: Theme = 'futuristic';
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
 
-    // Always remove both theme classes
-    document.documentElement.classList.remove('light', 'dark');
-    document.body.classList.remove('futuristic-theme');
+    // Always remove light class and set dark class
+    document.documentElement.classList.remove('light');
+    document.documentElement.className = 'dark';
 
-    // Set the correct theme class directly to avoid duplicates
-    if (theme === 'futuristic' || theme === 'dark') {
-      document.documentElement.className = 'dark';
-      if (theme === 'futuristic') {
-        document.body.classList.add('futuristic-theme');
-      }
-    } else if (theme === 'light') {
-      document.documentElement.className = 'light';
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => {
-      if (prev === 'dark') return 'light';
-      if (prev === 'light') return 'futuristic';
-      return 'dark';
-    });
-  };
+    // Always add futuristic-theme class to body
+    document.body.classList.add('futuristic-theme');
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme }}>
       {children}
     </ThemeContext.Provider>
   );

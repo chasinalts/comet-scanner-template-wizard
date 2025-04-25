@@ -5,7 +5,6 @@ import Modal from '../../components/ui/Modal';
 import { useAdminContent, type ImageContent } from '../../hooks/useAdminContent';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import ThemeToggle from '../../components/ui/ThemeToggle';
 import ResponsiveImageWithPlaceholder from '../../components/ui/ResponsiveImageWithPlaceholder';
 import VirtualizedImageGallery from '../../components/ui/VirtualizedImageGallery';
 import LazyImage from '../../components/ui/LazyImage';
@@ -36,9 +35,8 @@ const StepOne = () => {
   const scannerImages = getScannerImages();
 
   return (
-    <div className={theme === 'dark' ? 'dark' : ''}>
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
-        <ThemeToggle />
+    <div className="dark">
+      <div className="min-h-screen bg-gray-900 transition-colors duration-200">
         <motion.div
           variants={containerVariants}
           initial="initial"

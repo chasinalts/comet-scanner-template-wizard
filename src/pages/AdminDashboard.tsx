@@ -11,7 +11,7 @@ import { handleSupabaseImageUpload } from '../utils/imageHandlers';
 import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
 import { useContentManager } from '../hooks/useContentManager';
-import { useAdminContent } from '../hooks/useAdminContent';
+import { useAdminContent, type ImageContent } from '../hooks/useAdminContent';
 import type { Question, QuestionOption } from '../types/questions';
 import type { Section } from '../hooks/useSections';
 // TrashIcon import removed as it's not used
@@ -257,16 +257,32 @@ export default function AdminDashboard() {
     showToast('success', 'Image deleted successfully');
   };
 
+  // State for reordering scanner images
+  const [scannerImages, setScannerImages] = useState<ImageContent[]>([]);
+
+  // Load scanner images
+  useEffect(() => {
+    setScannerImages(getScannerImages());
+  }, [getScannerImages]);
+
+  // Handle reordering of scanner images
+  const handleReorderScannerImages = (reorderedImages: ImageContent[]) => {
+    setScannerImages(reorderedImages);
+
+    // Here you would typically update the order in your database or storage
+    // For now, we'll just update the local state
+    showToast('success', 'Image order updated');
+  };
+
   // Get paginated scanner images
   const getPaginatedScannerImages = () => {
-    const allImages = getScannerImages();
     const startIndex = (scannerImagesPage - 1) * IMAGES_PER_PAGE;
-    return allImages.slice(startIndex, startIndex + IMAGES_PER_PAGE);
+    return scannerImages.slice(startIndex, startIndex + IMAGES_PER_PAGE);
   };
 
   // Calculate total pages
   const getTotalScannerPages = () => {
-    const totalImages = getScannerImages().length;
+    const totalImages = scannerImages.length;
     return Math.ceil(totalImages / IMAGES_PER_PAGE);
   };
 
@@ -424,24 +440,53 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="space-y-6">
-            {/* Scanner Images Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Existing Scanner Images */}
-              {getPaginatedScannerImages().map((image) => (
-                <ImageThumbnail
-                  key={image.id}
-                  id={image.id}
-                  src={image.src}
-                  alt={image.alt}
-                  scale={image.scale || 1}
-                  onScaleChange={(id: string, scale: number) => updateImageScale(id, scale)}
-                  onDelete={handleDeleteImage}
-                />
-              ))}
+            {/* Scanner Images Grid with Reordering */}
+            <div className="space-y-4">
+              <HolographicText
+                text="Drag and drop images to reorder them"
+                as="p"
+                className="text-sm text-cyan-300"
+              />
+              <Reorder.Group
+                axis="y"
+                values={getPaginatedScannerImages()}
+                onReorder={(reordered: ImageContent[]) => {
+                  // Create a new array with all images
+                  const startIndex = (scannerImagesPage - 1) * IMAGES_PER_PAGE;
+                  const newImages = [...scannerImages];
+
+                  // Replace the current page's images with the reordered ones
+                  for (let i = 0; i < reordered.length; i++) {
+                    newImages[startIndex + i] = reordered[i];
+                  }
+
+                  // Update the state
+                  handleReorderScannerImages(newImages);
+                }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {/* Existing Scanner Images */}
+                {getPaginatedScannerImages().map((image: ImageContent) => (
+                  <Reorder.Item
+                    key={image.id}
+                    value={image}
+                    className="cursor-move"
+                  >
+                    <ImageThumbnail
+                      id={image.id}
+                      src={image.src}
+                      alt={image.alt}
+                      scale={image.scale || 1}
+                      onScaleChange={(id: string, scale: number) => updateImageScale(id, scale)}
+                      onDelete={handleDeleteImage}
+                    />
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
 
               {/* Upload New Scanner Image - Only show if user can upload */}
               {canUpload ? (
-                <div className="border dark:border-gray-700 rounded-lg shadow-sm p-4 futuristic-container">
+                <div className="border dark:border-gray-700 rounded-lg shadow-sm p-4 futuristic-container mt-6">
                   <DragDropUpload
                     onFileSelect={handleScannerImageUpload}
                     accept="image/*"
@@ -452,7 +497,7 @@ export default function AdminDashboard() {
                   />
                 </div>
               ) : (
-                <div className="border dark:border-gray-700 rounded-lg shadow-sm p-4 futuristic-container text-center">
+                <div className="border dark:border-gray-700 rounded-lg shadow-sm p-4 futuristic-container text-center mt-6">
                   <HolographicText
                     text="Only owners can upload media"
                     as="p"

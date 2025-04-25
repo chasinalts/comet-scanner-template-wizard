@@ -13,7 +13,6 @@ import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import ScannerWizard from '../pages/ScannerWizard';
 import SetupWizard from '../pages/SetupWizard';
-import ThemeToggle from '../components/ui/ThemeToggle';
 
 import { AuthContext } from '../contexts/AuthContext';
 
@@ -85,26 +84,12 @@ describe('UI and Flow Integration Tests', () => {
     expect(screen.getAllByText(/template builder wizard/i).length).toBeGreaterThan(0);
   });
 
-  it('toggles theme when ThemeToggle is clicked', () => {
+  it('always uses holographic theme', () => {
     renderWithProviders(<Layout><Home /></Layout>);
-    const themeButton = screen.getByTestId('theme-toggle');
-    // Initial theme is 'futuristic', which applies 'dark' class to html, not body
-    // So we will check document.documentElement
-    // Initial state: only 'dark' should be present
+    // Theme is always 'futuristic', which applies 'dark' class to html
     expect(document.documentElement.className).toBe('dark');
-
-    fireEvent.click(themeButton);
-
-    // After first click: theme should be 'dark'
-    expect(document.documentElement.className).toBe('dark');
-    fireEvent.click(themeButton);
-
-    // After second click: theme should be 'light'
-    expect(document.documentElement.className).toBe('light');
-    fireEvent.click(themeButton);
-
-    // After third click: theme should be 'dark' (futuristic)
-    expect(document.documentElement.className).toBe('dark');
+    // Body should have the futuristic-theme class
+    expect(document.body.classList.contains('futuristic-theme')).toBe(true);
   });
 
   it('logs out user and redirects to login', async () => {

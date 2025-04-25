@@ -21,7 +21,6 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
   className = '',
 }) => {
   const [localScale, setLocalScale] = useState<number>(scale);
-  const [showControls, setShowControls] = useState<boolean>(false);
 
   // Update local scale when prop changes
   useEffect(() => {
@@ -36,10 +35,8 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
   };
 
   return (
-    <div 
+    <div
       className={`group border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200 ${className}`}
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => setShowControls(false)}
     >
       <div className="p-4 space-y-4">
         <div className="relative aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
@@ -49,21 +46,23 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
             className="w-full h-full object-contain transition-transform duration-200"
             style={{ transform: `scale(${localScale})` }}
           />
-          
-          {/* Delete button */}
+
+          {/* Delete button - always visible */}
           <button
-            onClick={() => onDelete(id)}
-            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={() => {
+              if (window.confirm('Are you sure you want to delete this image?')) {
+                onDelete(id);
+              }
+            }}
+            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors"
             title="Delete image"
           >
             <TrashIcon className="w-4 h-4" />
           </button>
-          
-          {/* Resize controls - shown on hover */}
-          <div 
-            className={`absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-2 transition-opacity duration-200 ${
-              showControls ? 'opacity-100' : 'opacity-0'
-            }`}
+
+          {/* Resize controls - always visible */}
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-2"
           >
             <div className="flex items-center space-x-2">
               <span className="text-white text-xs">Small</span>

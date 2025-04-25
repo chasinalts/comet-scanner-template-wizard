@@ -21,8 +21,6 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 import Home from './pages/Home';
 
-import ErrorBoundary from './components/ErrorBoundary';
-
 function App() {
   return (
     <ErrorBoundary>
@@ -35,9 +33,12 @@ function App() {
               <UpdateNotification />
               <CacheDebugger />
               <Routes>
+                {/* Redirect root to login */}
+                <Route path="/" element={<Navigate to="/login" replace />} />
+
                 {/* Home Page Route - Protected */}
                 <Route
-                  path="/"
+                  path="/home"
                   element={
                     <ProtectedRoute>
                       <Layout>
@@ -48,6 +49,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+
                 {/* Public Routes */}
                 <Route
                   path="/login"

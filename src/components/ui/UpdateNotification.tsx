@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import React, { useState, useEffect } from 'react';
 // Service worker update logic is now inline below, since serviceWorkerRegistration no longer exists.
 
 const UpdateNotification: React.FC = () => {

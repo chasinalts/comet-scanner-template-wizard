@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import ThemeToggle from '../ui/ThemeToggle';
 
 interface LayoutProps {
   children: ReactNode;
@@ -29,8 +28,8 @@ const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'dark' : ''}`}>
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen dark">
+      <div className="min-h-screen bg-gray-900 transition-colors duration-200">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -106,7 +105,6 @@ const Layout = ({ children }: LayoutProps) => {
 
         {/* Main Content */}
         <main className="relative">
-          <ThemeToggle />
           <AnimatePresence mode="wait">
             <motion.div
               key="content"

@@ -5,7 +5,6 @@ import { useAdminContent } from '../hooks/useAdminContent';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import ResponsiveImageWithPlaceholder from '../components/ui/ResponsiveImageWithPlaceholder';
-import ThemeToggle from '../components/ui/ThemeToggle';
 import LiveCodePreview from '../components/LiveCodePreview';
 import LiveFloatingPreview from '../components/LiveFloatingPreview';
 import { useWizard } from '../contexts/WizardContext';
@@ -267,9 +266,8 @@ const ScannerWizard = () => {
   };
 
   return (
-    <div className={theme === 'dark' ? 'dark' : ''}>
-      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200 futuristic-grid-bg">
-        <ThemeToggle />
+    <div className="dark">
+      <div className="min-h-screen bg-gray-900 transition-colors duration-200 futuristic-grid-bg">
         <motion.div
           variants={containerVariants}
           initial="initial"

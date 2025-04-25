@@ -53,12 +53,6 @@ const Home: React.FC = () => {
         ) : (
           <div className="w-full h-48 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">No banner uploaded yet.</div>
         )}
-        {currentUser?.is_owner && (
-          <div className="mt-2">
-            <label className="block text-sm font-medium text-white mb-1">Upload Banner (owners only):</label>
-            <input type="file" accept="image/*" onChange={handleBannerUpload} disabled={uploading} className="text-white" />
-          </div>
-        )}
         {error && <div className="text-red-400 mt-2">{error}</div>}
       </div>
       {/* COMET Explanation */}

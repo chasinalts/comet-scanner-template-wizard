@@ -41,10 +41,9 @@ const Login = () => {
       console.log('Attempting to login with email:', email);
       // Call the updated login function from AuthContext
       await login(email, password);
-      console.log('Login successful, navigating to scanner page');
-      // Navigate to the scanner page upon successful login
-      // The AuthProvider's onAuthStateChanged listener will handle additional redirection logic if needed
-      navigate('/');
+      console.log('Login successful, navigating to home page');
+      // Navigate to the home page upon successful login
+      navigate('/home');
     } catch (error: any) {
       console.error('Login error details:', error);
       console.error("Login failed:", error);
