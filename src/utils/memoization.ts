@@ -113,29 +113,9 @@ export function memoize<T extends (...args: any[]) => any>(
   return memoized;
 }
 
-/**
- * Creates a debounced function that delays invoking the provided function
- * until after the specified wait time has elapsed since the last time it was invoked.
- * @param fn The function to debounce
- * @param wait The number of milliseconds to delay
- * @returns Debounced function
- */
-export function debounce<T extends (...args: any[]) => any>(
-  fn: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: number | undefined;
-
-  return function(this: any, ...args: Parameters<T>): void {
-    const later = () => {
-      timeout = undefined;
-      fn.apply(this, args);
-    };
-
-    clearTimeout(timeout);
-    timeout = window.setTimeout(later, wait);
-  };
-}
+// Import debounce from dedicated utility file
+import { debounce } from './debounce';
+export { debounce };
 
 /**
  * Creates a throttled function that only invokes the provided function
@@ -151,14 +131,12 @@ export function throttle<T extends (...args: any[]) => any>(
   let lastCall = 0;
   let result: ReturnType<T> | undefined;
 
-  return function(this: any, ...args: Parameters<T>): ReturnType<T> | undefined {
+  return function(...args: Parameters<T>): ReturnType<T> | undefined {
     const now = Date.now();
-
     if (now - lastCall >= wait) {
       lastCall = now;
       result = fn.apply(this, args);
     }
-
     return result;
   };
 }

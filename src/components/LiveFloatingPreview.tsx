@@ -20,6 +20,11 @@ const LiveFloatingPreview: React.FC<LiveFloatingPreviewProps> = ({
 
   if (!visible) return null;
 
+  const handleClose = () => {
+    setVisible(false);
+    onClose?.();
+  };
+
   return (
     <Rnd
       default={{ x: 120, y: 80, width: defaultWidth, height: defaultHeight }}
@@ -32,7 +37,7 @@ const LiveFloatingPreview: React.FC<LiveFloatingPreviewProps> = ({
       <div className="flex items-center justify-between px-3 py-2 border-b border-cyan-300 bg-gradient-to-r from-cyan-500/20 to-cyan-800/10 rounded-t-xl cursor-move floating-preview-title">
         <span className="font-semibold text-cyan-700 dark:text-cyan-200 select-none">{title}</span>
         <button
-          onClick={() => { setVisible(false); if (onClose) onClose(); }}
+          onClick={handleClose}
           className="text-cyan-600 hover:text-red-500 text-lg font-bold px-2 rounded"
           title="Close preview"
         >

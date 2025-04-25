@@ -18,30 +18,26 @@ export const compressImage = async (
 ): Promise<File> => {
   return new Promise((resolve, reject) => {
     try {
-      // Create a FileReader to read the file
       const reader = new FileReader();
 
-      reader.onload = (readerEvent) => {
-        // Create an image to calculate dimensions
+      reader.onload = (event) => {
         const img = new Image();
+
         img.onload = () => {
           // Calculate new dimensions while maintaining aspect ratio
-          let width = img.width;
-          let height = img.height;
+          let { width, height } = img;
 
-          // Only resize if the image is larger than the max dimensions
           if (width > maxWidth || height > maxHeight) {
             const ratio = Math.min(maxWidth / width, maxHeight / height);
             width = Math.floor(width * ratio);
             height = Math.floor(height * ratio);
           }
 
-          // Create a canvas to draw the resized image
+          // Create canvas and resize image
           const canvas = document.createElement('canvas');
           canvas.width = width;
           canvas.height = height;
 
-          // Draw the image on the canvas
           const ctx = canvas.getContext('2d');
           if (!ctx) {
             reject(new Error('Could not get canvas context'));
@@ -50,7 +46,7 @@ export const compressImage = async (
 
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Convert canvas to blob
+          // Convert to blob and create new file
           canvas.toBlob(
             (blob) => {
               if (!blob) {
@@ -58,7 +54,6 @@ export const compressImage = async (
                 return;
               }
 
-              // Create a new File object from the blob
               const compressedFile = new File(
                 [blob],
                 file.name,
@@ -69,10 +64,10 @@ export const compressImage = async (
               );
 
               // Log compression results
-              console.log('Image compression results:', {
+              console.log('Image compression:', {
                 originalSize: file.size,
                 compressedSize: compressedFile.size,
-                compressionRatio: (compressedFile.size / file.size * 100).toFixed(2) + '%',
+                ratio: `${(compressedFile.size / file.size * 100).toFixed(0)}%`,
                 dimensions: `${width}x${height}`
               });
 
@@ -83,39 +78,22 @@ export const compressImage = async (
           );
         };
 
-        img.onerror = () => {
-          reject(new Error('Failed to load image for compression'));
-        };
+        img.onerror = () => reject(new Error('Failed to load image'));
 
-        // Set the image source to the file data
-        if (typeof readerEvent.target?.result === 'string') {
-          img.src = readerEvent.target.result;
+        if (typeof event.target?.result === 'string') {
+          img.src = event.target.result;
         } else {
           reject(new Error('Failed to read file'));
         }
       };
 
-      reader.onerror = () => {
-        reject(new Error('Failed to read file'));
-      };
-
-      // Read the file as a data URL
+      reader.onerror = () => reject(new Error('Failed to read file'));
       reader.readAsDataURL(file);
+
     } catch (error) {
       reject(error);
     }
   });
-};
-
-/**
- * Determines if an image needs compression based on its size
- * @param file The image file to check
- * @param maxSizeInMB Maximum file size in MB before compression is applied
- * @returns Boolean indicating if compression is needed
- */
-export const shouldCompressImage = (file: File, maxSizeInMB = 1): boolean => {
-  const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-  return file.size > maxSizeInBytes;
 };
 
 /**
@@ -134,15 +112,13 @@ export const processImageForUpload = async (
   }
 ): Promise<File> => {
   try {
-    // Always apply some basic processing for consistency
-    // but use different quality settings based on file size
-    const quality = shouldCompressImage(file, options.maxSizeInMB) ?
-      options.quality : // Use lower quality for large files
-      0.92; // Use higher quality for already small files
+    // Determine if compression is needed based on file size
+    const maxSizeInBytes = options.maxSizeInMB * 1024 * 1024;
+    const needsCompression = file.size > maxSizeInBytes;
 
-    console.log(`Processing image with quality: ${quality}`);
+    // Use appropriate quality setting
+    const quality = needsCompression ? options.quality : 0.92;
 
-    // Apply compression with appropriate quality
     return await compressImage(
       file,
       options.maxWidth,
@@ -151,7 +127,6 @@ export const processImageForUpload = async (
     );
   } catch (error) {
     console.error('Error processing image, using original:', error);
-    // If compression fails, return the original file as fallback
-    return file;
+    return file; // Fallback to original file
   }
 };

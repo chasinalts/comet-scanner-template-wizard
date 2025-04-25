@@ -25,8 +25,6 @@ interface UploadingState {
   contentType?: 'banner' | 'scanner';
 }
 
-import { supabase } from '../supabaseConfig';
-
 export default function AdminDashboard() {
   const { currentUser } = useAuth();
   const { showToast } = useToast();
@@ -93,36 +91,38 @@ export default function AdminDashboard() {
     showToast('success', 'New answer option added');
   };
 
+  // Generic option update handler
+  const updateQuestionOption = (
+    questionId: string,
+    optionId: string,
+    updateFn: (opt: QuestionOption) => Partial<QuestionOption>
+  ) => {
+    const currentQuestion = questions.find((q: Question) => q.id === questionId);
+    if (!currentQuestion) return;
+
+    updateQuestion(questionId, {
+      options: currentQuestion.options?.map((opt: QuestionOption) =>
+        opt.id === optionId ? { ...opt, ...updateFn(opt) } : opt
+      )
+    });
+  };
+
+  // Handle option text change
   const handleOptionTextChange = (questionId: string, optionId: string) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
-      const currentQuestion = questions.find((q: Question) => q.id === questionId);
-      if (!currentQuestion) return;
-
-      updateQuestion(questionId, {
-        options: currentQuestion.options?.map((opt: QuestionOption) =>
-          opt.id === optionId ? {
-            ...opt,
-            text: e.target.value,
-            value: e.target.value.toLowerCase()
-          } : opt
-        )
-      });
+      updateQuestionOption(questionId, optionId, () => ({
+        text: e.target.value,
+        value: e.target.value.toLowerCase()
+      }));
     };
   };
 
+  // Handle option scale change
   const handleOptionScaleChange = (questionId: string, optionId: string) => {
     return (e: ChangeEvent<HTMLInputElement>) => {
-      const currentQuestion = questions.find((q: Question) => q.id === questionId);
-      if (!currentQuestion) return;
-
-      updateQuestion(questionId, {
-        options: currentQuestion.options?.map((opt: QuestionOption) =>
-          opt.id === optionId ? {
-            ...opt,
-            scale: parseFloat(e.target.value)
-          } : opt
-        )
-      });
+      updateQuestionOption(questionId, optionId, () => ({
+        scale: parseFloat(e.target.value)
+      }));
     };
   };
 
@@ -170,118 +170,64 @@ export default function AdminDashboard() {
   };
 
   const handleRemoveOptionImage = (questionId: string, optionId: string) => {
-    const currentQuestion = questions.find((q: Question) => q.id === questionId);
-    if (!currentQuestion) return;
-
-    updateQuestion(questionId, {
-      options: currentQuestion.options?.map((opt: QuestionOption) =>
-        opt.id === optionId ? {
-          ...opt,
-          imageUrl: undefined,
-          imagePreview: undefined,
-          scale: undefined
-        } : opt
-      )
-    });
+    updateQuestionOption(questionId, optionId, () => ({
+      imageUrl: undefined,
+      imagePreview: undefined,
+      scale: undefined
+    }));
   };
 
   const handleOptionSectionLink = (questionId: string, optionId: string) => {
     return (e: ChangeEvent<HTMLSelectElement>) => {
-      const currentQuestion = questions.find((q: Question) => q.id === questionId);
-      if (!currentQuestion) return;
-
-      updateQuestion(questionId, {
-        options: currentQuestion.options?.map((opt: QuestionOption) =>
-          opt.id === optionId ? {
-            ...opt,
-            linkedSectionId: e.target.value || undefined
-          } : opt
-        )
-      });
+      updateQuestionOption(questionId, optionId, () => ({
+        linkedSectionId: e.target.value || undefined
+      }));
     };
+  };
+
+  // Generic image upload handler
+  const handleImageUpload = (file: File, type: 'banner' | 'scanner', title: string) => {
+    if (uploadingImage) {
+      showToast('error', 'Please wait for the current upload to complete');
+      return;
+    }
+
+    try {
+      setUploadingImage({ contentType: type });
+
+      uploadImage(file, type, title)
+        .then(id => {
+          setSelectedImageId(id);
+
+          if (type === 'scanner') {
+            // Debug: Log scanner images after upload
+            console.log('Scanner image uploaded with ID:', id);
+            console.log('Current scanner images:', getScannerImages());
+          }
+
+          showToast('success', `${title} uploaded successfully`);
+          setUploadingImage(null);
+        })
+        .catch(error => {
+          showToast('error', `Failed to upload ${title.toLowerCase()} to Supabase Storage.`);
+          console.error(`Error uploading ${title.toLowerCase()}:`, error);
+          setUploadingImage(null);
+        });
+    } catch (error) {
+      showToast('error', `Failed to upload ${title.toLowerCase()}`);
+      console.error(`Error setting up ${title.toLowerCase()} upload:`, error);
+      setUploadingImage(null);
+    }
   };
 
   // Handle banner image upload
   const handleBannerImageUpload = (file: File) => {
-    if (uploadingImage) {
-      showToast('error', 'Please wait for the current upload to complete');
-      return;
-    }
-
-    try {
-      setUploadingImage({ contentType: 'banner' });
-
-      // Use the uploadImage function which now uses Supabase Storage
-      uploadImage(file, 'banner', 'Banner Image')
-        .then(id => {
-          setSelectedImageId(id);
-          showToast('success', 'Banner image uploaded successfully');
-          setUploadingImage(null);
-        })
-        .catch(error => {
-          showToast('error', 'Failed to upload banner image to Supabase Storage.');
-          console.error('Error uploading banner image:', error);
-          setUploadingImage(null);
-        });
-    } catch (error) {
-      showToast('error', 'Failed to upload banner image');
-      console.error('Error setting up banner image upload:', error);
-      setUploadingImage(null);
-    }
+    handleImageUpload(file, 'banner', 'Banner Image');
   };
 
   // Handle scanner image upload
   const handleScannerImageUpload = (file: File) => {
-    if (uploadingImage) {
-      showToast('error', 'Please wait for the current upload to complete');
-      return;
-    }
-
-    try {
-      setUploadingImage({ contentType: 'scanner' });
-
-      // Use the uploadImage function which now uses Supabase Storage
-      uploadImage(file, 'scanner', 'Scanner Variation')
-        .then(id => {
-          setSelectedImageId(id);
-
-          // Debug: Log scanner images after upload
-          console.log('Scanner image uploaded with ID:', id);
-          console.log('Current scanner images:', getScannerImages());
-
-          showToast('success', 'Scanner image uploaded successfully');
-          setUploadingImage(null);
-        })
-        .catch(error => {
-          showToast('error', 'Failed to upload scanner image to Supabase Storage.');
-          console.error('Error uploading scanner image:', error);
-          setUploadingImage(null);
-        });
-    } catch (error) {
-      showToast('error', 'Failed to upload scanner image');
-      console.error('Error setting up scanner image upload:', error);
-      setUploadingImage(null);
-    }
-  };
-
-  // Handle gallery image upload
-  const handleGalleryImageUpload = async (file: File) => {
-    if (uploadingImage) {
-      showToast('error', 'Please wait for the current upload to complete');
-      return;
-    }
-    try {
-      setUploadingImage({ contentType: 'gallery' });
-      // Upload to Supabase Storage images/gallery
-      const { error } = await supabase.storage.from('images').upload(`gallery/${file.name}`, file, { upsert: true });
-      if (error) throw error;
-      showToast('success', 'Gallery image uploaded successfully');
-      setUploadingImage(null);
-      setRefreshGallery(r => !r);
-    } catch (error) {
-      showToast('error', 'Failed to upload gallery image');
-      setUploadingImage(null);
-    }
+    handleImageUpload(file, 'scanner', 'Scanner Variation');
   };
 
   // Handle image scale change
@@ -308,20 +254,6 @@ export default function AdminDashboard() {
       setSelectedImageId(null);
     }
     showToast('success', 'Image deleted successfully');
-  };
-
-  // Delete gallery image
-  const handleDeleteGalleryImage = async (imgUrl: string) => {
-    const path = imgUrl.split('/gallery/')[1];
-    if (!path) return;
-    try {
-      const { error } = await supabase.storage.from('images').remove([`gallery/${path}`]);
-      if (error) throw error;
-      showToast('success', 'Gallery image deleted');
-      setRefreshGallery(r => !r);
-    } catch (error) {
-      showToast('error', 'Failed to delete gallery image');
-    }
   };
 
   // Get paginated scanner images
