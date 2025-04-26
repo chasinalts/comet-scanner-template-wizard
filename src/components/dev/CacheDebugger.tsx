@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from '../../utils/react-imports';
 // Service worker and cache clearing logic is now inline below, since serviceWorkerRegistration no longer exists.
 
-const CacheDebugger: React.FC = () => {
+const CacheDebugger = () => {
   const [isClearing, setIsClearing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -14,7 +14,7 @@ const CacheDebugger: React.FC = () => {
   const handleClearCache = async () => {
     setIsClearing(true);
     setMessage('Clearing caches and service workers...');
-    
+
     try {
       // Clear all caches
       if ('caches' in window) {
@@ -27,7 +27,7 @@ const CacheDebugger: React.FC = () => {
         await Promise.all(registrations.map(reg => reg.unregister()));
       }
       setMessage('Successfully cleared all caches and service workers. Reloading in 2 seconds...');
-      
+
       // Reload the page after a short delay
       setTimeout(() => {
         window.location.reload();
@@ -45,7 +45,7 @@ const CacheDebugger: React.FC = () => {
       <p className="text-sm mb-3">
         Use this tool to clear all caches and service workers if you're experiencing stale content issues.
       </p>
-      
+
       <button
         onClick={handleClearCache}
         disabled={isClearing}
@@ -53,7 +53,7 @@ const CacheDebugger: React.FC = () => {
       >
         {isClearing ? 'Clearing...' : 'Clear All Caches'}
       </button>
-      
+
       {message && (
         <div className="mt-3 text-sm bg-red-700 p-2 rounded">
           {message}
