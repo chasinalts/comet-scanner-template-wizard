@@ -1,10 +1,11 @@
-import React, { useState } from '../utils/react-imports';
+import React, { useState, useEffect } from '../utils/react-imports';
 
 import HolographicText from '../components/ui/HolographicText';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseConfig';
 import VirtualizedImageGallery from '../components/ui/VirtualizedImageGallery';
+import LazyImage from '../components/ui/LazyImage';
 
 const COMET_EXPLANATION = `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
 
@@ -16,18 +17,22 @@ const Home: React.FC = () => {
   const [error, setError] = useState('');
 
   // Fetch banner and gallery images from Supabase Storage
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchImages = async () => {
       try {
         console.log('Fetching images from Supabase Storage...');
 
-        // First, check if the user is authenticated
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('Authentication status:', session ? 'Authenticated' : 'Not authenticated');
+        // Make sure the storage is initialized
+        await supabase.storage.from('images').list('', { limit: 1 }).catch(err => {
+          console.log('Storage initialization check:', err);
+        });
 
         // Fetch banner (assume single file in 'banner' folder)
         console.log('Fetching banner images...');
-        const { data: bannerData, error: bannerError } = await supabase.storage.from('images').list('banner', { limit: 1 });
+        const { data: bannerData, error: bannerError } = await supabase.storage.from('images').list('banner', {
+          limit: 10, // Increased limit to make sure we get all files
+          sortBy: { column: 'name', order: 'asc' }
+        });
 
         if (bannerError) {
           console.error('Error fetching banner:', bannerError);
@@ -36,8 +41,15 @@ const Home: React.FC = () => {
 
         console.log('Banner data:', bannerData);
 
-        if (bannerData && bannerData.length > 0) {
-          const { data: bannerUrlData } = await supabase.storage.from('images').getPublicUrl(`banner/${bannerData[0].name}`);
+        // Filter out placeholder files and get the first real image
+        const realBannerFiles = bannerData?.filter(file => !file.name.startsWith('.'));
+
+        if (realBannerFiles && realBannerFiles.length > 0) {
+          // Get the public URL for the banner image
+          const { data: bannerUrlData } = await supabase.storage
+            .from('images')
+            .getPublicUrl(`banner/${realBannerFiles[0].name}`);
+
           console.log('Banner URL:', bannerUrlData.publicUrl);
           setBannerUrl(bannerUrlData.publicUrl);
         } else {
@@ -46,7 +58,10 @@ const Home: React.FC = () => {
 
         // Fetch gallery images (all files in 'gallery' folder)
         console.log('Fetching gallery images...');
-        const { data: galleryData, error: galleryError } = await supabase.storage.from('images').list('gallery');
+        const { data: galleryData, error: galleryError } = await supabase.storage.from('images').list('gallery', {
+          limit: 100, // Increased limit to get more images
+          sortBy: { column: 'name', order: 'asc' }
+        });
 
         if (galleryError) {
           console.error('Error fetching gallery:', galleryError);
@@ -55,11 +70,16 @@ const Home: React.FC = () => {
 
         console.log('Gallery data:', galleryData);
 
-        if (galleryData && galleryData.length > 0) {
-          const urls = galleryData.map(img => {
+        // Filter out placeholder files
+        const realGalleryFiles = galleryData?.filter(file => !file.name.startsWith('.'));
+
+        if (realGalleryFiles && realGalleryFiles.length > 0) {
+          // Get public URLs for all gallery images
+          const urls = realGalleryFiles.map(img => {
             const { data } = supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`);
             return data.publicUrl;
           });
+
           console.log('Gallery URLs:', urls);
           setGalleryImages(urls);
         } else {
@@ -85,7 +105,13 @@ const Home: React.FC = () => {
       {/* Banner Section */}
       <div className="w-full max-w-3xl mb-6 flex flex-col items-center">
         {bannerUrl ? (
-          <img src={bannerUrl} alt="Banner" className="rounded-lg shadow-2xl w-full object-cover max-h-72" style={{ background: 'rgba(255,255,255,0.05)' }} />
+          <LazyImage
+            src={bannerUrl}
+            alt="Banner"
+            className="rounded-lg shadow-2xl w-full h-72"
+            style={{ background: 'rgba(255,255,255,0.05)' }}
+            loadingStrategy="eager"
+          />
         ) : (
           <div className="w-full h-48 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">No banner uploaded yet.</div>
         )}
@@ -101,21 +127,30 @@ const Home: React.FC = () => {
         <HolographicText text="COMET Scanner Possibilities" as="h2" variant="subtitle" className="text-xl font-semibold text-cyan-100 mb-4 text-center" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-gradient-to-br from-cyan-800/30 to-blue-900/30 p-2 rounded-xl shadow-inner">
           {galleryImages.map((img, i) => (
-            <img
-              key={img}
-              src={img}
-              alt={`COMET Gallery ${i + 1}`}
-              className="rounded-lg cursor-pointer object-cover aspect-square hover:scale-105 transition-transform duration-200"
-              onClick={() => setFullscreenImage(img)}
-              style={{ boxShadow: '0 0 20px 2px rgba(0,255,255,0.2)' }}
-            />
+            <div key={img} className="aspect-square">
+              <LazyImage
+                src={img}
+                alt={`COMET Gallery ${i + 1}`}
+                className="rounded-lg cursor-pointer w-full h-full hover:scale-105 transition-transform duration-200"
+                onClick={() => setFullscreenImage(img)}
+                style={{ boxShadow: '0 0 20px 2px rgba(0,255,255,0.2)' }}
+                gallerySize={true}
+              />
+            </div>
           ))}
         </div>
       </section>
       {/* Fullscreen Image Modal */}
       {fullscreenImage && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center" onClick={() => setFullscreenImage(null)}>
-          <img src={fullscreenImage} alt="Fullscreen COMET" className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl" />
+          <div className="max-h-[90vh] max-w-[90vw]">
+            <LazyImage
+              src={fullscreenImage}
+              alt="Fullscreen COMET"
+              className="rounded-lg shadow-2xl w-full h-full"
+              loadingStrategy="eager"
+            />
+          </div>
         </div>
       )}
       {/* Start Wizard Button */}

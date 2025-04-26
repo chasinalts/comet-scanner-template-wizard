@@ -33,71 +33,107 @@ export const getProxiedImageUrl = async (url: string): Promise<string> => {
     return url;
   }
 
-  // If it's a Supabase Storage URL but not a signed URL, get a public URL
-  if (url.includes('supabase.co/storage') && !url.includes('token=')) {
-    try {
-      console.log('URL is a Supabase Storage URL without token, getting public URL');
+  // If it's a data URL, return it as is
+  if (url.startsWith('data:')) {
+    console.log('URL is a data URL, returning as is');
+    return url;
+  }
 
-      // Extract the path from the URL
-      const urlObj = new URL(url);
-      const pathParts = urlObj.pathname.split('/');
-      const bucketIndex = pathParts.findIndex(part => part === STORAGE_BUCKET);
+  // Add a cache-busting parameter to all URLs to prevent caching issues
+  const addCacheBuster = (inputUrl: string): string => {
+    const separator = inputUrl.includes('?') ? '&' : '?';
+    return `${inputUrl}${separator}t=${Date.now()}`;
+  };
 
-      if (bucketIndex === -1 || bucketIndex === pathParts.length - 1) {
-        console.error('Invalid Supabase Storage URL format:', url);
-        return url;
+  try {
+    // If it's a Supabase Storage URL but not a signed URL, get a public URL
+    if (url.includes('supabase.co/storage')) {
+      console.log('URL is a Supabase Storage URL');
+
+      // If it already has a token, just add a cache buster
+      if (url.includes('token=')) {
+        console.log('URL already has a token, adding cache buster');
+        return addCacheBuster(url);
       }
 
-      // Get the path after the bucket name
-      const path = pathParts.slice(bucketIndex + 1).join('/');
-      console.log('Extracted path:', path);
+      // Extract the bucket and path from the URL
+      let bucket = STORAGE_BUCKET;
+      let path = '';
 
-      // First try to get a public URL (this works if the bucket is public)
-      const { data: publicUrlData } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .getPublicUrl(path);
+      try {
+        const urlObj = new URL(url);
+        const pathParts = urlObj.pathname.split('/');
 
-      if (publicUrlData?.publicUrl) {
-        console.log('Got public URL:', publicUrlData.publicUrl);
+        // Find the bucket name in the path
+        const bucketIndex = pathParts.findIndex(part => part === 'object' || part === STORAGE_BUCKET);
 
-        // Add a cache-busting parameter
-        const separator = publicUrlData.publicUrl.includes('?') ? '&' : '?';
-        const publicUrlWithCacheBuster = `${publicUrlData.publicUrl}${separator}t=${Date.now()}`;
-        console.log('Public URL with cache buster:', publicUrlWithCacheBuster);
+        if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
+          // The bucket name is the next part after 'object' or the bucket name itself
+          bucket = pathParts[bucketIndex === -1 ? bucketIndex : bucketIndex + 1];
 
-        return publicUrlWithCacheBuster;
+          // Get the path after the bucket name
+          path = pathParts.slice(bucketIndex + 2).join('/');
+          console.log('Extracted bucket:', bucket);
+          console.log('Extracted path:', path);
+        } else {
+          // Try to extract path using a different method
+          const objectMatch = url.match(/\/storage\/v1\/object\/([^/]+)\/(.+)/);
+          if (objectMatch && objectMatch.length >= 3) {
+            bucket = objectMatch[1];
+            path = objectMatch[2];
+            console.log('Extracted bucket using regex:', bucket);
+            console.log('Extracted path using regex:', path);
+          } else {
+            console.error('Could not extract bucket and path from URL:', url);
+            return addCacheBuster(url); // Return the original URL with a cache buster
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing URL:', error);
+        return addCacheBuster(url); // Return the original URL with a cache buster
+      }
+
+      // Try to get a public URL first
+      try {
+        console.log('Getting public URL for bucket:', bucket, 'path:', path);
+        const { data: publicUrlData } = await supabase.storage
+          .from(bucket)
+          .getPublicUrl(path);
+
+        if (publicUrlData?.publicUrl) {
+          console.log('Got public URL:', publicUrlData.publicUrl);
+          return addCacheBuster(publicUrlData.publicUrl);
+        }
+      } catch (error) {
+        console.error('Error getting public URL:', error);
       }
 
       // If public URL fails, try to get a signed URL
-      console.log('Public URL failed, trying signed URL');
-      const { data: signedUrlData } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .createSignedUrl(path, 60 * 60); // 1 hour expiry
+      try {
+        console.log('Getting signed URL for bucket:', bucket, 'path:', path);
+        const { data: signedUrlData } = await supabase.storage
+          .from(bucket)
+          .createSignedUrl(path, 60 * 60); // 1 hour expiry
 
-      if (signedUrlData?.signedUrl) {
-        console.log('Got signed URL:', signedUrlData.signedUrl);
-        return signedUrlData.signedUrl;
+        if (signedUrlData?.signedUrl) {
+          console.log('Got signed URL:', signedUrlData.signedUrl);
+          return signedUrlData.signedUrl; // Signed URLs already have a token parameter
+        }
+      } catch (error) {
+        console.error('Error getting signed URL:', error);
       }
 
-      console.error('Failed to get public or signed URL');
-      return url;
-    } catch (error) {
-      console.error('Error getting URL:', error);
-      return url;
+      console.warn('Failed to get public or signed URL, returning original URL with cache buster');
+      return addCacheBuster(url);
     }
-  }
 
-  // If it's already a signed URL, add a cache-busting parameter
-  if (url.includes('token=')) {
-    console.log('URL is already a signed URL, adding cache-busting parameter');
-    const separator = url.includes('?') ? '&' : '?';
-    const urlWithCacheBuster = `${url}${separator}t=${Date.now()}`;
-    console.log('URL with cache buster:', urlWithCacheBuster);
-    return urlWithCacheBuster;
+    // For all other URLs, just add a cache buster
+    console.log('URL is not a Supabase Storage URL, adding cache buster');
+    return addCacheBuster(url);
+  } catch (error) {
+    console.error('Error in getProxiedImageUrl:', error);
+    return addCacheBuster(url); // Return the original URL with a cache buster as a fallback
   }
-
-  console.log('URL is not a Supabase Storage URL, returning as is');
-  return url;
 };
 
 /**
