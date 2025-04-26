@@ -19,6 +19,8 @@ import ImageThumbnail from '../components/ui/ImageThumbnail';
 import TemplateCreator from '../components/TemplateCreator';
 import HolographicText from '../components/ui/HolographicText';
 import { isOwner } from '../utils/permissionChecks';
+import LogViewer from '../components/admin/LogViewer';
+import loggingService from '../utils/loggingService';
 
 interface UploadingState {
   questionId?: string;
@@ -57,6 +59,9 @@ export default function AdminDashboard() {
     };
 
     checkOwnerStatus();
+
+    // Initialize logging service
+    loggingService.initialize();
   }, [currentUser]);
   const {
     questions,
@@ -652,6 +657,17 @@ export default function AdminDashboard() {
             ))}
           </Reorder.Group>
         </div>
+      </section>
+
+      {/* System Logs Section */}
+      <section className="space-y-8">
+        <HolographicText
+          text="System Logs"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-semibold"
+        />
+        <LogViewer />
       </section>
 
       {/* Questions Section */}

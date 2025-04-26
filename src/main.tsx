@@ -8,6 +8,7 @@ import { AuthProvider } from './contexts/AuthContext';
 
 import analytics from './utils/analytics';
 import { initializeStorage } from './supabaseConfig';
+import loggingService from './utils/loggingService';
 
 // Supabase handles authentication now
 
@@ -24,6 +25,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 // Initialize performance analytics only in browser environment
 if (typeof window !== 'undefined') {
   analytics.init();
+
+  // Initialize logging service
+  loggingService.initialize();
+  console.log('Logging service initialized');
 
   // Initialize Supabase storage
   initializeStorage()
