@@ -78,18 +78,39 @@ const LazyImage: React.FC<LazyImageProps> = ({
         // For Supabase Storage URLs, use our proxy function to avoid CORS issues
         if (isSupabaseUrl) {
           try {
-            const proxiedUrl = await getProxiedImageUrl(src);
-            if (isMounted) {
-              setImageSrc(proxiedUrl);
+            console.log('Processing Supabase URL:', src);
+
+            // Check if it's already a public URL
+            if (src.includes('/public/')) {
+              console.log('Already a public URL, using directly:', src);
+              setImageSrc(src);
               if (!gallerySize) {
                 setIsLoaded(true);
                 return;
+              }
+            } else {
+              // Try to get a proxied URL
+              console.log('Getting proxied URL for:', src);
+              const proxiedUrl = await getProxiedImageUrl(src);
+              console.log('Proxied URL:', proxiedUrl);
+
+              if (isMounted) {
+                setImageSrc(proxiedUrl);
+                if (!gallerySize) {
+                  setIsLoaded(true);
+                  return;
+                }
               }
             }
           } catch (error) {
             console.error('Error getting proxied URL:', error);
             if (isMounted) {
-              setImageSrc(src); // Fallback to original URL
+              // Add a cache-busting parameter to the URL
+              const cacheBuster = `?t=${Date.now()}`;
+              const urlWithCacheBuster = src.includes('?') ? `${src}&t=${Date.now()}` : `${src}${cacheBuster}`;
+              console.log('Using original URL with cache buster:', urlWithCacheBuster);
+
+              setImageSrc(urlWithCacheBuster); // Fallback to original URL with cache buster
               if (!gallerySize) {
                 setIsLoaded(true);
                 return;

@@ -19,22 +19,58 @@ const Home: React.FC = () => {
   React.useEffect(() => {
     const fetchImages = async () => {
       try {
-        // Fetch banner (assume single file 'banner.jpg' in 'banner' bucket/folder)
-        const { data: bannerData } = await supabase.storage.from('images').list('banner', { limit: 1 });
+        console.log('Fetching images from Supabase Storage...');
+
+        // First, check if the user is authenticated
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Authentication status:', session ? 'Authenticated' : 'Not authenticated');
+
+        // Fetch banner (assume single file in 'banner' folder)
+        console.log('Fetching banner images...');
+        const { data: bannerData, error: bannerError } = await supabase.storage.from('images').list('banner', { limit: 1 });
+
+        if (bannerError) {
+          console.error('Error fetching banner:', bannerError);
+          throw new Error(`Banner fetch error: ${bannerError.message}`);
+        }
+
+        console.log('Banner data:', bannerData);
+
         if (bannerData && bannerData.length > 0) {
           const { data: bannerUrlData } = await supabase.storage.from('images').getPublicUrl(`banner/${bannerData[0].name}`);
+          console.log('Banner URL:', bannerUrlData.publicUrl);
           setBannerUrl(bannerUrlData.publicUrl);
+        } else {
+          console.log('No banner images found');
         }
+
         // Fetch gallery images (all files in 'gallery' folder)
-        const { data: galleryData } = await supabase.storage.from('images').list('gallery');
+        console.log('Fetching gallery images...');
+        const { data: galleryData, error: galleryError } = await supabase.storage.from('images').list('gallery');
+
+        if (galleryError) {
+          console.error('Error fetching gallery:', galleryError);
+          throw new Error(`Gallery fetch error: ${galleryError.message}`);
+        }
+
+        console.log('Gallery data:', galleryData);
+
         if (galleryData && galleryData.length > 0) {
-          const urls = galleryData.map(img => supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`).data.publicUrl);
+          const urls = galleryData.map(img => {
+            const { data } = supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`);
+            return data.publicUrl;
+          });
+          console.log('Gallery URLs:', urls);
           setGalleryImages(urls);
+        } else {
+          console.log('No gallery images found');
         }
       } catch (err: any) {
-        setError('Failed to load images.');
+        console.error('Failed to load images:', err);
+        setError(`Failed to load images: ${err.message || 'Unknown error'}`);
       }
     };
+
     fetchImages();
   }, []);
 

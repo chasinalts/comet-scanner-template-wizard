@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import React from 'react';
+import React, { useEffect } from 'react';
 const { lazy, Suspense } = React;
 import ErrorBoundary from './components/ErrorBoundary';
 // AuthProvider is already imported in main.tsx
@@ -12,6 +12,7 @@ import SuspenseFallback from './components/ui/SuspenseFallback';
 import PerformanceMonitor from './components/dev/PerformanceMonitor';
 import UpdateNotification from './components/ui/UpdateNotification';
 import CacheDebugger from './components/dev/CacheDebugger';
+import { initializeStorage } from './supabaseConfig';
 
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
@@ -22,6 +23,21 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 import Home from './pages/Home';
 
 function App() {
+  // Initialize Supabase storage when the app starts
+  useEffect(() => {
+    const init = async () => {
+      try {
+        console.log('Initializing Supabase storage...');
+        const result = await initializeStorage();
+        console.log('Supabase storage initialization result:', result);
+      } catch (error) {
+        console.error('Error initializing Supabase storage:', error);
+      }
+    };
+
+    init();
+  }, []);
+
   return (
     <ErrorBoundary>
       <Router>
