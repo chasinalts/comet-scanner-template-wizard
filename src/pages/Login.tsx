@@ -25,8 +25,8 @@ const Login = () => {
   const location = useLocation();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Check if we need to redirect to a specific page after login
-  const from = location.state?.from || '/home';
+  // Always redirect to home page after login
+  const from = '/home';
 
   // If user is already logged in, redirect to the appropriate page
   useEffect(() => {

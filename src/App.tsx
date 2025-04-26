@@ -49,10 +49,10 @@ function App() {
               <UpdateNotification />
               <CacheDebugger />
               <Routes>
-                {/* Redirect root to login */}
+                {/* Login is the first page */}
                 <Route path="/" element={<Navigate to="/login" replace />} />
 
-                {/* Home Page Route - Protected */}
+                {/* Home Page Route - Protected but accessible to all authenticated users */}
                 <Route
                   path="/home"
                   element={

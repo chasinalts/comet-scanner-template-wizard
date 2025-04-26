@@ -6,8 +6,22 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseConfig';
 import VirtualizedImageGallery from '../components/ui/VirtualizedImageGallery';
 import LazyImage from '../components/ui/LazyImage';
+import Button from '../components/ui/Button';
 
+// COMET Scanner description and explanation
 const COMET_EXPLANATION = `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
+
+// Scanner usage description
+const SCANNER_USAGE = `COMET Scanners are powerful tools for market analysis that help traders identify potential trading opportunities across multiple assets simultaneously. They work by applying custom filters and visualization techniques to price data, highlighting patterns that might be missed by traditional analysis methods.
+
+Key features of COMET Scanners include:
+• Multi-asset screening capability (up to 40 assets per scanner instance)
+• Custom visualization techniques for pattern recognition
+• Extreme parameter settings to identify edge cases
+• Real-time alerts for potential trading opportunities
+• Configurable filters to match your trading strategy
+
+The COMET Scanner Template Wizard helps you create a customized scanner template tailored to your specific trading needs and preferences.`;
 
 const Home: React.FC = () => {
   const { currentUser } = useAuth();
@@ -101,14 +115,21 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-cyan-900 to-blue-700 flex flex-col items-center py-8 px-2">
-      <HolographicText text="COMET SCANNER TEMPLATE WIZARD" as="h1" variant="title" className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center drop-shadow-lg" />
+      {/* Site Title */}
+      <HolographicText
+        text="COMET SCANNER TEMPLATE WIZARD"
+        as="h1"
+        variant="title"
+        className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center drop-shadow-lg"
+      />
+
       {/* Banner Section */}
-      <div className="w-full max-w-3xl mb-6 flex flex-col items-center">
+      <div className="w-full max-w-5xl mb-10 flex flex-col items-center">
         {bannerUrl ? (
           <LazyImage
             src={bannerUrl}
             alt="Banner"
-            className="rounded-lg shadow-2xl w-full h-72"
+            className="rounded-lg shadow-2xl w-full h-72 object-cover"
             style={{ background: 'rgba(255,255,255,0.05)' }}
             loadingStrategy="eager"
           />
@@ -117,29 +138,38 @@ const Home: React.FC = () => {
         )}
         {error && <div className="text-red-400 mt-2">{error}</div>}
       </div>
-      {/* COMET Explanation */}
-      <section className="max-w-2xl bg-white/10 rounded-lg p-6 mb-8 shadow-lg">
-        <HolographicText text="What is COMET?" as="h2" variant="subtitle" className="text-2xl font-bold text-cyan-200 mb-2 text-center" />
-        <pre className="whitespace-pre-line text-white text-lg font-mono leading-snug">{COMET_EXPLANATION}</pre>
-      </section>
-      {/* Image Gallery */}
-      <section className="w-full max-w-5xl mb-8">
-        <HolographicText text="COMET Scanner Possibilities" as="h2" variant="subtitle" className="text-xl font-semibold text-cyan-100 mb-4 text-center" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-gradient-to-br from-cyan-800/30 to-blue-900/30 p-2 rounded-xl shadow-inner">
-          {galleryImages.map((img, i) => (
-            <div key={img} className="aspect-square">
-              <LazyImage
-                src={img}
-                alt={`COMET Gallery ${i + 1}`}
-                className="rounded-lg cursor-pointer w-full h-full hover:scale-105 transition-transform duration-200"
-                onClick={() => setFullscreenImage(img)}
-                style={{ boxShadow: '0 0 20px 2px rgba(0,255,255,0.2)' }}
-                gallerySize={true}
-              />
+
+      {/* Image Gallery Section */}
+      <section className="w-full max-w-6xl mb-12">
+        <HolographicText
+          text="COMET Scanner Gallery"
+          as="h2"
+          variant="subtitle"
+          className="text-3xl font-semibold text-cyan-100 mb-6 text-center"
+        />
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-gradient-to-br from-cyan-800/30 to-blue-900/30 p-4 rounded-xl shadow-inner">
+          {galleryImages.length > 0 ? (
+            galleryImages.map((img, i) => (
+              <div key={img} className="aspect-square">
+                <LazyImage
+                  src={img}
+                  alt={`COMET Gallery ${i + 1}`}
+                  className="rounded-lg cursor-pointer w-full h-full hover:scale-105 transition-transform duration-200"
+                  onClick={() => setFullscreenImage(img)}
+                  style={{ boxShadow: '0 0 20px 2px rgba(0,255,255,0.2)' }}
+                  gallerySize={true}
+                />
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-10 text-cyan-200">
+              No gallery images available. The admin can add images through the dashboard.
             </div>
-          ))}
+          )}
         </div>
       </section>
+
       {/* Fullscreen Image Modal */}
       {fullscreenImage && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center" onClick={() => setFullscreenImage(null)}>
@@ -153,13 +183,40 @@ const Home: React.FC = () => {
           </div>
         </div>
       )}
+
       {/* Start Wizard Button */}
-      <button
-        className="mt-8 px-8 py-4 bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-bold text-xl rounded-full shadow-lg hover:scale-105 transition-transform"
-        onClick={() => navigate('/scanner')}
-      >
-        Click here to be guided through the COMET Scanner Template Wizard
-      </button>
+      <div className="w-full max-w-4xl flex justify-center mb-16">
+        <Button
+          onClick={() => navigate('/scanner')}
+          className="px-8 py-6 text-xl font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg shadow-cyan-500/20"
+          variant="primary"
+        >
+          Start the COMET Scanner Template Wizard
+        </Button>
+      </div>
+
+      {/* COMET Description Section */}
+      <section className="w-full max-w-4xl mb-8 bg-white/10 backdrop-blur-sm rounded-lg p-8 shadow-lg">
+        <HolographicText
+          text="What is COMET?"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-bold text-cyan-200 mb-4 text-center"
+        />
+        <div className="whitespace-pre-line text-white text-lg leading-relaxed mb-8">
+          {COMET_EXPLANATION}
+        </div>
+
+        <HolographicText
+          text="COMET Scanner Usage"
+          as="h3"
+          variant="subtitle"
+          className="text-xl font-bold text-cyan-200 mb-4 text-center"
+        />
+        <div className="whitespace-pre-line text-white text-lg leading-relaxed">
+          {SCANNER_USAGE}
+        </div>
+      </section>
     </div>
   );
 };

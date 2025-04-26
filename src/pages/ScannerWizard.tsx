@@ -173,6 +173,40 @@ const ScannerWizard = () => {
     }
   };
 
+  // Template sharing functions
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareTemplateId, setShareTemplateId] = useState<string | null>(null);
+  const [shareEmail, setShareEmail] = useState('');
+  const [shareMessage, setShareMessage] = useState('');
+
+  const openShareModal = (templateId: string) => {
+    setShareTemplateId(templateId);
+    setShareModalOpen(true);
+  };
+
+  const shareTemplate = () => {
+    if (!shareEmail.trim()) {
+      alert('Please enter an email address');
+      return;
+    }
+
+    const template = savedTemplates.find(t => t.id === shareTemplateId);
+    if (!template) {
+      alert('Template not found');
+      return;
+    }
+
+    // In a real app, this would send the template via email or generate a share link
+    // For now, we'll just show a success message
+    alert(`Template "${template.name}" would be shared with ${shareEmail}`);
+
+    // Reset share form
+    setShareEmail('');
+    setShareMessage('');
+    setShareModalOpen(false);
+    setShareTemplateId(null);
+  };
+
   const loadTemplate = (templateId: string) => {
     const template = savedTemplates.find(t => t.id === templateId);
     if (template) {
@@ -496,34 +530,127 @@ const ScannerWizard = () => {
                       className={`p-4 rounded-lg border ${selectedTemplateId === template.id
                         ? 'border-blue-500 ring-2 ring-blue-500'
                         : 'border-gray-200 dark:border-gray-700'}
-                        bg-white dark:bg-gray-800 shadow hover:shadow-md transition-all cursor-pointer`}
-                      onClick={() => loadTemplate(template.id)}
+                        bg-white dark:bg-gray-800 shadow hover:shadow-md transition-all`}
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-medium text-gray-900 dark:text-white">{template.name}</h3>
-                        <button
-                          className="text-red-500 hover:text-red-700"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteTemplate(template.id);
-                          }}
-                        >
-                          ×
-                        </button>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{template.name}</h3>
+                        <div className="flex space-x-1">
+                          <button
+                            className="text-blue-500 hover:text-blue-700 p-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openShareModal(template.id);
+                            }}
+                            title="Share Template"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                            </svg>
+                          </button>
+                          <button
+                            className="text-red-500 hover:text-red-700 p-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm(`Delete template "${template.name}"?`)) {
+                                deleteTemplate(template.id);
+                              }
+                            }}
+                            title="Delete Template"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         Created: {new Date(template.createdAt).toLocaleDateString()}
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Type: {template.code ? 'Full Template' : 'Wizard Template'}
-                      </p>
+                      <div className="mt-4 flex justify-between items-center">
+                        <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+                          {template.code ? 'Full Template' : 'Wizard Template'}
+                        </span>
+                        <button
+                          onClick={() => loadTemplate(template.id)}
+                          className="text-xs px-2 py-1 bg-cyan-100 dark:bg-cyan-900 text-cyan-800 dark:text-cyan-200 rounded hover:bg-cyan-200 dark:hover:bg-cyan-800"
+                        >
+                          Load Template
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 dark:text-gray-400">No saved templates yet. Create and save a template to see it here.</p>
+                <p className="text-gray-500 dark:text-gray-400 text-center">No saved templates yet. Create and save a template to see it here.</p>
               )}
             </div>
+
+            {/* Share Template Modal */}
+            {shareModalOpen && (
+              <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 relative">
+                  <button
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    onClick={() => setShareModalOpen(false)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+
+                  <HolographicText
+                    text="Share Template"
+                    as="h3"
+                    variant="subtitle"
+                    className="text-xl font-bold mb-4"
+                  />
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Recipient Email
+                      </label>
+                      <input
+                        type="email"
+                        value={shareEmail}
+                        onChange={(e) => setShareEmail(e.target.value)}
+                        placeholder="Enter email address"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Message (Optional)
+                      </label>
+                      <textarea
+                        value={shareMessage}
+                        onChange={(e) => setShareMessage(e.target.value)}
+                        placeholder="Add a personal message"
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+
+                    <div className="flex justify-end space-x-3 pt-4">
+                      <Button
+                        variant="secondary"
+                        onClick={() => setShareModalOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={shareTemplate}
+                      >
+                        Share Template
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </motion.div>
 
