@@ -60,11 +60,13 @@ const Home: React.FC = () => {
 
         if (realBannerFiles && realBannerFiles.length > 0) {
           // Get the public URL for the banner image
+          const bannerBucket = 'images';
+          const bannerPath = `banner/${realBannerFiles[0].name}`;
+          console.log('Getting public URL for bucket:', bannerBucket, 'path:', bannerPath);
           const { data: bannerUrlData } = await supabase.storage
-            .from('images')
-            .getPublicUrl(`banner/${realBannerFiles[0].name}`);
-
-          console.log('Banner URL:', bannerUrlData.publicUrl);
+            .from(bannerBucket)
+            .getPublicUrl(bannerPath);
+          console.log('Banner image public URL:', bannerUrlData.publicUrl);
           setBannerUrl(bannerUrlData.publicUrl);
         } else {
           console.log('No banner images found');
@@ -89,8 +91,12 @@ const Home: React.FC = () => {
 
         if (realGalleryFiles && realGalleryFiles.length > 0) {
           // Get public URLs for all gallery images
+          const galleryBucket = 'images';
           const urls = realGalleryFiles.map(img => {
-            const { data } = supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`);
+            const galleryPath = `gallery/${img.name}`;
+            console.log('Getting public URL for bucket:', galleryBucket, 'path:', galleryPath);
+            const { data } = supabase.storage.from(galleryBucket).getPublicUrl(galleryPath);
+            console.log('Gallery image public URL:', data.publicUrl);
             return data.publicUrl;
           });
 
@@ -126,17 +132,19 @@ const Home: React.FC = () => {
       {/* Banner Section */}
       <div className="w-full max-w-5xl mb-10 flex flex-col items-center">
         {bannerUrl ? (
-          <LazyImage
-            src={bannerUrl}
-            alt="Banner"
-            className="rounded-lg shadow-2xl w-full h-72 object-cover"
-            style={{ background: 'rgba(255,255,255,0.05)' }}
-            loadingStrategy="eager"
-          />
+          <React.Suspense fallback={<div className="w-full h-72 flex items-center justify-center"><span className="animate-spin h-8 w-8 border-4 border-cyan-400 border-t-transparent rounded-full"></span></div>}>
+            <LazyImage
+              src={bannerUrl}
+              alt="Banner"
+              className="rounded-lg shadow-2xl w-full h-72 object-cover"
+              style={{ background: 'rgba(255,255,255,0.05)' }}
+              loadingStrategy="eager"
+            />
+          </React.Suspense>
         ) : (
           <div className="w-full h-48 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">No banner uploaded yet.</div>
         )}
-        {error && <div className="text-red-400 mt-2">{error}</div>}
+        {error && <div className="text-red-500 font-semibold mt-2" style={{color:'#ff4d4f'}}>{error}</div>}
       </div>
 
       {/* Image Gallery Section */}
@@ -172,8 +180,17 @@ const Home: React.FC = () => {
 
       {/* Fullscreen Image Modal */}
       {fullscreenImage && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center" onClick={() => setFullscreenImage(null)}>
-          <div className="max-h-[90vh] max-w-[90vw]">
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
+          onClick={() => setFullscreenImage(null)}
+          tabIndex={-1}
+          aria-modal="true"
+          role="dialog"
+          onKeyDown={e => {
+            if (e.key === 'Escape') setFullscreenImage(null);
+          }}
+        >
+          <div className="max-h-[90vh] max-w-[90vw]" tabIndex={0} autoFocus>
             <LazyImage
               src={fullscreenImage}
               alt="Fullscreen COMET"
@@ -188,6 +205,7 @@ const Home: React.FC = () => {
       <div className="w-full max-w-4xl flex justify-center mb-16">
         <Button
           onClick={() => navigate('/scanner')}
+          aria-label="Start the COMET Scanner Template Wizard"
           className="px-8 py-6 text-xl font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg shadow-cyan-500/20"
           variant="primary"
         >
