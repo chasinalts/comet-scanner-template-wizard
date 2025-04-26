@@ -35,7 +35,24 @@ export default function AdminDashboard() {
   // Check if the user is an owner
   useEffect(() => {
     const checkOwnerStatus = async () => {
+      console.log('AdminDashboard: Checking owner status');
+      console.log('AdminDashboard: Current user:', currentUser);
+
+      if (!currentUser) {
+        console.log('AdminDashboard: No current user');
+        setCanUpload(false);
+        return;
+      }
+
+      if (currentUser.is_owner) {
+        console.log('AdminDashboard: User is owner based on currentUser');
+        setCanUpload(true);
+        return;
+      }
+
+      // Double-check with the isOwner utility
       const ownerStatus = await isOwner();
+      console.log('AdminDashboard: Owner status from utility:', ownerStatus);
       setCanUpload(ownerStatus);
     };
 

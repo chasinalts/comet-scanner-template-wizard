@@ -74,43 +74,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           if (error) {
             console.error('Error fetching user profile:', error);
+            console.error('Error details:', JSON.stringify(error, null, 2));
+
             // If profile doesn't exist, create a default one
             if (error.code === 'PGRST116') { // No rows returned
+              console.log('No user profile found, creating a new one');
+
+              // Check if user has owner metadata
+              const { data: userData } = await supabase.auth.getUser();
+              const userMetadata = userData?.user?.user_metadata;
+              console.log('User metadata:', userMetadata);
+
+              const isOwnerFromMetadata = userMetadata?.is_owner === true;
+              console.log('Is owner from metadata:', isOwnerFromMetadata);
+
               const newProfile: UserProfile = {
                 id: currentSession.user.id,
                 email: currentSession.user.email || '',
-                is_owner: false, // Default to non-owner
+                is_owner: isOwnerFromMetadata || false, // Use metadata or default to false
                 created_at: new Date().toISOString(),
-                permissions: {
+                permissions: isOwnerFromMetadata ? {
+                  content_management: true,
+                  user_management: true,
+                  system_configuration: true,
+                  media_uploads: true,
+                  security_settings: true,
+                  site_customization: true,
+                } : {
                   content_management: false,
                   user_management: false,
                   system_configuration: false,
-                  media_uploads: false, // Only owners can upload media
+                  media_uploads: false,
                   security_settings: false,
                   site_customization: false,
                 }
               };
 
+              console.log('Creating new profile:', newProfile);
+
               // Insert the new profile
-              const { error: insertError } = await supabase
+              const { error: insertError, data: insertData } = await supabase
                 .from('user_profiles')
-                .insert(newProfile);
+                .insert(newProfile)
+                .select();
 
               if (insertError) {
                 console.error('Error creating user profile:', insertError);
+                console.error('Insert error details:', JSON.stringify(insertError, null, 2));
               } else {
+                console.log('Profile created successfully:', insertData);
                 setCurrentUser(newProfile);
               }
             }
           } else if (data) {
             // Profile exists, use it
+            console.log('User profile found:', data);
             setCurrentUser(data);
+          } else {
+            console.warn('No data returned but no error either');
           }
         } catch (error) {
           console.error('Error in auth state change:', error);
+          if (error instanceof Error) {
+            console.error('Error details:', error.message, error.stack);
+          }
         }
       } else {
         // User is signed out
+        console.log('User is signed out');
         setCurrentUser(null);
       }
 
@@ -140,15 +171,70 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           if (error) {
             console.error('Error fetching user profile during initialization:', error);
+            console.error('Error details:', JSON.stringify(error, null, 2));
+
+            // If profile doesn't exist, create a default one
+            if (error.code === 'PGRST116') { // No rows returned
+              console.log('No user profile found during initialization, creating a new one');
+
+              // Check if user has owner metadata
+              const { data: userData } = await supabase.auth.getUser();
+              const userMetadata = userData?.user?.user_metadata;
+              console.log('User metadata:', userMetadata);
+
+              const isOwnerFromMetadata = userMetadata?.is_owner === true;
+              console.log('Is owner from metadata:', isOwnerFromMetadata);
+
+              const newProfile: UserProfile = {
+                id: initialSession.user.id,
+                email: initialSession.user.email || '',
+                is_owner: isOwnerFromMetadata || false, // Use metadata or default to false
+                created_at: new Date().toISOString(),
+                permissions: isOwnerFromMetadata ? {
+                  content_management: true,
+                  user_management: true,
+                  system_configuration: true,
+                  media_uploads: true,
+                  security_settings: true,
+                  site_customization: true,
+                } : {
+                  content_management: false,
+                  user_management: false,
+                  system_configuration: false,
+                  media_uploads: false,
+                  security_settings: false,
+                  site_customization: false,
+                }
+              };
+
+              console.log('Creating new profile during initialization:', newProfile);
+
+              // Insert the new profile
+              const { error: insertError, data: insertData } = await supabase
+                .from('user_profiles')
+                .insert(newProfile)
+                .select();
+
+              if (insertError) {
+                console.error('Error creating user profile during initialization:', insertError);
+                console.error('Insert error details:', JSON.stringify(insertError, null, 2));
+              } else {
+                console.log('Profile created successfully during initialization:', insertData);
+                setCurrentUser(newProfile);
+              }
+            }
           } else if (data) {
             console.log('User profile found during initialization:', data);
             setCurrentUser(data);
           } else {
-            console.warn('No user profile found during initialization');
+            console.warn('No data returned but no error either during initialization');
           }
         }
       } catch (error) {
         console.error('Error checking initial session:', error);
+        if (error instanceof Error) {
+          console.error('Error details:', error.message, error.stack);
+        }
       } finally {
         setIsLoading(false);
       }

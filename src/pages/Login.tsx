@@ -1,5 +1,5 @@
-import { useState, useRef, type FormEvent } from '../utils/react-imports';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useRef, type FormEvent, useEffect } from '../utils/react-imports';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 // Import types from Supabase
@@ -12,18 +12,29 @@ const containerVariants = {
 };
 
 const Login = () => {
-  // Firebase Auth uses email, so let's rename the state variable
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [resetEmail, setResetEmail] = useState('');
-    const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetEmailSent, setResetEmailSent] = useState(false);
 
-  const { login, sendPasswordResetEmail } = useAuth();
+  const { login, sendPasswordResetEmail, currentUser, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
-    const modalRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Check if we need to redirect to a specific page after login
+  const from = location.state?.from || '/home';
+
+  // If user is already logged in, redirect to the appropriate page
+  useEffect(() => {
+    if (currentUser && !authLoading) {
+      console.log('User already logged in, redirecting to:', from);
+      navigate(from);
+    }
+  }, [currentUser, authLoading, navigate, from]);
 
 
 
@@ -39,15 +50,20 @@ const Login = () => {
       setError('');
       setIsLoading(true);
       console.log('Attempting to login with email:', email);
+      console.log('Will redirect to:', from);
+
       // Call the updated login function from AuthContext
       await login(email, password);
-      console.log('Login successful, navigating to home page');
-      // Navigate to the home page upon successful login
-      navigate('/home');
+
+      console.log('Login successful, navigating to:', from);
+
+      // Navigate to the intended destination or home page upon successful login
+      navigate(from);
     } catch (error: any) {
       console.error('Login error details:', error);
       console.error("Login failed:", error);
       let errorMessage = 'Failed to sign in. Please check your credentials.';
+
       // Provide more specific feedback for common Supabase errors
       if (error.message) {
         // Handle specific Supabase errors
