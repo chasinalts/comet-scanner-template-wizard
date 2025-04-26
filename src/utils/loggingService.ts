@@ -89,6 +89,20 @@ class LoggingService {
   /**
    * Capture a log entry
    */
+  /**
+   * Public log method for generic logs
+   */
+  log(message: string, ...data: any[]): void {
+    this.captureLog(LogLevel.LOG, [message, ...data]);
+  }
+
+  /**
+   * Public error method for error logs
+   */
+  error(message: string, ...data: any[]): void {
+    this.captureLog(LogLevel.ERROR, [message, ...data]);
+  }
+
   private captureLog(level: LogLevel, args: any[], stack?: string): void {
     // Call original console method
     this.originalConsole[level](...args);

@@ -112,8 +112,10 @@ export default function AdminDashboard() {
       options: [...(currentQuestion.options || []), newOption]
     });
 
+    loggingService.log('Admin added answer option', { questionId, optionId: newOption.id, user: currentUser?.email });
     showToast('success', 'New answer option added');
   };
+
 
   // Generic option update handler
   const updateQuestionOption = (
@@ -138,6 +140,7 @@ export default function AdminDashboard() {
         text: e.target.value,
         value: e.target.value.toLowerCase()
       }));
+      loggingService.log('Admin updated answer option text', { questionId, optionId, newText: e.target.value, user: currentUser?.email });
     };
   };
 
@@ -147,6 +150,7 @@ export default function AdminDashboard() {
       updateQuestionOption(questionId, optionId, () => ({
         scale: parseFloat(e.target.value)
       }));
+      loggingService.log('Admin updated answer option scale', { questionId, optionId, newScale: e.target.value, user: currentUser?.email });
     };
   };
 
@@ -158,6 +162,7 @@ export default function AdminDashboard() {
 
     try {
       setUploadingImage({ questionId, optionId });
+      loggingService.log('Admin started image upload', { questionId, optionId, user: currentUser?.email });
 
       // Use Supabase Storage for image uploads
       handleSupabaseImageUpload(
@@ -180,16 +185,19 @@ export default function AdminDashboard() {
 
           showToast('success', 'Image uploaded successfully');
           setUploadingImage(null);
+          loggingService.log('Admin uploaded image', { questionId, optionId, user: currentUser?.email });
         },
         (error) => {
           console.error('Failed to upload option image:', error);
           showToast('error', 'Failed to upload image to Supabase Storage.');
           setUploadingImage(null);
+          loggingService.error('Image upload failed', { questionId, optionId, error, user: currentUser?.email });
         }
       );
     } catch (error) {
       showToast('error', 'Failed to upload image');
       setUploadingImage(null);
+      loggingService.error('Image upload failed', { questionId, optionId, error, user: currentUser?.email });
     }
   };
 
