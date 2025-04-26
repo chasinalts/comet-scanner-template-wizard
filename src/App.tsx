@@ -103,11 +103,11 @@ function App() {
                   }
                 />
 
-                {/* Protected Admin Dashboard Route */}
+                {/* Protected Admin Dashboard Route - Accessible by owners and admins */}
                 <Route
                   path="/dashboard"
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute requireAdmin={true}>
                       <Layout>
                         <Suspense fallback={<SuspenseFallback message="Loading admin dashboard..." />}>
                           <AdminDashboard />

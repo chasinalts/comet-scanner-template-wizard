@@ -20,6 +20,7 @@ import TemplateCreator from '../components/TemplateCreator';
 import HolographicText from '../components/ui/HolographicText';
 import { isOwner } from '../utils/permissionChecks';
 import LogViewer from '../components/admin/LogViewer';
+import UserManagement from '../components/admin/UserManagement';
 import loggingService from '../utils/loggingService';
 
 interface UploadingState {
@@ -313,7 +314,10 @@ export default function AdminDashboard() {
     setScannerImagesPage(newPage);
   };
 
-  if (!currentUser?.is_owner) {
+  // Check if user has admin or owner access
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.is_owner;
+
+  if (!isAdmin) {
     return <div className="p-8 text-center">
       <HolographicText
         text="You don't have permission to access this page."
@@ -659,7 +663,20 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* System Logs Section */}
+      {/* User Management Section - Only visible to owners */}
+      {currentUser?.is_owner && (
+        <section className="space-y-8">
+          <HolographicText
+            text="User Management"
+            as="h2"
+            variant="subtitle"
+            className="text-2xl font-semibold"
+          />
+          <UserManagement />
+        </section>
+      )}
+
+      {/* System Logs Section - Visible to owners and admins */}
       <section className="space-y-8">
         <HolographicText
           text="System Logs"

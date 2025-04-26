@@ -21,12 +21,13 @@ interface AuthResponse {
 type AuthStateChangeCallback = (event: AuthChangeEvent, session: Session | null) => void;
 
 // User profile data structure
-interface UserProfile {
+export interface UserProfile {
   id: string;
   email: string;
   username?: string;
   is_owner: boolean; // Changed to match database column name
   created_at?: string; // Changed to match database column name
+  last_sign_in_at?: string;
   permissions?: {
     content_management: boolean;
     user_management: boolean;
@@ -35,6 +36,9 @@ interface UserProfile {
     security_settings: boolean;
     site_customization: boolean;
   };
+
+  // Virtual property to determine role
+  role?: 'user' | 'admin' | 'owner';
 }
 
 
@@ -129,7 +133,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else if (data) {
             // Profile exists, use it
             console.log('User profile found:', data);
-            setCurrentUser(data);
+
+            // Set the role based on permissions
+            const profileWithRole = {
+              ...data,
+              role: data.is_owner ? 'owner' :
+                    (data.permissions?.user_management ? 'admin' : 'user')
+            };
+
+            setCurrentUser(profileWithRole);
           } else {
             console.warn('No data returned but no error either');
           }
@@ -225,7 +237,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
           } else if (data) {
             console.log('User profile found during initialization:', data);
-            setCurrentUser(data);
+
+            // Set the role based on permissions
+            const profileWithRole = {
+              ...data,
+              role: data.is_owner ? 'owner' :
+                    (data.permissions?.user_management ? 'admin' : 'user')
+            };
+
+            setCurrentUser(profileWithRole);
           } else {
             console.warn('No data returned but no error either during initialization');
           }

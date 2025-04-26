@@ -6,9 +6,10 @@ import { supabase } from '../supabaseConfig';
 interface ProtectedRouteProps {
   children: ReactNode;
   requireOwner?: boolean;
+  requireAdmin?: boolean;
 }
 
-const ProtectedRoute = ({ children, requireOwner = false }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }: ProtectedRouteProps) => {
   const { currentUser, isLoading, session } = useAuth();
   const location = useLocation();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -67,6 +68,14 @@ const ProtectedRoute = ({ children, requireOwner = false }: ProtectedRouteProps)
           return;
         }
 
+        // Check if they meet the admin requirement
+        if (requireAdmin && !currentUser?.is_owner && currentUser?.role !== 'admin') {
+          console.log('ProtectedRoute: Admin required but user is not admin or owner');
+          setHasAccess(false);
+          setIsCheckingAuth(false);
+          return;
+        }
+
         // User has access
         console.log('ProtectedRoute: User has access');
         setHasAccess(true);
@@ -79,7 +88,7 @@ const ProtectedRoute = ({ children, requireOwner = false }: ProtectedRouteProps)
     };
 
     checkAuth();
-  }, [currentUser, isLoading, requireOwner, session]);
+  }, [currentUser, isLoading, requireOwner, requireAdmin, session]);
 
   // Show loading state while checking auth
   if (isLoading || isCheckingAuth) {
@@ -127,6 +136,18 @@ const ProtectedRoute = ({ children, requireOwner = false }: ProtectedRouteProps)
         <Navigate
           to="/home"
           state={{ error: 'Owner access required' }}
+          replace
+        />
+      );
+    }
+
+    if (requireAdmin && currentUser && !currentUser.is_owner && currentUser.role !== 'admin') {
+      // User is not an admin or owner, redirect to home
+      console.log('ProtectedRoute: Redirecting to home (not admin)');
+      return (
+        <Navigate
+          to="/home"
+          state={{ error: 'Admin access required' }}
           replace
         />
       );

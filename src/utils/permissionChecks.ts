@@ -110,10 +110,69 @@ export const isOwner = async (): Promise<boolean> => {
 };
 
 /**
+ * Checks if the current user is an admin
+ * @returns A promise that resolves to a boolean indicating if the user is an admin
+ */
+export const isAdmin = async (): Promise<boolean> => {
+  try {
+    console.log('isAdmin: Checking if current user is an admin');
+
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      console.log('isAdmin: No authenticated user found');
+      return false;
+    }
+
+    console.log('isAdmin: User ID:', user.id);
+
+    // First check if user is an owner (owners have admin privileges)
+    const ownerStatus = await isOwner();
+    if (ownerStatus) {
+      console.log('isAdmin: User is an owner, so they have admin privileges');
+      return true;
+    }
+
+    // Get the user's profile from the database
+    console.log('isAdmin: Fetching user profile from database');
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('permissions')
+      .eq('id', user.id)
+      .single();
+
+    if (error) {
+      console.error('isAdmin: Error checking admin status:', error);
+      return false;
+    }
+
+    if (!data || !data.permissions) {
+      console.log('isAdmin: No permissions data found');
+      return false;
+    }
+
+    // Check if user has user_management permission (which defines an admin)
+    const isAdminValue = data.permissions.user_management === true;
+    console.log('isAdmin: Is admin value:', isAdminValue);
+
+    return isAdminValue;
+  } catch (error) {
+    console.error('isAdmin: Error checking admin status:', error);
+    if (error instanceof Error) {
+      console.error('isAdmin: Error details:', error.message, error.stack);
+    }
+    return false;
+  }
+};
+
+/**
  * Checks if the current user has the media_uploads permission
  * @returns A promise that resolves to a boolean indicating if the user can upload media
  */
 export const canUploadMedia = async (): Promise<boolean> => {
-  // Only owners can upload media based on our storage policies
-  return isOwner();
+  // Owners and admins can upload media
+  const adminStatus = await isAdmin();
+  const ownerStatus = await isOwner();
+  return ownerStatus || adminStatus;
 };
