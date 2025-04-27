@@ -25,16 +25,14 @@ const Login = () => {
   const location = useLocation();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Always redirect to home page after login
-  const from = '/home';
-
-  // If user is already logged in, redirect to the appropriate page
+  // If user is already logged in, redirect to the home page
   useEffect(() => {
     if (currentUser && !authLoading) {
-      console.log('User already logged in, redirecting to:', from);
-      navigate(from);
+      const homePath = '/home';
+      console.log('User already logged in, redirecting to:', homePath);
+      navigate(homePath);
     }
-  }, [currentUser, authLoading, navigate, from]);
+  }, [currentUser, authLoading, navigate]);
 
 
 
