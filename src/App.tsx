@@ -13,8 +13,7 @@ import PerformanceMonitor from './components/dev/PerformanceMonitor';
 import UpdateNotification from './components/ui/UpdateNotification';
 import CacheDebugger from './components/dev/CacheDebugger';
 import { initializeStorage } from './supabaseConfig';
-import RoleBasedRedirect from './components/RoleBasedRedirect';
-import RoleBasedLoginRedirect from './components/RoleBasedLoginRedirect';
+import { useAuth } from './contexts/AuthContext';
 
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
@@ -25,20 +24,32 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 import Home from './pages/Home';
 
 function App() {
-  // Initialize Supabase storage when the app starts
+  const { currentUser, isLoading } = useAuth();
+
+  // Initialize Supabase storage only when the user is authenticated and is an owner
   useEffect(() => {
     const init = async () => {
-      try {
-        console.log('Initializing Supabase storage...');
-        const result = await initializeStorage();
-        console.log('Supabase storage initialization result:', result);
-      } catch (error) {
-        console.error('Error initializing Supabase storage:', error);
+      // Only proceed if authentication is complete and we have a user
+      if (isLoading || !currentUser) return;
+
+      // Check if the user is an owner
+      const isOwner = currentUser.is_owner === true || currentUser.is_owner === 'true';
+
+      if (isOwner) {
+        try {
+          console.log('User is owner, initializing Supabase storage...');
+          const result = await initializeStorage();
+          console.log('Supabase storage initialization result:', result);
+        } catch (error) {
+          console.error('Error initializing Supabase storage:', error);
+        }
+      } else {
+        console.log('User is not an owner, skipping storage initialization');
       }
     };
 
     init();
-  }, []);
+  }, [currentUser, isLoading]);
 
   return (
     <ErrorBoundary>
@@ -51,15 +62,8 @@ function App() {
               <UpdateNotification />
               <CacheDebugger />
               <Routes>
-                {/* Role-based root redirect */}
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <RoleBasedRedirect />
-                    </ProtectedRoute>
-                  }
-                />
+                {/* Login is the first page */}
+                <Route path="/" element={<Navigate to="/login" replace />} />
 
                 {/* Home Page Route - Protected but accessible to all authenticated users */}
                 <Route
@@ -79,7 +83,11 @@ function App() {
                 <Route
                   path="/login"
                   element={
-                    <RoleBasedLoginRedirect />
+                    <Layout>
+                      <Suspense fallback={<SuspenseFallback message="Loading login page..." />}>
+                        <Login />
+                      </Suspense>
+                    </Layout>
                   }
                 />
                 <Route

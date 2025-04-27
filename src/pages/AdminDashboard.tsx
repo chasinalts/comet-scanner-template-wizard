@@ -22,6 +22,7 @@ import { isOwner } from '../utils/permissionChecks';
 import LogViewer from '../components/admin/LogViewer';
 import UserManagement from '../components/admin/UserManagement';
 import loggingService from '../utils/loggingService';
+import { initializeStorage } from '../supabaseConfig';
 
 interface UploadingState {
   questionId?: string;
@@ -318,6 +319,23 @@ export default function AdminDashboard() {
   const isAdmin = currentUser?.role === 'admin' ||
                  currentUser?.is_owner === true ||
                  currentUser?.is_owner === 'true';
+
+  // Initialize storage if user is an owner
+  useEffect(() => {
+    const initStorage = async () => {
+      if (currentUser?.is_owner === true || currentUser?.is_owner === 'true') {
+        try {
+          console.log('Owner accessing dashboard, initializing storage...');
+          const result = await initializeStorage();
+          console.log('Storage initialization result:', result);
+        } catch (error) {
+          console.error('Error initializing storage:', error);
+        }
+      }
+    };
+
+    initStorage();
+  }, [currentUser]);
 
   if (!isAdmin) {
     return <div className="p-8 text-center">
