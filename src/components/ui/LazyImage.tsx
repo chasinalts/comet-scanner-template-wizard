@@ -15,6 +15,7 @@ interface LazyImageProps {
   gallerySize?: boolean;
   sizes?: string;
   loadingStrategy?: 'lazy' | 'eager';
+  scale?: number; // Added scale property
 }
 
 /**
@@ -31,7 +32,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
   onClick,
   gallerySize = false,
   sizes = '100vw',
-  loadingStrategy = 'lazy'
+  loadingStrategy = 'lazy',
+  scale = 1 // Default scale to 1
 }) => {
   // State for tracking image loading
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -249,6 +251,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
           className={`transition-opacity duration-300 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           } absolute inset-0 w-full h-full object-cover`}
+          style={{ transform: `scale(${scale})` }} // Apply scale transformation
           onLoad={handleImageLoad}
           onError={handleImageError}
           width={width}
