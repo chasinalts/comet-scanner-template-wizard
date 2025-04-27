@@ -75,6 +75,33 @@ const Layout = ({ children }: LayoutProps) => {
             {/* Navigation */}
             {currentUser && (
               <nav className="flex space-x-8 -mb-px">
+                {/* For owners and admins, show Dashboard as the first link */}
+                {(currentUser.is_owner === true || currentUser.is_owner === 'true' || currentUser.role === 'admin') && (
+                  <Link
+                    to="/dashboard"
+                    className={`border-b-2 py-4 px-1 inline-flex items-center text-sm font-medium transition-colors ${
+                      isActive('/dashboard')
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
+                )}
+
+                {/* Home link for all users */}
+                <Link
+                  to="/home"
+                  className={`border-b-2 py-4 px-1 inline-flex items-center text-sm font-medium transition-colors ${
+                    isActive('/home')
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                  }`}
+                >
+                  Home
+                </Link>
+
+                {/* Scanner Templates link for all users */}
                 <Link
                   to="/scanner"
                   className={`border-b-2 py-4 px-1 inline-flex items-center text-sm font-medium transition-colors ${
@@ -85,19 +112,6 @@ const Layout = ({ children }: LayoutProps) => {
                 >
                   Scanner Templates
                 </Link>
-
-                {currentUser.is_owner && (
-                  <Link
-                    to="/admin"
-                    className={`border-b-2 py-4 px-1 inline-flex items-center text-sm font-medium transition-colors ${
-                      isActive('/admin')
-                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                    }`}
-                  >
-                    Admin Dashboard
-                  </Link>
-                )}
               </nav>
             )}
           </div>

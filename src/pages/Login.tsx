@@ -24,10 +24,18 @@ const Login = () => {
   const location = useLocation();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // If user is already logged in, redirect to the home page
+  // If user is already logged in, redirect to the appropriate page
   useEffect(() => {
     if (currentUser && !authLoading) {
-      navigate('/home');
+      // Redirect owners and admins to the dashboard, others to home
+      const isOwner = currentUser.is_owner === true || currentUser.is_owner === 'true';
+      const isAdmin = currentUser.role === 'admin';
+
+      if (isOwner || isAdmin) {
+        navigate('/dashboard');
+      } else {
+        navigate('/home');
+      }
     }
   }, [currentUser, authLoading, navigate]);
 
@@ -47,8 +55,23 @@ const Login = () => {
       // Call the login function from AuthContext
       await login(email, password);
 
-      // Navigate to home page upon successful login
-      navigate('/home');
+      // Get the current user after login
+      const user = currentUser;
+
+      // Redirect to the appropriate page based on user role
+      if (user) {
+        const isOwner = user.is_owner === true || user.is_owner === 'true';
+        const isAdmin = user.role === 'admin';
+
+        if (isOwner || isAdmin) {
+          navigate('/dashboard');
+        } else {
+          navigate('/home');
+        }
+      } else {
+        // If user is not available yet, navigate to home as fallback
+        navigate('/home');
+      }
     } catch (error: any) {
       console.error('Login error details:', error);
       let errorMessage = 'Failed to sign in. Please check your credentials.';

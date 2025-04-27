@@ -56,7 +56,7 @@ function AppContent() {
 
   return (
     <Routes>
-      {/* Login is the entry point */}
+      {/* Login is the entry point for unauthenticated users */}
       <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* Home Page Route - Protected but accessible to all authenticated users */}
