@@ -21,39 +21,7 @@ const LOG_LEVEL_ICONS = {
   [LogLevel.ERROR]: '❌'
 };
 
-import { useAuth } from '../../contexts/AuthContext';
-
 const LogViewer = () => {
-  const { currentUser } = useAuth();
-  const isAdmin = currentUser?.role === 'admin' || currentUser?.is_owner;
-
-  if (!isAdmin) {
-    return (
-      <div className="p-8 text-center">
-        <HolographicText
-          text="You don't have permission to view logs."
-          as="p"
-          variant="subtitle"
-          className="text-center"
-        />
-      </div>
-    );
-  }
-
-  // Download logs as JSON file
-  const handleDownloadLogs = () => {
-    const logsJson = loggingService.exportLogs();
-    const blob = new Blob([logsJson], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `logs_${new Date().toISOString()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [filter, setFilter] = useState<LogLevel | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -147,22 +115,9 @@ const LogViewer = () => {
   };
 
   return (
-    <div className="log-viewer-container">
-      <div className="flex items-center justify-between mb-2">
-        <HolographicText text="System Logs" as="h2" className="text-xl font-bold" />
-        <button
-          className="px-3 py-1 bg-blue-700 hover:bg-blue-800 text-white rounded shadow"
-          onClick={handleDownloadLogs}
-        >
-          Download Logs
-        </button>
-      </div>
+    <div className="bg-gray-900/80 rounded-lg shadow-lg p-4 backdrop-blur-sm border border-cyan-800/50">
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-3">
-          {!loggingService.isPersisted?.() && (
-            <span className="text-xs bg-yellow-700 text-yellow-200 px-2 py-1 rounded" title="Logs are only stored in memory and may be lost on refresh.">In-memory only</span>
-          )}
-        </div>
+        <HolographicText text="System Logs" as="h2" className="text-xl font-bold" />
         <div className="flex space-x-2">
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}

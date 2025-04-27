@@ -11,17 +11,7 @@ import { useWizard } from '../contexts/WizardContext';
 import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
 import type { Question, QuestionOption } from '../types/questions';
-import type { Answers } from '../contexts/WizardContext';
-
-interface Template {
-  id: string;
-  template_name: string;
-  template_data: string | Answers;
-  created_at: string;
-}
-import type { ImageContent } from '../hooks/useAdminContent';
 import VirtualizedImageGallery from '../components/ui/VirtualizedImageGallery';
-import type { AnswerValue } from '../contexts/WizardContext';
 import LazyImage from '../components/ui/LazyImage';
 import { TextField, CheckboxField } from '../components/ui/FormField';
 import HolographicText from '../components/ui/HolographicText';
@@ -51,7 +41,6 @@ const ScannerWizard = () => {
   const { sections } = useSections(); // Load sections managed by admin
 
   // UI state
-  const [scannerImages, setScannerImages] = useState<ImageContent[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState<string>('');
   const [showFloatingPreview, setShowFloatingPreview] = useState(true);
@@ -64,10 +53,9 @@ const ScannerWizard = () => {
   // Template state
   const [fullTemplateCode, setFullTemplateCode] = useState<string>('');
   const [fullTemplateEnabled, setFullTemplateEnabled] = useState<boolean>(false);
+  const [savedTemplates, setSavedTemplates] = useState<any[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [templateName, setTemplateName] = useState<string>('');
-  const [templateNameError, setTemplateNameError] = useState<string>('');
-  const [savedTemplates, setSavedTemplates] = useState<Template[]>([]);
 
   // Load admin-managed questions and sections into wizard context
   React.useEffect(() => {
@@ -82,6 +70,8 @@ const ScannerWizard = () => {
   const bannerContent = getBannerImage();
 
   // Get scanner images with error handling
+  const [scannerImages, setScannerImages] = useState<any[]>([]);
+
   React.useEffect(() => {
     try {
       const images = getScannerImages();
@@ -106,8 +96,7 @@ const ScannerWizard = () => {
       // For now, we'll use localStorage as a placeholder
       const userTemplates = localStorage.getItem(`user_templates_${currentUser?.id}`);
       if (userTemplates) {
-        const parsedTemplates = JSON.parse(userTemplates) as Template[];
-        setSavedTemplates(parsedTemplates);
+        setSavedTemplates(JSON.parse(userTemplates));
       }
     } catch (error) {
       console.error('Error loading templates:', error);
@@ -141,27 +130,21 @@ const ScannerWizard = () => {
     }
   };
 
-  // Utilities
-  // Import or stub showToast and loggingService if not present
-  // @ts-ignore
-  const showToast = (type: string, message: string) => { window.alert(`${type}: ${message}`); };
-  // @ts-ignore
-  const loggingService = { log: (...args: any[]) => console.log('[LOG]', ...args), error: (...args: any[]) => console.error('[ERROR]', ...args) };
-
   // Template management functions
   const saveTemplate = () => {
     if (!templateName.trim()) {
-      setTemplateNameError('Please enter a template name');
+      alert('Please enter a template name');
       return;
-    } else {
-      setTemplateNameError('');
     }
 
-    const newTemplate: Template = {
+    const newTemplate = {
       id: `template-${Date.now()}`,
-      template_name: templateName,
-      template_data: wizardMode === 'fullTemplate' ? fullTemplateCode : wizardState.answers,
-      created_at: new Date().toISOString(),
+      name: templateName,
+      code: wizardMode === 'fullTemplate' ? fullTemplateCode : '', // For full template mode
+      answers: wizardState.answers, // For wizard mode
+      skippedQuestions: Array.from(skippedQuestions),
+      createdAt: new Date().toISOString(),
+      userId: currentUser?.id
     };
 
     const updatedTemplates = [...savedTemplates, newTemplate];
@@ -173,14 +156,12 @@ const ScannerWizard = () => {
     }
 
     setTemplateName('');
-    showToast('success', 'Template saved successfully!');
-    loggingService.log('Template saved', { templateName, userId: currentUser?.id });
+    alert('Template saved successfully!');
   };
 
   const deleteTemplate = (templateId: string) => {
     const updatedTemplates = savedTemplates.filter(t => t.id !== templateId);
     setSavedTemplates(updatedTemplates);
-    loggingService.log('Template deleted', { templateId, userId: currentUser?.id });
 
     // Update localStorage
     if (currentUser?.id) {
@@ -196,7 +177,6 @@ const ScannerWizard = () => {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareTemplateId, setShareTemplateId] = useState<string | null>(null);
   const [shareEmail, setShareEmail] = useState('');
-  const [shareEmailError, setShareEmailError] = useState<string>('');
   const [shareMessage, setShareMessage] = useState('');
 
   const openShareModal = (templateId: string) => {
@@ -206,22 +186,19 @@ const ScannerWizard = () => {
 
   const shareTemplate = () => {
     if (!shareEmail.trim()) {
-      setShareEmailError('Please enter an email address');
+      alert('Please enter an email address');
       return;
-    } else {
-      setShareEmailError('');
     }
 
     const template = savedTemplates.find(t => t.id === shareTemplateId);
     if (!template) {
-      showToast('error', 'Template not found');
+      alert('Template not found');
       return;
     }
 
     // In a real app, this would send the template via email or generate a share link
     // For now, we'll just show a success message
-    showToast('success', `Template "${template.template_name}" would be shared with ${shareEmail}`);
-    loggingService.log('Template shared', { templateId: template.id, to: shareEmail, userId: currentUser?.id });
+    alert(`Template "${template.name}" would be shared with ${shareEmail}`);
 
     // Reset share form
     setShareEmail('');
@@ -234,24 +211,22 @@ const ScannerWizard = () => {
     const template = savedTemplates.find(t => t.id === templateId);
     if (template) {
       setSelectedTemplateId(templateId);
-      loggingService.log('Template loaded', { templateId, userId: currentUser?.id });
 
-      // If it's a full template (template_data is a string), just set the mode
-      if (typeof template.template_data === 'string') {
+      // If it's a full template, just set the mode
+      if (template.code) {
         setWizardMode('fullTemplate');
-        setFullTemplateCode(template.template_data);
+        setFullTemplateCode(template.code);
       }
-      // If it's a wizard template (template_data is an object with answers)
-      else if (typeof template.template_data === 'object' && template.template_data !== null) {
+      // If it's a wizard template, restore answers and skipped questions
+      else if (template.answers) {
         setWizardMode('wizard');
-        wizardDispatch({ type: 'SET_ANSWERS', payload: template.template_data });
-        // No skippedQuestions stored; optionally reset or handle as needed
-        setSkippedQuestions(new Set());
+        wizardDispatch({ type: 'SET_ANSWERS', payload: template.answers });
+        setSkippedQuestions(new Set(template.skippedQuestions || []));
       }
     }
   };
 
-  const handleAnswerChange = (questionId: string, value: AnswerValue) => {
+  const handleAnswerChange = (questionId: string, value: any) => {
     wizardDispatch({ type: 'SET_ANSWER', payload: { questionId, value } });
   };
 
@@ -266,7 +241,7 @@ const ScannerWizard = () => {
             value={(answer as string) || ''}
             onChange={(e) => handleAnswerChange(question.id, e.target.value)}
             required={question.required}
-            className="holo-btn text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+            className="text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
           />
         );
       case 'choice':
@@ -384,7 +359,7 @@ const ScannerWizard = () => {
           {scannerImages.length > 0 && (
             <motion.div
               variants={itemVariants}
-              className="holo-card max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16"
+              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16"
             >
               <HolographicText
                 text="Scanner Variations"
@@ -401,7 +376,7 @@ const ScannerWizard = () => {
                 columnCount={3}
                 itemGap={16}
                 className="mb-8"
-                itemClassName="holo-card overflow-hidden transform transition-transform hover:scale-105"
+                itemClassName="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105"
                 loadingStrategy="lazy"
               />
             </motion.div>
@@ -428,15 +403,296 @@ const ScannerWizard = () => {
                   className="text-3xl font-bold mb-6 text-center"
                 />
 
-                <div className="holo-card p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+                  <pre className="overflow-auto p-4 bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-gray-200 font-mono rounded-lg max-h-[60vh]">
+                    <code>{fullTemplateCode}</code>
+                  </pre>
+                </div>
+
+                {/* Template Save Controls */}
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-center mt-8">
+                  <TextField
+                    value={templateName}
+                    onChange={(e) => setTemplateName(e.target.value)}
+                    placeholder="Enter a name for this template"
+                    className="w-full md:w-64"
+                  />
+                  <Button onClick={saveTemplate}>Save Template</Button>
+                </div>
+              </div>
+            )}
+
+            {/* Wizard Mode */}
+            {wizardMode === 'wizard' && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Questions */}
+                <div className="lg:col-span-2 space-y-8">
+                  <motion.div variants={itemVariants}>
+                    <HolographicText
+                      text="Configure Your Template"
+                      as="h2"
+                      variant="subtitle"
+                      className="text-3xl font-bold mb-6"
+                    />
+
+                    {wizardState.questions.length > 0 ? (
+                      <div className="space-y-6">
+                        {/* Current Question */}
+                        <div className="p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 futuristic-container">
+                          {renderQuestionInput(wizardState.questions[currentQuestionIndex])}
+                        </div>
+
+                        {/* Navigation Controls */}
+                        <div className="flex justify-between mt-6">
+                          <Button
+                            onClick={goToPreviousQuestion}
+                            disabled={currentQuestionIndex === 0}
+                            variant="secondary"
+                          >
+                            Previous
+                          </Button>
+
+                          <Button
+                            onClick={skipCurrentQuestion}
+                            variant="outline"
+                          >
+                            Skip
+                          </Button>
+
+                          <Button
+                            onClick={goToNextQuestion}
+                            disabled={currentQuestionIndex === wizardState.questions.length - 1}
+                          >
+                            Next
+                          </Button>
+                        </div>
+
+                        {/* Progress Indicator */}
+                        <div className="mt-4 text-center">
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Question {currentQuestionIndex + 1} of {wizardState.questions.length}
+                          </p>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-2">
+                            <div
+                              className="bg-blue-600 h-2.5 rounded-full"
+                              style={{ width: `${((currentQuestionIndex + 1) / wizardState.questions.length) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        {/* Template Save Controls */}
+                        <div className="flex flex-col md:flex-row gap-4 items-center justify-center mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                          <TextField
+                            value={templateName}
+                            onChange={(e) => setTemplateName(e.target.value)}
+                            placeholder="Enter a name for this template"
+                            className="w-full md:w-64"
+                          />
+                          <Button onClick={saveTemplate}>Save Progress</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <HolographicText
+                        text="No questions configured yet. Please set them up in the Admin Dashboard."
+                        as="p"
+                        className="text-gray-500 dark:text-gray-400"
+                      />
+                    )}
+                  </motion.div>
+                </div>
+
+                {/* Right Column: Live Preview Toggle Button */}
+                <div className="lg:col-span-1 flex flex-col items-end">
+                  <button
+                    className="mb-4 px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 transition"
+                    onClick={() => setShowFloatingPreview(v => !v)}
+                  >
+                    {showFloatingPreview ? 'Hide' : 'Show'} Live Preview
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Saved Templates Section */}
+            <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <HolographicText
+                text="Saved Templates"
+                as="h2"
+                variant="subtitle"
+                className="text-2xl font-bold mb-6"
+              />
+
+              {savedTemplates.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {savedTemplates.map(template => (
+                    <div
+                      key={template.id}
+                      className={`p-4 rounded-lg border ${selectedTemplateId === template.id
+                        ? 'border-blue-500 ring-2 ring-blue-500'
+                        : 'border-gray-200 dark:border-gray-700'}
+                        bg-white dark:bg-gray-800 shadow hover:shadow-md transition-all`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{template.name}</h3>
+                        <div className="flex space-x-1">
+                          <button
+                            className="text-blue-500 hover:text-blue-700 p-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openShareModal(template.id);
+                            }}
+                            title="Share Template"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                            </svg>
+                          </button>
+                          <button
+                            className="text-red-500 hover:text-red-700 p-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm(`Delete template "${template.name}"?`)) {
+                                deleteTemplate(template.id);
+                              }
+                            }}
+                            title="Delete Template"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Created: {new Date(template.createdAt).toLocaleDateString()}
+                      </p>
+                      <div className="mt-4 flex justify-between items-center">
+                        <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+                          {template.code ? 'Full Template' : 'Wizard Template'}
+                        </span>
+                        <button
+                          onClick={() => loadTemplate(template.id)}
+                          className="text-xs px-2 py-1 bg-cyan-100 dark:bg-cyan-900 text-cyan-800 dark:text-cyan-200 rounded hover:bg-cyan-200 dark:hover:bg-cyan-800"
+                        >
+                          Load Template
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 text-center">No saved templates yet. Create and save a template to see it here.</p>
+              )}
+            </div>
+
+            {/* Share Template Modal */}
+            {shareModalOpen && (
+              <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 relative">
+                  <button
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    onClick={() => setShareModalOpen(false)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+
+                  <HolographicText
+                    text="Share Template"
+                    as="h3"
+                    variant="subtitle"
+                    className="text-xl font-bold mb-4"
+                  />
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Recipient Email
+                      </label>
+                      <input
+                        type="email"
+                        value={shareEmail}
+                        onChange={(e) => setShareEmail(e.target.value)}
+                        placeholder="Enter email address"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Message (Optional)
+                      </label>
+                      <textarea
+                        value={shareMessage}
+                        onChange={(e) => setShareMessage(e.target.value)}
+                        placeholder="Add a personal message"
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+
+                    <div className="flex justify-end space-x-3 pt-4">
+                      <Button
+                        variant="secondary"
+                        onClick={() => setShareModalOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={shareTemplate}
+                      >
+                        Share Template
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Floating Live Preview Window */}
+        {showFloatingPreview && (
+          <LiveFloatingPreview title="Live Code Preview" onClose={() => setShowFloatingPreview(false)}>
+            <LiveCodePreview
+              skippedQuestions={skippedQuestions}
+              fullTemplateMode={wizardMode === 'fullTemplate'}
+              fullTemplateCode={fullTemplateCode}
+            />
+          </LiveFloatingPreview>
+        )}
+
+        {/* Lightbox Modal */}
+        {selectedImage && (
+          <Modal
+            isOpen={true}
+            onClose={() => {
+              setSelectedImage(null);
+              setSelectedTitle('');
+            }}
+            title={selectedTitle}
+            size="xl"
+          >
+            <div className="relative">
+              <div className="flex justify-center items-center bg-white dark:bg-gray-800 rounded-lg p-4">
+                <div className="holo-glow">
+                  <LazyImage
+                    src={selectedImage}
+                    alt={selectedTitle}
+                    className="max-w-full max-h-[80vh] object-contain"
+                    loadingStrategy="eager"
+                  />
+                </div>
               </div>
             </div>
-          )}
-        </div>
-      </motion.div>
+          </Modal>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default ScannerWizard;

@@ -68,20 +68,20 @@ export const getProxiedImageUrl = async (url: string): Promise<string> => {
         const bucketIndex = pathParts.findIndex(part => part === 'object' || part === STORAGE_BUCKET);
 
         if (bucketIndex !== -1 && bucketIndex < pathParts.length - 1) {
-          // Force use of the correct storage bucket
-          bucket = STORAGE_BUCKET; // Always use 'images' as the bucket
-          // The path is everything after the bucket name, as before
+          // The bucket name is the next part after 'object' or the bucket name itself
+          bucket = pathParts[bucketIndex === -1 ? bucketIndex : bucketIndex + 1];
+
+          // Get the path after the bucket name
           path = pathParts.slice(bucketIndex + 2).join('/');
-          console.log('Forced bucket:', bucket);
+          console.log('Extracted bucket:', bucket);
           console.log('Extracted path:', path);
         } else {
           // Try to extract path using a different method
           const objectMatch = url.match(/\/storage\/v1\/object\/([^/]+)\/(.+)/);
           if (objectMatch && objectMatch.length >= 3) {
-            // Force use of the correct storage bucket
-            bucket = STORAGE_BUCKET; // Always use 'images' as the bucket
+            bucket = objectMatch[1];
             path = objectMatch[2];
-            console.log('Forced bucket (regex):', bucket);
+            console.log('Extracted bucket using regex:', bucket);
             console.log('Extracted path using regex:', path);
           } else {
             console.error('Could not extract bucket and path from URL:', url);
@@ -96,9 +96,8 @@ export const getProxiedImageUrl = async (url: string): Promise<string> => {
       // Try to get a public URL first
       try {
         console.log('Getting public URL for bucket:', bucket, 'path:', path);
-        // Always use STORAGE_BUCKET for .from()
         const { data: publicUrlData } = await supabase.storage
-          .from(STORAGE_BUCKET)
+          .from(bucket)
           .getPublicUrl(path);
 
         if (publicUrlData?.publicUrl) {
@@ -112,9 +111,8 @@ export const getProxiedImageUrl = async (url: string): Promise<string> => {
       // If public URL fails, try to get a signed URL
       try {
         console.log('Getting signed URL for bucket:', bucket, 'path:', path);
-        // Always use STORAGE_BUCKET for .from()
         const { data: signedUrlData } = await supabase.storage
-          .from(STORAGE_BUCKET)
+          .from(bucket)
           .createSignedUrl(path, 60 * 60); // 1 hour expiry
 
         if (signedUrlData?.signedUrl) {
