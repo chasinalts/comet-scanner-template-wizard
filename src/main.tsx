@@ -12,6 +12,15 @@ import loggingService from './utils/loggingService';
 
 // Supabase handles authentication now
 
+// Make sure the root element exists
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  const newRoot = document.createElement('div');
+  newRoot.id = 'root';
+  document.body.appendChild(newRoot);
+  console.warn('Root element not found, created a new one');
+}
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <AuthProvider>
