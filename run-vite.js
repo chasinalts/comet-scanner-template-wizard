@@ -5,10 +5,8 @@
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { fileURLToPath } from 'url';
 
 // Get the current directory
-const __filename = fileURLToPath(import.meta.url);
 const __dirname = process.cwd();
 
 console.log('🚀 Starting Vite setup...');

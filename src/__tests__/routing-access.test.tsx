@@ -13,7 +13,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { ToastProvider } from '../components/ui/Toast';
 import { WizardProvider } from '../contexts/WizardContext';
 
-function renderWithAuth(ui: React.ReactElement, { currentUser, isLoading = false }: any) {
+function renderWithAuth(ui: React.ReactElement, { currentUser, isLoading = false }: { currentUser: unknown; isLoading?: boolean }) {
   return render(
     <ThemeProvider>
       <ToastProvider>

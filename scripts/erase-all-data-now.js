@@ -4,9 +4,9 @@
  * This script directly erases all user data from Firebase Authentication and Firestore.
  * It does not require authentication and will immediately delete all user data.
  */
+ 
 
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, getDocs, deleteDoc } from 'firebase/firestore';
 
 // Firebase configuration
@@ -22,7 +22,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Function to delete all users from Firebase Authentication

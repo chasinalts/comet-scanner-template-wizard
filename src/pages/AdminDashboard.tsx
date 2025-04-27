@@ -349,29 +349,71 @@ export default function AdminDashboard() {
       </div>
     );
   }
-                ) : null}
-              </div>
-            </div>
-            <div>
-              {canUpload ? (
-                /* Banner Image Upload */
-                <DragDropUpload
-                  onFileSelect={handleBannerImageUpload}
-                  accept="image/*"
-                  title="Upload Banner Image"
-                  description="Drag and drop or click to upload a banner image"
-                  maxSize={1}
-                  isLoading={uploadingImage?.contentType === 'banner'}
-                />
-              ) : (
-                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg text-center">
-                  <HolographicText
-                    text="Only owners can upload media"
-                    as="p"
-                    className="text-amber-500"
-                  />
+
+  // MAIN DASHBOARD RETURN
+  return (
+    <div className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''} futuristic-grid-bg`}>
+      <HolographicText
+        text="Admin Dashboard"
+        as="h1"
+        variant="title"
+        className="text-3xl font-bold mb-8"
+      />
+
+      {/* Image Management Section */}
+      <section className="space-y-8">
+        <HolographicText
+          text="Image Management"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-semibold"
+        />
+
+        {/* Banner Image */}
+        <div className="holo-card p-6 border border-gray-200 dark:border-gray-700 futuristic-container holo-glow">
+          <HolographicText
+            text="Banner Image"
+            as="h3"
+            variant="subtitle"
+            className="text-xl font-medium mb-4"
+          />
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                {/* Banner Image Preview */}
+                <div className="mb-4">
+                  {getBannerImage() ? (
+                    <div className="relative aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                      <img
+                        src={getBannerImage()?.src}
+                        alt={getBannerImage()?.alt || 'Banner image'}
+                        className="w-full h-full object-contain"
+                        style={{ transform: `scale(${getBannerImage()?.scale || 1})` }}
+                      />
+                    </div>
+                  ) : null}
                 </div>
-              )}
+              </div>
+              <div>
+                {canUpload ? (
+                  <DragDropUpload
+                    onFileSelect={handleBannerImageUpload}
+                    accept="image/*"
+                    title="Upload Banner Image"
+                    description="Drag and drop or click to upload a banner image"
+                    maxSize={1}
+                    isLoading={uploadingImage?.contentType === 'banner'}
+                  />
+                ) : (
+                  <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg text-center">
+                    <HolographicText
+                      text="Only owners can upload media"
+                      as="p"
+                      className="text-amber-500"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -794,4 +836,4 @@ export default function AdminDashboard() {
       </section>
     </div>
   );
-}
+}}

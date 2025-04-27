@@ -13,6 +13,8 @@ import PerformanceMonitor from './components/dev/PerformanceMonitor';
 import UpdateNotification from './components/ui/UpdateNotification';
 import CacheDebugger from './components/dev/CacheDebugger';
 import { initializeStorage } from './supabaseConfig';
+import RoleBasedRedirect from './components/RoleBasedRedirect';
+import RoleBasedLoginRedirect from './components/RoleBasedLoginRedirect';
 
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
@@ -49,8 +51,15 @@ function App() {
               <UpdateNotification />
               <CacheDebugger />
               <Routes>
-                {/* Login is the first page */}
-                <Route path="/" element={<Navigate to="/login" replace />} />
+                {/* Role-based root redirect */}
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <RoleBasedRedirect />
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* Home Page Route - Protected but accessible to all authenticated users */}
                 <Route
@@ -70,11 +79,7 @@ function App() {
                 <Route
                   path="/login"
                   element={
-                    <Layout>
-                      <Suspense fallback={<SuspenseFallback message="Loading login page..." />}>
-                        <Login />
-                      </Suspense>
-                    </Layout>
+                    <RoleBasedLoginRedirect />
                   }
                 />
                 <Route

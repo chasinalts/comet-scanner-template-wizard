@@ -9,7 +9,7 @@ type ValidationRule = {
   max?: number;
   email?: boolean;
   url?: boolean;
-  custom?: (value: any) => boolean | string;
+  custom?: (value: unknown) => boolean | string;
 };
 
 export type ValidationRules = {
@@ -32,7 +32,7 @@ const URL_REGEX = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
 // - At least one special character
 const STRONG_PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
 
-export const validate = (values: Record<string, any>, rules: ValidationRules): ValidationErrors => {
+export const validate = (values: Record<string, unknown>, rules: ValidationRules): ValidationErrors => {
   const errors: ValidationErrors = {};
 
   Object.keys(rules).forEach((field) => {
@@ -151,7 +151,7 @@ export const createLoginAttemptsRule = (username: string): ValidationRule => ({
 
 // Custom validation rule creator
 export const createCustomRule = (
-  validator: (value: any) => boolean | string,
+  validator: (value: unknown) => boolean | string,
   message: string
 ): ValidationRule => ({
   custom: (value) => (validator(value) ? true : message),
@@ -159,9 +159,9 @@ export const createCustomRule = (
 
 // Async validation helper
 export const validateAsync = async (
-  values: Record<string, any>,
+  values: Record<string, unknown>,
   rules: ValidationRules,
-  asyncValidators: Record<string, (value: any) => Promise<boolean | string>>
+  asyncValidators: Record<string, (value: unknown) => Promise<boolean | string>>
 ): Promise<ValidationErrors> => {
   // First perform synchronous validation
   const errors = validate(values, rules);

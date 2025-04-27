@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint-disable no-undef */
 /**
  * Script to simulate Netlify build process locally with trace warnings
  *

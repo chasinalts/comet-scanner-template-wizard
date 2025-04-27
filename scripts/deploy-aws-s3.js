@@ -1,3 +1,8 @@
+#!/usr/bin/env node
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-undef */
+
 /**
  * AWS S3 deployment script
  * 

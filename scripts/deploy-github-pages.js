@@ -7,6 +7,9 @@
  * Requirements:
  * - gh-pages: npm install gh-pages --save-dev
  */
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-undef */
 
 const ghpages = require('gh-pages');
 const path = require('path');

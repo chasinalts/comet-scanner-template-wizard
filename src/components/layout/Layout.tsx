@@ -75,6 +75,18 @@ const Layout = ({ children }: LayoutProps) => {
             {/* Navigation */}
             {currentUser && (
               <nav className="flex space-x-8 -mb-px">
+                {/* Home Link: always visible */}
+                <Link
+                  to="/home"
+                  className={`border-b-2 py-4 px-1 inline-flex items-center text-sm font-medium transition-colors ${
+                    isActive('/home')
+                      ? 'border-cyan-500 text-cyan-600 dark:text-cyan-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                  }`}
+                >
+                  Home
+                </Link>
+                {/* Wizard Link: always visible */}
                 <Link
                   to="/scanner"
                   className={`border-b-2 py-4 px-1 inline-flex items-center text-sm font-medium transition-colors ${
@@ -83,15 +95,15 @@ const Layout = ({ children }: LayoutProps) => {
                       : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
-                  Scanner Templates
+                  Template Wizard
                 </Link>
-
-                {currentUser.is_owner && (
+                {/* Dashboard: only for owner/admin */}
+                {(currentUser.is_owner || currentUser.role === 'admin') && (
                   <Link
-                    to="/admin"
+                    to="/dashboard"
                     className={`border-b-2 py-4 px-1 inline-flex items-center text-sm font-medium transition-colors ${
-                      isActive('/admin')
-                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      isActive('/dashboard')
+                        ? 'border-purple-500 text-purple-600 dark:text-purple-400'
                         : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                     }`}
                   >

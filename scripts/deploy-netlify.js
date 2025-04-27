@@ -8,6 +8,9 @@
  * - Netlify CLI: npm install -g netlify-cli
  * - Netlify account and site setup
  */
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-undef */
 
 const { execSync } = require('child_process');
 const deployConfig = require('../deploy.config');

@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint-disable no-undef */
 /**
  * Simple script to run the development server
  */

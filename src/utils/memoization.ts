@@ -64,7 +64,7 @@ class LRUCache<T> {
  * @param options Memoization options
  * @returns Memoized function
  */
-export function memoize<T extends (...args: any[]) => any>(
+export function memoize<T extends (...args: unknown[]) => unknown>(
   fn: T,
   options: MemoizeOptions = {}
 ): T {
@@ -95,7 +95,9 @@ export function memoize<T extends (...args: any[]) => any>(
         return value;
       }).catch((error) => {
         // Remove failed promises from cache
-        cache.get(key) === result && cache.set(key, undefined as any, 0);
+        cache.get(key) === result && cache.set(key, undefined as ReturnType<T>, 0);
+        // If you want stricter type safety, you can also use: // cache.delete(key);
+
         throw error;
       }) as ReturnType<T>;
     }
@@ -106,7 +108,7 @@ export function memoize<T extends (...args: any[]) => any>(
   }) as T;
 
   // Add a method to clear the cache
-  (memoized as any).clearCache = () => {
+  (memoized as unknown as { clearCache: () => void }).clearCache = () => {
     cache.clear();
   };
 
@@ -124,7 +126,7 @@ export { debounce };
  * @param wait The number of milliseconds to throttle invocations to
  * @returns Throttled function
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   fn: T,
   wait: number
 ): (...args: Parameters<T>) => ReturnType<T> | undefined {

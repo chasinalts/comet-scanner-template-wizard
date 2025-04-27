@@ -60,7 +60,7 @@ const UserManagement = () => {
         }
 
         // Transform data to match our User interface
-        const transformedUsers: User[] = data.map((user: any) => ({
+        const transformedUsers: User[] = data.map((user: unknown) => ({
           id: user.id,
           email: user.email,
           username: user.username || '',
@@ -95,6 +95,7 @@ const UserManagement = () => {
       const user = users.find(u => u.id === userId);
       if (user?.is_owner) {
         showToast('error', 'Cannot change the role of an owner');
+        loggingService.log('Attempted to change owner role', { user });
         return;
       }
 
@@ -129,6 +130,7 @@ const UserManagement = () => {
       ));
 
       showToast('success', `User role updated to ${newRole}`);
+      loggingService.log('User role changed', { userId, newRole });
     } catch (error) {
       console.error('Error in handleRoleChange:', error);
       showToast('error', 'An error occurred while updating user role');
@@ -142,6 +144,7 @@ const UserManagement = () => {
       const user = users.find(u => u.id === userId);
       if (user?.is_owner) {
         showToast('error', 'Cannot delete an owner account');
+        loggingService.log('Attempted to delete owner account', { user });
         return;
       }
 
@@ -170,6 +173,7 @@ const UserManagement = () => {
       setUsers(users.filter(user => user.id !== userId));
 
       showToast('success', 'User deleted successfully');
+      loggingService.log('User deleted', { userId });
     } catch (error) {
       console.error('Error in handleDeleteUser:', error);
       showToast('error', 'An error occurred while deleting user');
@@ -256,6 +260,7 @@ const UserManagement = () => {
       setShowAddUserForm(false);
       
       showToast('success', 'User created successfully');
+      loggingService.log('User created', { userId: data.user.id, email: newUserEmail, role: newUserRole });
     } catch (error) {
       console.error('Error in handleAddUser:', error);
       showToast('error', 'An error occurred while creating user');
@@ -296,6 +301,7 @@ const UserManagement = () => {
           <Button
             onClick={() => setShowAddUserForm(!showAddUserForm)}
             variant="primary"
+            aria-label={showAddUserForm ? 'Cancel add user' : 'Open add user form'}
           >
             {showAddUserForm ? 'Cancel' : 'Add User'}
           </Button>
@@ -343,9 +349,12 @@ const UserManagement = () => {
                 <Button
                   type="submit"
                   variant="primary"
+                  aria-label="Create user"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Creating...' : 'Create User'}
+                  {isSubmitting ? (
+                    <span className="flex items-center"><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>Creating...</span>
+                  ) : 'Create User'}
                 </Button>
               </div>
             </form>
@@ -427,9 +436,13 @@ const UserManagement = () => {
                         <Button
                           variant="danger"
                           size="sm"
+                          aria-label={`Delete user ${user.email}`}
                           onClick={() => handleDeleteUser(user.id)}
+                          disabled={isSubmitting}
                         >
-                          Delete
+                          {isSubmitting ? (
+                            <span className="flex items-center"><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>Deleting...</span>
+                          ) : 'Delete'}
                         </Button>
                       )}
                     </td>

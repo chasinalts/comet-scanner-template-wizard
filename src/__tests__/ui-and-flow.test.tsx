@@ -43,7 +43,7 @@ function renderWithProviders(children: React.ReactNode, { currentUser = mockUser
     isLoading: false,
   };
   return render(
-    <AuthContext.Provider value={mockAuthContext as any}>
+    <AuthContext.Provider value={mockAuthContext as unknown}>
       <ThemeProvider>
         <ToastProvider>
           <WizardProvider>

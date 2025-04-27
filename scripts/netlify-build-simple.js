@@ -3,6 +3,8 @@
  *
  * This is a simplified version of the build script that uses ES modules.
  */
+/* eslint-env node */
+/* eslint-disable no-undef */
 
 import { execSync } from 'child_process';
 

@@ -4,6 +4,8 @@
  * This script simulates the Netlify deployment process locally to help identify any issues
  * before deploying to Netlify.
  */
+/* eslint-env node */
+/* eslint-disable no-undef */
 
 import { execSync } from 'child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';

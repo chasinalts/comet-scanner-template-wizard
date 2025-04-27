@@ -130,7 +130,12 @@ const Home: React.FC = () => {
       />
 
       {/* Banner Section */}
-      <div className="w-full max-w-5xl mb-10 flex flex-col items-center">
+      <div className="w-full max-w-5xl mb-10 flex flex-col items-center border-b border-cyan-700/40 pb-8">
+        {/* Banner image is fetched from Supabase */}
+        {/* Divider below banner */}
+        <div className="w-full flex justify-center mt-8 mb-2">
+          <div className="h-1 w-2/3 bg-gradient-to-r from-cyan-400/40 via-cyan-700/80 to-blue-700/20 rounded-full shadow-md" />
+        </div>
         {bannerUrl ? (
           <React.Suspense fallback={<div className="w-full h-72 flex items-center justify-center"><span className="animate-spin h-8 w-8 border-4 border-cyan-400 border-t-transparent rounded-full"></span></div>}>
             <LazyImage
@@ -148,7 +153,12 @@ const Home: React.FC = () => {
       </div>
 
       {/* Image Gallery Section */}
-      <section className="w-full max-w-6xl mb-12">
+      <section className="w-full max-w-6xl mb-12 pt-4 border-b border-cyan-700/40 pb-10 relative">
+        {/* Gallery images are fetched from Supabase */}
+        {/* Section cue: down arrow */}
+        <div className="w-full flex justify-center mb-2">
+          <span className="animate-bounce text-cyan-400 text-3xl select-none">↓</span>
+        </div>
         <HolographicText
           text="COMET Scanner Gallery"
           as="h2"
@@ -202,21 +212,30 @@ const Home: React.FC = () => {
       )}
 
       {/* Start Wizard Button */}
-      <div className="w-full max-w-4xl flex justify-center mb-16">
+      <div className="w-full max-w-4xl flex flex-col items-center justify-center mb-16 mt-2">
+        {/* Navigates to the scanner wizard page */}
+        {/* Divider above button */}
+        <div className="w-full flex justify-center mb-6">
+  <div className="holo-divider w-1/2" />
+</div>
         <Button
-          onClick={() => navigate('/scanner')}
-          aria-label="Start the COMET Scanner Template Wizard"
-          className="px-8 py-6 text-xl font-bold rounded-full transform hover:scale-105 transition-all duration-300 shadow-lg shadow-cyan-500/20"
-          variant="primary"
-        >
-          Start the COMET Scanner Template Wizard
-        </Button>
+  onClick={() => navigate('/scanner')}
+  aria-label="Start the COMET Scanner Template Wizard"
+  className="holo-btn px-8 py-6 text-xl font-bold rounded-full transform hover:scale-105 transition-all duration-300"
+  variant="primary"
+>
+  Start the COMET Scanner Template Wizard
+</Button>
       </div>
 
-      {/* COMET Description Section */}
-      <section className="w-full max-w-4xl mb-8 bg-white/10 backdrop-blur-sm rounded-lg p-8 shadow-lg">
+      {/* COMET Description Section (always at the bottom) */}
+      <section className="holo-card w-full max-w-4xl mt-auto mb-8 p-8 shadow-lg border-t border-cyan-700/40 relative">
+        {/* Section cue: up arrow */}
+        <div className="w-full flex justify-center mb-4">
+          <span className="animate-bounce text-cyan-400 text-2xl select-none rotate-180">↓</span>
+        </div>
         <HolographicText
-          text="What is COMET?"
+          text="What is a COMET Scanner???"
           as="h2"
           variant="subtitle"
           className="text-2xl font-bold text-cyan-200 mb-4 text-center"

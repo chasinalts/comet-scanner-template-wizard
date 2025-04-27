@@ -64,9 +64,9 @@ declare module 'react-dom' {
 
 // React JSX Runtime module declaration
 declare module 'react/jsx-runtime' {
-  export const jsx: any;
-  export const jsxs: any;
-  export const Fragment: any;
+  export const jsx: unknown;
+  export const jsxs: unknown;
+  export const Fragment: unknown;
 }
 
 declare module '*.svg' {
@@ -87,6 +87,6 @@ declare module '*.png' {
 }
 
 declare module '*.json' {
-  const content: any;
+  const content: unknown;
   export default content;
 }

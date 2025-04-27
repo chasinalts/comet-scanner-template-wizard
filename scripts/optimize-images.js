@@ -1,3 +1,7 @@
+/* eslint-env node */
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 /**
  * Image optimization script
  * 
@@ -63,7 +67,7 @@ const findImages = () => {
 };
 
 // Process an image
-const processImage = async (imagePath) => {
+const processImage = async (imagePath: string) => {
   const filename = path.basename(imagePath);
   const ext = path.extname(imagePath).toLowerCase();
   const basename = path.basename(imagePath, ext);

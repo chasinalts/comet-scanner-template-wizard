@@ -1,12 +1,13 @@
-/**
- * Simple script to run Vite build directly
- */
+#!/usr/bin/env node
+/* eslint-env node */
+/* eslint-disable no-undef */
 
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
 import { join } from 'path';
 
 console.log('🚀 Starting Vite build...');
+console.log('Current directory:', globalThis.process.cwd());
 console.log('Current directory:', process.cwd());
 
 try {

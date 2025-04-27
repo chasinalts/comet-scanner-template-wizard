@@ -21,7 +21,25 @@ const LOG_LEVEL_ICONS = {
   [LogLevel.ERROR]: '❌'
 };
 
+import { useAuth } from '../../contexts/AuthContext';
+
 const LogViewer = () => {
+  const { currentUser } = useAuth();
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.is_owner;
+
+  if (!isAdmin) {
+    return (
+      <div className="p-8 text-center">
+        <HolographicText
+          text="You don't have permission to view logs."
+          as="p"
+          variant="subtitle"
+          className="text-center"
+        />
+      </div>
+    );
+  }
+
   // Download logs as JSON file
   const handleDownloadLogs = () => {
     const logsJson = loggingService.exportLogs();

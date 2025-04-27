@@ -70,7 +70,7 @@ export const simulateApi = async <T>(
 };
 
 export const mockProfileApi = {
-  validateProfile: async (_data: any, signal?: AbortSignal) => {
+  validateProfile: async (_data: unknown, signal?: AbortSignal) => {
     return simulateApi(
       { isValid: true },
       {
@@ -83,7 +83,7 @@ export const mockProfileApi = {
     );
   },
 
-  updateProfile: async (data: any, signal?: AbortSignal) => {
+  updateProfile: async (data: unknown, signal?: AbortSignal) => {
     return simulateApi(
       { success: true, data },
       {
@@ -96,7 +96,7 @@ export const mockProfileApi = {
     );
   },
 
-  updateNotifications: async (settings: any, signal?: AbortSignal) => {
+  updateNotifications: async (settings: unknown, signal?: AbortSignal) => {
     return simulateApi(
       { updated: true, settings },
       {

@@ -5,8 +5,8 @@ import { supabase } from '../supabaseConfig';
 interface Template {
   id: string;
   template_name: string;
-  template_data: any;
-  created_at: any;
+  template_data: unknown;
+  created_at: unknown;
 }
 
 const TemplateCreator: React.FC = () => {
@@ -47,12 +47,16 @@ const TemplateCreator: React.FC = () => {
           .eq('user_id', currentUser.id)
           .order('created_at', { ascending: false });
         if (!fetchError) {
-          const templates: Template[] = (data || []).map((row: any) => ({
-            id: row.id,
-            template_name: row.template_name,
-            template_data: row.template_data,
-            created_at: row.created_at,
-          }));
+          const templates: Template[] = (data || []).map((row: unknown) => {
+            // TODO: Replace 'any' cast with a stricter type if possible
+            const r = row as any;
+            return {
+              id: r.id,
+              template_name: r.template_name,
+              template_data: r.template_data,
+              created_at: r.created_at,
+            };
+          });
           setUserTemplates(templates);
         }
       }
@@ -63,38 +67,42 @@ const TemplateCreator: React.FC = () => {
     }
   };
 
-    useEffect(() => {
-        const fetchUserTemplates = async () => {
-            if (currentUser) {
-                setIsLoading(true);
-                try {
-                    // Fetch templates for the current user from Supabase
-                const { data, error } = await supabase
-                  .from('templates')
-                  .select('*')
-                  .eq('user_id', currentUser.id)
-                  .order('created_at', { ascending: false });
-                if (error) {
-                  throw error;
-                }
-                const templates: Template[] = (data || []).map((row: any) => ({
-                  id: row.id,
-                  template_name: row.template_name,
-                  template_data: row.template_data,
-                  created_at: row.created_at,
-                }));
-                setUserTemplates(templates);
-                } catch (error) {
-                    setError('Failed to load templates.');
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-        };
+  useEffect(() => {
+    const fetchUserTemplates = async () => {
+      if (currentUser) {
+        setIsLoading(true);
+        try {
+          // Fetch templates for the current user from Supabase
+          const { data, error } = await supabase
+            .from('templates')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+          if (error) {
+            throw error;
+          }
+          const templates: Template[] = (data || []).map((row: unknown) => {
+            const r = row as any;
+            return {
+              id: r.id,
+              template_name: r.template_name,
+              template_data: r.template_data,
+              created_at: r.created_at,
+            };
+          });
+          setUserTemplates(templates);
+        } catch (error) {
+          setError('Failed to load templates.');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+
 
         fetchUserTemplates();
     }, [currentUser]);
-
 
   return (
     <div className="p-4">
