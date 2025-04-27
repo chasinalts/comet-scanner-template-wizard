@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseConfig';
 import LazyImage from '../components/ui/LazyImage';
 import Button from '../components/ui/Button';
-import { useAdminContent } from '../hooks/useAdminContent';
 
 // COMET Scanner description and explanation
 const COMET_EXPLANATION = `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
@@ -30,8 +29,7 @@ const Home: React.FC = () => {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [error, setError] = useState('');
 
-  // Get content from admin content hook
-  const { getBannerImage, getScannerImages } = useAdminContent();
+  // State for image scales
   const [bannerScale, setBannerScale] = useState<number>(1);
   const [imageScales, setImageScales] = useState<Record<string, number>>({});
 
@@ -39,24 +37,6 @@ const Home: React.FC = () => {
   const fetchImages = async () => {
     try {
       console.log('Fetching images from Supabase Storage...');
-
-      // Get banner scale from admin content
-      const bannerImage = getBannerImage();
-      if (bannerImage) {
-        console.log('Banner image from admin content:', bannerImage);
-        setBannerScale(bannerImage.scale || 1);
-      }
-
-      // Get scanner images scales from admin content
-      const scannerImages = getScannerImages();
-      if (scannerImages.length > 0) {
-        console.log('Scanner images from admin content:', scannerImages);
-        const scales: Record<string, number> = {};
-        scannerImages.forEach(img => {
-          scales[img.src] = img.scale || 1;
-        });
-        setImageScales(scales);
-      }
 
       // Make sure the storage is initialized
       await supabase.storage.from('images').list('', { limit: 1 }).catch(err => {
@@ -227,10 +207,8 @@ const Home: React.FC = () => {
             style={{ background: 'rgba(255,255,255,0.05)' }}
             loadingStrategy="eager"
             scale={bannerScale}
-            width={getBannerImage()?.width}
-            height={getBannerImage()?.height}
-            aspectRatio={getBannerImage()?.aspectRatio}
-            displaySize={getBannerImage()?.displaySize}
+            aspectRatio="16/9"
+            displaySize="large"
           />
         ) : (
           <div className="w-full h-48 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">No banner uploaded yet.</div>
@@ -259,10 +237,8 @@ const Home: React.FC = () => {
                   style={{ boxShadow: '0 0 20px 2px rgba(0,255,255,0.2)' }}
                   gallerySize={true}
                   scale={imageScales[img] || 1}
-                  width={getScannerImages().find(image => image.src === img)?.width}
-                  height={getScannerImages().find(image => image.src === img)?.height}
-                  aspectRatio={getScannerImages().find(image => image.src === img)?.aspectRatio}
-                  displaySize={getScannerImages().find(image => image.src === img)?.displaySize}
+                  aspectRatio="16/9"
+                  displaySize="medium"
                 />
               </div>
             ))
@@ -284,10 +260,8 @@ const Home: React.FC = () => {
               className="rounded-lg shadow-2xl w-full h-full"
               loadingStrategy="eager"
               scale={fullscreenImage ? imageScales[fullscreenImage] || 1 : 1}
-              width={fullscreenImage ? getScannerImages().find(image => image.src === fullscreenImage)?.width : undefined}
-              height={fullscreenImage ? getScannerImages().find(image => image.src === fullscreenImage)?.height : undefined}
-              aspectRatio={fullscreenImage ? getScannerImages().find(image => image.src === fullscreenImage)?.aspectRatio : undefined}
-              displaySize={fullscreenImage ? getScannerImages().find(image => image.src === fullscreenImage)?.displaySize : undefined}
+              aspectRatio="16/9"
+              displaySize="large"
             />
           </div>
         </div>
