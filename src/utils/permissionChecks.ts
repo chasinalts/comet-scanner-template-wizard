@@ -59,7 +59,10 @@ export const isOwner = async (): Promise<boolean> => {
     console.log('isOwner: User metadata:', user.user_metadata);
 
     // Check if owner status is in metadata
-    if (user.user_metadata && user.user_metadata.is_owner === true) {
+    if (user.user_metadata && (
+      user.user_metadata.is_owner === true ||
+      user.user_metadata.is_owner === 'true'
+    )) {
       console.log('isOwner: User is owner based on metadata');
       return true;
     }
@@ -81,7 +84,10 @@ export const isOwner = async (): Promise<boolean> => {
         console.log('isOwner: No user profile found, checking metadata');
 
         // If user has owner metadata, they should be an owner
-        if (user.user_metadata && user.user_metadata.is_owner === true) {
+        if (user.user_metadata && (
+          user.user_metadata.is_owner === true ||
+          user.user_metadata.is_owner === 'true'
+        )) {
           console.log('isOwner: User should be owner based on metadata, but profile is missing');
           return true;
         }
@@ -96,7 +102,10 @@ export const isOwner = async (): Promise<boolean> => {
     }
 
     console.log('isOwner: User profile data:', data);
-    const isOwnerValue = data.is_owner === true;
+    // Check if is_owner is a string 'true' or boolean true
+    const isOwnerValue =
+      data.is_owner === true ||
+      data.is_owner === 'true';
     console.log('isOwner: Is owner value:', isOwnerValue);
 
     return isOwnerValue;

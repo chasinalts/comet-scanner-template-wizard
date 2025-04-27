@@ -35,19 +35,6 @@ export default function AdminDashboard() {
   const { theme } = useTheme();
   const [canUpload, setCanUpload] = useState<boolean>(false);
 
-  // Check if user has admin or owner access
-  const isAdmin = currentUser?.role === 'admin' || currentUser?.is_owner;
-  if (!isAdmin) {
-    return <div className="p-8 text-center">
-      <HolographicText
-        text="You don't have permission to access this page."
-        as="p"
-        variant="subtitle"
-        className="text-center"
-      />
-    </div>;
-  }
-
   // Check if the user is an owner
   useEffect(() => {
     const checkOwnerStatus = async () => {
@@ -125,10 +112,8 @@ export default function AdminDashboard() {
       options: [...(currentQuestion.options || []), newOption]
     });
 
-    loggingService.log('Admin added answer option', { questionId, optionId: newOption.id, user: currentUser?.email });
     showToast('success', 'New answer option added');
   };
-
 
   // Generic option update handler
   const updateQuestionOption = (
@@ -153,7 +138,6 @@ export default function AdminDashboard() {
         text: e.target.value,
         value: e.target.value.toLowerCase()
       }));
-      loggingService.log('Admin updated answer option text', { questionId, optionId, newText: e.target.value, user: currentUser?.email });
     };
   };
 
@@ -163,7 +147,6 @@ export default function AdminDashboard() {
       updateQuestionOption(questionId, optionId, () => ({
         scale: parseFloat(e.target.value)
       }));
-      loggingService.log('Admin updated answer option scale', { questionId, optionId, newScale: e.target.value, user: currentUser?.email });
     };
   };
 
@@ -175,7 +158,6 @@ export default function AdminDashboard() {
 
     try {
       setUploadingImage({ questionId, optionId });
-      loggingService.log('Admin started image upload', { questionId, optionId, user: currentUser?.email });
 
       // Use Supabase Storage for image uploads
       handleSupabaseImageUpload(
@@ -198,19 +180,16 @@ export default function AdminDashboard() {
 
           showToast('success', 'Image uploaded successfully');
           setUploadingImage(null);
-          loggingService.log('Admin uploaded image', { questionId, optionId, user: currentUser?.email });
         },
         (error) => {
           console.error('Failed to upload option image:', error);
           showToast('error', 'Failed to upload image to Supabase Storage.');
           setUploadingImage(null);
-          loggingService.error('Image upload failed', { questionId, optionId, error, user: currentUser?.email });
         }
       );
     } catch (error) {
       showToast('error', 'Failed to upload image');
       setUploadingImage(null);
-      loggingService.error('Image upload failed', { questionId, optionId, error, user: currentUser?.email });
     }
   };
 
@@ -333,24 +312,24 @@ export default function AdminDashboard() {
   // Handle page change
   const handlePageChange = (newPage: number) => {
     setScannerImagesPage(newPage);
+  };
 
   // Check if user has admin or owner access
-  const isAdmin = currentUser?.role === 'admin' || currentUser?.is_owner;
+  const isAdmin = currentUser?.role === 'admin' ||
+                 currentUser?.is_owner === true ||
+                 currentUser?.is_owner === 'true';
 
   if (!isAdmin) {
-    return (
-      <div className="p-8 text-center">
-        <HolographicText
-          text="You don't have permission to access this page."
-          as="p"
-          variant="subtitle"
-          className="text-center"
-        />
-      </div>
-    );
+    return <div className="p-8 text-center">
+      <HolographicText
+        text="You don't have permission to access this page."
+        as="p"
+        variant="subtitle"
+        className="text-center"
+      />
+    </div>;
   }
 
-  // MAIN DASHBOARD RETURN
   return (
     <div className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''} futuristic-grid-bg`}>
       <HolographicText
@@ -370,7 +349,7 @@ export default function AdminDashboard() {
         />
 
         {/* Banner Image */}
-        <div className="holo-card p-6 border border-gray-200 dark:border-gray-700 futuristic-container holo-glow">
+        <div className="rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 futuristic-container holo-glow">
           <HolographicText
             text="Banner Image"
             as="h3"
@@ -391,17 +370,74 @@ export default function AdminDashboard() {
                         style={{ transform: `scale(${getBannerImage()?.scale || 1})` }}
                       />
                     </div>
-                  ) : null}
+                  ) : (
+                    <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                      <HolographicText
+                        text="No banner image uploaded"
+                        as="p"
+                        className="text-gray-500 dark:text-gray-400"
+                      />
+                    </div>
+                  )}
                 </div>
+
+                {/* Banner Image Controls */}
+                {getBannerImage() && (
+                  <div className="space-y-4">
+                    <div>
+                      <HolographicText
+                        text={`Image Scale (${((getBannerImage()?.scale || 1) * 100).toFixed(0)}%)`}
+                        as="label"
+                        className="block text-sm font-medium text-cyan-300 mb-1"
+                      />
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="2"
+                        step="0.1"
+                        value={getBannerImage()?.scale || 1}
+                        onChange={handleImageScaleChange(getBannerImage()?.id || '')}
+                        className="w-full"
+                        key={`banner-scale-${getBannerImage()?.id}-${getBannerImage()?.scale}`}
+                      />
+                    </div>
+
+                    <div>
+                      <HolographicText
+                        text="Display Text"
+                        as="label"
+                        className="block text-sm font-medium text-cyan-300 mb-1"
+                      />
+                      <TextField
+                        value={getBannerImage()?.displayText || ''}
+                        onChange={(e) => handleImageDisplayTextChange(getBannerImage()?.id || '', e.target.value)}
+                        placeholder="Enter text to display on the banner"
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteImage(getBannerImage()?.id || '')}
+                      >
+                        Remove Banner Image
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
+
               <div>
                 {canUpload ? (
+                  /* Banner Image Upload */
                   <DragDropUpload
                     onFileSelect={handleBannerImageUpload}
                     accept="image/*"
                     title="Upload Banner Image"
                     description="Drag and drop or click to upload a banner image"
-                    maxSize={1}
+                    maxSize={5}
                     isLoading={uploadingImage?.contentType === 'banner'}
                   />
                 ) : (
@@ -506,7 +542,7 @@ export default function AdminDashboard() {
                   <button
                     onClick={() => handlePageChange(Math.max(1, scannerImagesPage - 1))}
                     disabled={scannerImagesPage === 1}
-                    className={`holo-btn px-3 py-1 rounded ${scannerImagesPage === 1 ? 'cursor-not-allowed opacity-60' : ''}`}
+                    className={`px-3 py-1 rounded ${scannerImagesPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
                   >
                     Previous
                   </button>
@@ -515,7 +551,7 @@ export default function AdminDashboard() {
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`holo-btn w-8 h-8 rounded flex items-center justify-center ${page === scannerImagesPage ? 'bg-blue-600 text-white' : ''}` }
+                      className={`w-8 h-8 rounded flex items-center justify-center ${page === scannerImagesPage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
                     >
                       {page}
                     </button>
@@ -524,7 +560,7 @@ export default function AdminDashboard() {
                   <button
                     onClick={() => handlePageChange(Math.min(getTotalScannerPages(), scannerImagesPage + 1))}
                     disabled={scannerImagesPage === getTotalScannerPages()}
-                    className={`holo-btn px-3 py-1 rounded ${scannerImagesPage === getTotalScannerPages() ? 'cursor-not-allowed opacity-60' : ''}`}
+                    className={`px-3 py-1 rounded ${scannerImagesPage === getTotalScannerPages() ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
                   >
                     Next
                   </button>
@@ -543,7 +579,7 @@ export default function AdminDashboard() {
           variant="subtitle"
           className="text-2xl font-semibold"
         />
-        <div className="holo-card p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <HolographicText
               text="Complete Pre-defined Template"
@@ -586,19 +622,20 @@ export default function AdminDashboard() {
         />
         <TemplateCreator />
         <div className="space-y-6">
-          <Button className="holo-btn" onClick={addSection}>Add New Section</Button>
+          <Button onClick={addSection}>Add New Section</Button>
           <Reorder.Group axis="y" values={sections} onReorder={reorderSections} className="space-y-4">
             {sections.map((section: Section) => (
               <Reorder.Item
                 key={section.id}
                 value={section}
-                className="holo-card p-4"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700"
               >
                 <div className="flex items-center justify-between mb-3">
                   <TextField
                     value={section.title}
                     onChange={(e) => updateSection(section.id, { title: e.target.value })}
                     className="text-lg font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800"
+                    placeholder="Section Title"
                   />
                   <div className="flex items-center space-x-4">
                     <CheckboxField
@@ -609,7 +646,6 @@ export default function AdminDashboard() {
                     <Button
                       variant="danger"
                       size="sm"
-                      className="holo-btn"
                       onClick={() => deleteSection(section.id)}
                     >
                       Delete Section
@@ -630,7 +666,7 @@ export default function AdminDashboard() {
       </section>
 
       {/* User Management Section - Only visible to owners */}
-      {currentUser?.is_owner && (
+      {(currentUser?.is_owner === true || currentUser?.is_owner === 'true') && (
         <section className="space-y-8">
           <HolographicText
             text="User Management"
@@ -836,4 +872,4 @@ export default function AdminDashboard() {
       </section>
     </div>
   );
-}}
+}

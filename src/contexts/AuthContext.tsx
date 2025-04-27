@@ -89,7 +89,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               const userMetadata = userData?.user?.user_metadata;
               console.log('User metadata:', userMetadata);
 
-              const isOwnerFromMetadata = userMetadata?.is_owner === true;
+              // Check if is_owner is a string 'true' or boolean true
+              const isOwnerFromMetadata =
+                userMetadata?.is_owner === true ||
+                userMetadata?.is_owner === 'true';
               console.log('Is owner from metadata:', isOwnerFromMetadata);
 
               const newProfile: UserProfile = {
@@ -194,7 +197,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               const userMetadata = userData?.user?.user_metadata;
               console.log('User metadata:', userMetadata);
 
-              const isOwnerFromMetadata = userMetadata?.is_owner === true;
+              // Check if is_owner is a string 'true' or boolean true
+              const isOwnerFromMetadata =
+                userMetadata?.is_owner === true ||
+                userMetadata?.is_owner === 'true';
               console.log('Is owner from metadata:', isOwnerFromMetadata);
 
               const newProfile: UserProfile = {
