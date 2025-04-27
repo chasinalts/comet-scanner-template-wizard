@@ -30,9 +30,27 @@ const Home: React.FC = () => {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [error, setError] = useState('');
 
-  // Fetch banner and gallery images from Supabase Storage
+  // Listen for image scale changes from the dashboard
   useEffect(() => {
-    const fetchImages = async () => {
+    const handleImageScaleChange = (event: CustomEvent) => {
+      const { id, scale } = event.detail;
+      console.log('Home: Received image scale change event:', { id, scale });
+
+      // Force a refresh of the images
+      fetchImages();
+    };
+
+    // Add event listener
+    window.addEventListener('image-scale-changed', handleImageScaleChange as EventListener);
+
+    // Clean up
+    return () => {
+      window.removeEventListener('image-scale-changed', handleImageScaleChange as EventListener);
+    };
+  }, []);
+
+  // Fetch banner and gallery images from Supabase Storage
+  const fetchImages = async () => {
       try {
         console.log('Fetching images from Supabase Storage...');
 
@@ -158,6 +176,7 @@ const Home: React.FC = () => {
       }
     };
 
+    // Initial fetch of images
     fetchImages();
   }, []);
 

@@ -114,6 +114,14 @@ export const useContentManager = (): ContentManagerHook => {
 
   const updateImageScale = useCallback((id: string, scale: number) => {
     updateContent(id, { scale });
+
+    // Trigger a custom event to notify other components about the scale change
+    const event = new CustomEvent('image-scale-changed', {
+      detail: { id, scale }
+    });
+    window.dispatchEvent(event);
+
+    console.log('Image scale updated and event dispatched:', { id, scale });
   }, [updateContent]);
 
   const updateImageDisplayText = useCallback((id: string, displayText: string) => {

@@ -236,7 +236,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
       ref={ref}
       className={`relative overflow-hidden ${className}`}
       style={{
-        backgroundColor: placeholderColor,
+        backgroundColor: 'transparent', // Changed from placeholderColor to transparent
         paddingBottom: aspectRatio ? `${aspectRatio}%` : undefined,
         ...style
       }}
@@ -248,7 +248,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
           alt={alt}
           className={`transition-opacity duration-300 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
-          } absolute inset-0 w-full h-full object-contain`}
+          } absolute inset-0 w-full h-full object-cover`}
           onLoad={handleImageLoad}
           onError={handleImageError}
           width={width}
