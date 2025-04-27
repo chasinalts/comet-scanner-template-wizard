@@ -25,21 +25,16 @@ const Login = () => {
   const location = useLocation();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Determine landing page after login based on role
-  const getLandingPage = (user: any) => {
-    if (!user) return '/login';
-    if (user.is_owner || user.role === 'admin') return '/dashboard';
-    return '/home';
-  };
+  // Always redirect to home page after login
+  const from = '/home';
 
-  // If user is already logged in, redirect to the correct landing page
+  // If user is already logged in, redirect to the appropriate page
   useEffect(() => {
     if (currentUser && !authLoading) {
-      const landingPage = getLandingPage(currentUser);
-      console.log('User already logged in, redirecting to:', landingPage);
-      navigate(landingPage);
+      console.log('User already logged in, redirecting to:', from);
+      navigate(from);
     }
-  }, [currentUser, authLoading, navigate]);
+  }, [currentUser, authLoading, navigate, from]);
 
 
 
@@ -55,16 +50,18 @@ const Login = () => {
       setError('');
       setIsLoading(true);
       console.log('Attempting to login with email:', email);
-      console.log('Will redirect to:', from);
+
+      // Define the redirect path here to ensure it's in scope
+      const redirectPath = '/home';
+      console.log('Will redirect to:', redirectPath);
 
       // Call the updated login function from AuthContext
       await login(email, password);
 
-      // After login, determine landing page
-      const user = (await login(email, password)) || currentUser;
-      const landingPage = getLandingPage(user);
-      console.log('Login successful, navigating to:', landingPage);
-      navigate(landingPage);
+      console.log('Login successful, navigating to:', redirectPath);
+
+      // Navigate to the intended destination or home page upon successful login
+      navigate(redirectPath);
     } catch (error: any) {
       console.error('Login error details:', error);
       console.error("Login failed:", error);
