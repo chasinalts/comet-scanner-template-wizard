@@ -62,7 +62,7 @@ class LoggingService {
 
     // Add unhandled promise rejection handler
     window.addEventListener('unhandledrejection', (event) => {
-      this.captureLog(LogLevel.ERROR, ['Unhandled Promise Rejection:', event.reason], 
+      this.captureLog(LogLevel.ERROR, ['Unhandled Promise Rejection:', event.reason],
         event.reason?.stack || new Error().stack);
     });
 
@@ -76,11 +76,11 @@ class LoggingService {
   restore(): void {
     if (!this.isInitialized) return;
 
-    console.debug = this.originalConsole[LogLevel.DEBUG];
-    console.info = this.originalConsole[LogLevel.INFO];
-    console.log = this.originalConsole[LogLevel.LOG];
-    console.warn = this.originalConsole[LogLevel.WARN];
-    console.error = this.originalConsole[LogLevel.ERROR];
+    console.debug = this.originalConsole[LogLevel.DEBUG] as Console['debug'];
+    console.info = this.originalConsole[LogLevel.INFO] as Console['info'];
+    console.log = this.originalConsole[LogLevel.LOG] as Console['log'];
+    console.warn = this.originalConsole[LogLevel.WARN] as Console['warn'];
+    console.error = this.originalConsole[LogLevel.ERROR] as Console['error'];
 
     this.isInitialized = false;
     this.originalConsole[LogLevel.INFO]('Logging service restored');
@@ -89,20 +89,6 @@ class LoggingService {
   /**
    * Capture a log entry
    */
-  /**
-   * Public log method for generic logs
-   */
-  log(message: string, ...data: any[]): void {
-    this.captureLog(LogLevel.LOG, [message, ...data]);
-  }
-
-  /**
-   * Public error method for error logs
-   */
-  error(message: string, ...data: any[]): void {
-    this.captureLog(LogLevel.ERROR, [message, ...data]);
-  }
-
   private captureLog(level: LogLevel, args: any[], stack?: string): void {
     // Call original console method
     this.originalConsole[level](...args);
@@ -222,8 +208,8 @@ class LoggingService {
    */
   searchLogs(term: string): LogEntry[] {
     const lowerTerm = term.toLowerCase();
-    return this.logs.filter(log => 
-      log.message.toLowerCase().includes(lowerTerm) || 
+    return this.logs.filter(log =>
+      log.message.toLowerCase().includes(lowerTerm) ||
       (log.stack && log.stack.toLowerCase().includes(lowerTerm))
     );
   }
@@ -232,7 +218,7 @@ class LoggingService {
    * Get logs within a time range
    */
   getLogsByTimeRange(startTime: number, endTime: number): LogEntry[] {
-    return this.logs.filter(log => 
+    return this.logs.filter(log =>
       log.timestamp >= startTime && log.timestamp <= endTime
     );
   }

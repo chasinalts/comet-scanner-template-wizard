@@ -103,8 +103,8 @@ export function memoize<T extends (...args: unknown[]) => unknown>(
     }
 
     // For non-promises, just store the result
-    cache.set(key, result, ttl);
-    return result;
+    cache.set(key, result as ReturnType<T>, ttl);
+    return result as ReturnType<T>;
   }) as T;
 
   // Add a method to clear the cache

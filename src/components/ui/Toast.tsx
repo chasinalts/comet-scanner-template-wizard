@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React from 'react';
+import { createContext, useContext, useState, useCallback, type ReactNode } from '../../utils/react-imports';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Toast {
@@ -64,7 +65,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const showToast = useCallback((type: Toast['type'], message: string) => {
     const id = Date.now().toString();
     setToasts(prev => [...prev, { id, type, message }]);
-    
+
     // Auto-remove toast after 5 seconds
     setTimeout(() => {
       setToasts(prev => prev.filter(toast => toast.id !== id));
@@ -77,7 +78,11 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
       <div className="fixed top-4 right-4 z-50 space-y-2">
         <AnimatePresence mode="popLayout">
           {toasts.map(toast => (
-            <Toast key={toast.id} type={toast.type} message={toast.message} />
+            <Toast
+              key={toast.id}
+              type={toast.type}
+              message={toast.message}
+            />
           ))}
         </AnimatePresence>
       </div>
