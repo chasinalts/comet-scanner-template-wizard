@@ -35,6 +35,19 @@ export default function AdminDashboard() {
   const { theme } = useTheme();
   const [canUpload, setCanUpload] = useState<boolean>(false);
 
+  // Check if user has admin or owner access
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.is_owner;
+  if (!isAdmin) {
+    return <div className="p-8 text-center">
+      <HolographicText
+        text="You don't have permission to access this page."
+        as="p"
+        variant="subtitle"
+        className="text-center"
+      />
+    </div>;
+  }
+
   // Check if the user is an owner
   useEffect(() => {
     const checkOwnerStatus = async () => {
@@ -320,142 +333,45 @@ export default function AdminDashboard() {
   // Handle page change
   const handlePageChange = (newPage: number) => {
     setScannerImagesPage(newPage);
-  };
 
   // Check if user has admin or owner access
   const isAdmin = currentUser?.role === 'admin' || currentUser?.is_owner;
 
   if (!isAdmin) {
-    return <div className="p-8 text-center">
-      <HolographicText
-        text="You don't have permission to access this page."
-        as="p"
-        variant="subtitle"
-        className="text-center"
-      />
-    </div>;
-  }
-
-  return (
-    <div className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''} futuristic-grid-bg`}>
-      <HolographicText
-        text="Admin Dashboard"
-        as="h1"
-        variant="title"
-        className="text-3xl font-bold mb-8"
-      />
-
-      {/* Image Management Section */}
-      <section className="space-y-8">
+    return (
+      <div className="p-8 text-center">
         <HolographicText
-          text="Image Management"
-          as="h2"
+          text="You don't have permission to access this page."
+          as="p"
           variant="subtitle"
-          className="text-2xl font-semibold"
+          className="text-center"
         />
-
-        {/* Banner Image */}
-        <div className="rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 futuristic-container holo-glow">
-          <HolographicText
-            text="Banner Image"
-            as="h3"
-            variant="subtitle"
-            className="text-xl font-medium mb-4"
-          />
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div>
-                {/* Banner Image Preview */}
-                <div className="mb-4">
-                  {getBannerImage() ? (
-                    <div className="relative aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-                      <img
-                        src={getBannerImage()?.src}
-                        alt={getBannerImage()?.alt || 'Banner image'}
-                        className="w-full h-full object-contain"
-                        style={{ transform: `scale(${getBannerImage()?.scale || 1})` }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                      <HolographicText
-                        text="No banner image uploaded"
-                        as="p"
-                        className="text-gray-500 dark:text-gray-400"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Banner Image Controls */}
-                {getBannerImage() && (
-                  <div className="space-y-4">
-                    <div>
-                      <HolographicText
-                        text={`Image Scale (${((getBannerImage()?.scale || 1) * 100).toFixed(0)}%)`}
-                        as="label"
-                        className="block text-sm font-medium text-cyan-300 mb-1"
-                      />
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="2"
-                        step="0.1"
-                        value={getBannerImage()?.scale || 1}
-                        onChange={handleImageScaleChange(getBannerImage()?.id || '')}
-                        className="w-full"
-                        key={`banner-scale-${getBannerImage()?.id}-${getBannerImage()?.scale}`}
-                      />
-                    </div>
-
-                    <div>
-                      <HolographicText
-                        text="Display Text"
-                        as="label"
-                        className="block text-sm font-medium text-cyan-300 mb-1"
-                      />
-                      <TextField
-                        value={getBannerImage()?.displayText || ''}
-                        onChange={(e) => handleImageDisplayTextChange(getBannerImage()?.id || '', e.target.value)}
-                        placeholder="Enter text to display on the banner"
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div className="flex justify-end">
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDeleteImage(getBannerImage()?.id || '')}
-                      >
-                        Remove Banner Image
-                      </Button>
-                    </div>
-                  </div>
-                )}
+      </div>
+    );
+  }
+                ) : null}
               </div>
-
-              <div>
-                {canUpload ? (
-                  /* Banner Image Upload */
-                  <DragDropUpload
-                    onFileSelect={handleBannerImageUpload}
-                    accept="image/*"
-                    title="Upload Banner Image"
-                    description="Drag and drop or click to upload a banner image"
-                    maxSize={5}
-                    isLoading={uploadingImage?.contentType === 'banner'}
+            </div>
+            <div>
+              {canUpload ? (
+                /* Banner Image Upload */
+                <DragDropUpload
+                  onFileSelect={handleBannerImageUpload}
+                  accept="image/*"
+                  title="Upload Banner Image"
+                  description="Drag and drop or click to upload a banner image"
+                  maxSize={1}
+                  isLoading={uploadingImage?.contentType === 'banner'}
+                />
+              ) : (
+                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg text-center">
+                  <HolographicText
+                    text="Only owners can upload media"
+                    as="p"
+                    className="text-amber-500"
                   />
-                ) : (
-                  <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg text-center">
-                    <HolographicText
-                      text="Only owners can upload media"
-                      as="p"
-                      className="text-amber-500"
-                    />
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -548,7 +464,7 @@ export default function AdminDashboard() {
                   <button
                     onClick={() => handlePageChange(Math.max(1, scannerImagesPage - 1))}
                     disabled={scannerImagesPage === 1}
-                    className={`px-3 py-1 rounded ${scannerImagesPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
+                    className={`holo-btn px-3 py-1 rounded ${scannerImagesPage === 1 ? 'cursor-not-allowed opacity-60' : ''}`}
                   >
                     Previous
                   </button>
@@ -557,7 +473,7 @@ export default function AdminDashboard() {
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`w-8 h-8 rounded flex items-center justify-center ${page === scannerImagesPage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
+                      className={`holo-btn w-8 h-8 rounded flex items-center justify-center ${page === scannerImagesPage ? 'bg-blue-600 text-white' : ''}` }
                     >
                       {page}
                     </button>
@@ -566,7 +482,7 @@ export default function AdminDashboard() {
                   <button
                     onClick={() => handlePageChange(Math.min(getTotalScannerPages(), scannerImagesPage + 1))}
                     disabled={scannerImagesPage === getTotalScannerPages()}
-                    className={`px-3 py-1 rounded ${scannerImagesPage === getTotalScannerPages() ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
+                    className={`holo-btn px-3 py-1 rounded ${scannerImagesPage === getTotalScannerPages() ? 'cursor-not-allowed opacity-60' : ''}`}
                   >
                     Next
                   </button>
@@ -585,7 +501,7 @@ export default function AdminDashboard() {
           variant="subtitle"
           className="text-2xl font-semibold"
         />
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+        <div className="holo-card p-6">
           <div className="flex items-center justify-between mb-4">
             <HolographicText
               text="Complete Pre-defined Template"
@@ -628,20 +544,19 @@ export default function AdminDashboard() {
         />
         <TemplateCreator />
         <div className="space-y-6">
-          <Button onClick={addSection}>Add New Section</Button>
+          <Button className="holo-btn" onClick={addSection}>Add New Section</Button>
           <Reorder.Group axis="y" values={sections} onReorder={reorderSections} className="space-y-4">
             {sections.map((section: Section) => (
               <Reorder.Item
                 key={section.id}
                 value={section}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700"
+                className="holo-card p-4"
               >
                 <div className="flex items-center justify-between mb-3">
                   <TextField
                     value={section.title}
                     onChange={(e) => updateSection(section.id, { title: e.target.value })}
                     className="text-lg font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                    placeholder="Section Title"
                   />
                   <div className="flex items-center space-x-4">
                     <CheckboxField
@@ -652,6 +567,7 @@ export default function AdminDashboard() {
                     <Button
                       variant="danger"
                       size="sm"
+                      className="holo-btn"
                       onClick={() => deleteSection(section.id)}
                     >
                       Delete Section
