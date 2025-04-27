@@ -178,33 +178,57 @@ const ScannerWizard = () => {
   const [shareTemplateId, setShareTemplateId] = useState<string | null>(null);
   const [shareEmail, setShareEmail] = useState('');
   const [shareMessage, setShareMessage] = useState('');
+  const [shareMethod, setShareMethod] = useState<'email' | 'link'>('email');
+  const [shareLink, setShareLink] = useState<string | null>(null);
 
   const openShareModal = (templateId: string) => {
     setShareTemplateId(templateId);
     setShareModalOpen(true);
+    setShareLink(null);
   };
 
-  const shareTemplate = () => {
-    if (!shareEmail.trim()) {
-      alert('Please enter an email address');
-      return;
-    }
-
+  const generateShareLink = () => {
     const template = savedTemplates.find(t => t.id === shareTemplateId);
     if (!template) {
       alert('Template not found');
       return;
     }
 
-    // In a real app, this would send the template via email or generate a share link
-    // For now, we'll just show a success message
-    alert(`Template "${template.name}" would be shared with ${shareEmail}`);
+    // In a real app, this would generate a unique shareable link
+    // For now, we'll create a mock link
+    const mockLink = `https://comet-scanner-wizard.com/shared-template/${template.id}`;
+    setShareLink(mockLink);
 
-    // Reset share form
-    setShareEmail('');
-    setShareMessage('');
-    setShareModalOpen(false);
-    setShareTemplateId(null);
+    // In a real implementation, you would save this link to the database
+    console.log(`Generated share link for template "${template.name}": ${mockLink}`);
+  };
+
+  const shareTemplate = () => {
+    if (shareMethod === 'email') {
+      if (!shareEmail.trim()) {
+        alert('Please enter an email address');
+        return;
+      }
+
+      const template = savedTemplates.find(t => t.id === shareTemplateId);
+      if (!template) {
+        alert('Template not found');
+        return;
+      }
+
+      // In a real app, this would send the template via email
+      // For now, we'll just show a success message
+      alert(`Template "${template.name}" would be shared with ${shareEmail}`);
+
+      // Reset share form
+      setShareEmail('');
+      setShareMessage('');
+      setShareModalOpen(false);
+      setShareTemplateId(null);
+    } else {
+      // Generate a shareable link
+      generateShareLink();
+    }
   };
 
   const loadTemplate = (templateId: string) => {
@@ -606,32 +630,94 @@ const ScannerWizard = () => {
                   />
 
                   <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Recipient Email
-                      </label>
-                      <input
-                        type="email"
-                        value={shareEmail}
-                        onChange={(e) => setShareEmail(e.target.value)}
-                        placeholder="Enter email address"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                        required
-                      />
+                    {/* Share Method Tabs */}
+                    <div className="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+                      <button
+                        className={`py-2 px-4 font-medium text-sm ${
+                          shareMethod === 'email'
+                            ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400'
+                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                        }`}
+                        onClick={() => setShareMethod('email')}
+                      >
+                        Email
+                      </button>
+                      <button
+                        className={`py-2 px-4 font-medium text-sm ${
+                          shareMethod === 'link'
+                            ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400'
+                            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                        }`}
+                        onClick={() => setShareMethod('link')}
+                      >
+                        Generate Link
+                      </button>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Message (Optional)
-                      </label>
-                      <textarea
-                        value={shareMessage}
-                        onChange={(e) => setShareMessage(e.target.value)}
-                        placeholder="Add a personal message"
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                      />
-                    </div>
+                    {shareMethod === 'email' ? (
+                      <>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Recipient Email
+                          </label>
+                          <input
+                            type="email"
+                            value={shareEmail}
+                            onChange={(e) => setShareEmail(e.target.value)}
+                            placeholder="Enter email address"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Message (Optional)
+                          </label>
+                          <textarea
+                            value={shareMessage}
+                            onChange={(e) => setShareMessage(e.target.value)}
+                            placeholder="Add a personal message"
+                            rows={3}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <div>
+                        {shareLink ? (
+                          <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                              Shareable Link
+                            </label>
+                            <div className="flex">
+                              <input
+                                type="text"
+                                value={shareLink}
+                                readOnly
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                              />
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(shareLink);
+                                  alert('Link copied to clipboard!');
+                                }}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              This link allows anyone to view and use this template. The link will expire in 30 days.
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-center py-4 text-gray-600 dark:text-gray-300">
+                            Click "Generate Link" to create a shareable link for this template.
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                     <div className="flex justify-end space-x-3 pt-4">
                       <Button
@@ -644,7 +730,7 @@ const ScannerWizard = () => {
                         variant="primary"
                         onClick={shareTemplate}
                       >
-                        Share Template
+                        {shareMethod === 'email' ? 'Share via Email' : shareLink ? 'Copy Link' : 'Generate Link'}
                       </Button>
                     </div>
                   </div>

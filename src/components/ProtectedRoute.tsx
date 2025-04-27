@@ -129,6 +129,20 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
       return <Navigate to="/login" state={{ from: location.pathname }} replace />;
     }
 
+    // Check if this is a dashboard route and user is not owner/admin
+    if (location.pathname === '/dashboard' && currentUser &&
+        !currentUser.is_owner && currentUser.role !== 'admin') {
+      // User is not an owner or admin, redirect to home
+      console.log('ProtectedRoute: Redirecting to home (not owner/admin)');
+      return (
+        <Navigate
+          to="/home"
+          state={{ error: 'Owner or admin access required for dashboard' }}
+          replace
+        />
+      );
+    }
+
     if (requireOwner && currentUser && !currentUser.is_owner) {
       // User is not an owner, redirect to home
       console.log('ProtectedRoute: Redirecting to home (not owner)');

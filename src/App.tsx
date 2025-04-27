@@ -62,7 +62,7 @@ function App() {
               <UpdateNotification />
               <CacheDebugger />
               <Routes>
-                {/* Login is the first page */}
+                {/* Login is the entry point */}
                 <Route path="/" element={<Navigate to="/login" replace />} />
 
                 {/* Home Page Route - Protected but accessible to all authenticated users */}
