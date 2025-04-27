@@ -132,9 +132,10 @@ const LazyImage: React.FC<LazyImageProps> = ({
         if (gallerySize) {
           try {
             // For gallery images, resize them for better performance
+            // Using 16:9 aspect ratio (wider than tall)
             const response = await fetch(src);
             const blob = await response.blob();
-            const resizedBlob = await resizeImage(blob, 400, 400);
+            const resizedBlob = await resizeImage(blob, 640, 360);
 
             if (isMounted) {
               objectUrl = URL.createObjectURL(resizedBlob);

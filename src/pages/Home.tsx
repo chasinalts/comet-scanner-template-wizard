@@ -204,7 +204,7 @@ const Home: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-gradient-to-br from-cyan-800/30 to-blue-900/30 p-4 rounded-xl shadow-inner">
           {galleryImages.length > 0 ? (
             galleryImages.map((img, i) => (
-              <div key={img} className="aspect-square">
+              <div key={img} className="aspect-[16/9]">
                 <LazyImage
                   src={img}
                   alt={`COMET Gallery ${i + 1}`}
