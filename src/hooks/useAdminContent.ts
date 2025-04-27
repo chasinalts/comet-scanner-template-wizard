@@ -12,6 +12,11 @@ export interface ContentItem {
   isFullTemplate?: boolean;
   createdAt: number;
   updatedAt: number;
+  // New properties for controlling image size
+  width?: number;
+  height?: number;
+  aspectRatio?: string; // e.g., '16/9', '4/3', '1/1'
+  displaySize?: 'small' | 'medium' | 'large' | 'custom';
 }
 
 export interface ImageContent {
@@ -20,6 +25,11 @@ export interface ImageContent {
   alt: string;
   scale?: number;
   displayText?: string;
+  // New properties for controlling image size
+  width?: number;
+  height?: number;
+  aspectRatio?: string; // e.g., '16/9', '4/3', '1/1'
+  displaySize?: 'small' | 'medium' | 'large' | 'custom';
 }
 
 export interface AdminContentHook {
@@ -83,7 +93,12 @@ export const useAdminContent = (): AdminContentHook => {
       src: banner.imageUrl || '',
       alt: banner.title,
       scale: banner.scale,
-      displayText: banner.displayText
+      displayText: banner.displayText,
+      // Include new size properties
+      width: banner.width,
+      height: banner.height,
+      aspectRatio: banner.aspectRatio,
+      displaySize: banner.displaySize
     };
   }, [contents, filterBanners]);
 
@@ -105,7 +120,12 @@ export const useAdminContent = (): AdminContentHook => {
         src: item.imageUrl || '',
         alt: item.title,
         scale: item.scale,
-        displayText: item.displayText
+        displayText: item.displayText,
+        // Include new size properties
+        width: item.width,
+        height: item.height,
+        aspectRatio: item.aspectRatio,
+        displaySize: item.displaySize
       }))
     ),
     []

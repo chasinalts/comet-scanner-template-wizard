@@ -86,7 +86,10 @@ export default function AdminDashboard() {
     deleteContent,
     uploadImage,
     updateImageScale,
-    updateImageDisplayText
+    updateImageDisplayText,
+    updateImageSize,
+    updateImageAspectRatio,
+    updateImageDisplaySize
   } = useContentManager();
   const { getBannerImage, getScannerImages } = useAdminContent();
 
@@ -270,6 +273,24 @@ export default function AdminDashboard() {
   // Handle image display text change
   const handleImageDisplayTextChange = (id: string, displayText: string) => {
     updateImageDisplayText(id, displayText);
+  };
+
+  // Handle image size change
+  const handleImageSizeChange = (id: string, size: 'small' | 'medium' | 'large' | 'custom') => {
+    updateImageDisplaySize(id, size);
+    showToast('success', `Image size set to ${size}`);
+  };
+
+  // Handle image dimensions change
+  const handleImageDimensionsChange = (id: string, width: number, height: number) => {
+    updateImageSize(id, width, height);
+    showToast('success', `Image dimensions updated to ${width}x${height}`);
+  };
+
+  // Handle image aspect ratio change
+  const handleImageAspectRatioChange = (id: string, aspectRatio: string) => {
+    updateImageAspectRatio(id, aspectRatio);
+    showToast('success', `Image aspect ratio set to ${aspectRatio}`);
   };
 
   // Handle image deletion
@@ -523,8 +544,15 @@ export default function AdminDashboard() {
                       src={image.src}
                       alt={image.alt}
                       scale={image.scale || 1}
+                      width={image.width}
+                      height={image.height}
+                      aspectRatio={image.aspectRatio}
+                      displaySize={image.displaySize}
                       onScaleChange={(id: string, scale: number) => updateImageScale(id, scale)}
                       onDelete={handleDeleteImage}
+                      onSizeChange={handleImageSizeChange}
+                      onDimensionsChange={handleImageDimensionsChange}
+                      onAspectRatioChange={handleImageAspectRatioChange}
                     />
                   </Reorder.Item>
                 ))}

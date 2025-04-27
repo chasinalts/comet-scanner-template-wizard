@@ -16,6 +16,11 @@ interface LazyImageProps {
   sizes?: string;
   loadingStrategy?: 'lazy' | 'eager';
   scale?: number; // Added scale property
+  // New size control properties
+  aspectRatio?: string; // e.g., '16/9', '4/3', '1/1'
+  displaySize?: 'small' | 'medium' | 'large' | 'custom';
+  customWidth?: number;
+  customHeight?: number;
 }
 
 /**
@@ -33,12 +38,53 @@ const LazyImage: React.FC<LazyImageProps> = ({
   gallerySize = false,
   sizes = '100vw',
   loadingStrategy = 'lazy',
-  scale = 1 // Default scale to 1
+  scale = 1, // Default scale to 1
+  // New size control properties with defaults
+  aspectRatio,
+  displaySize = 'medium',
+  customWidth,
+  customHeight
 }) => {
   // State for tracking image loading
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(false);
+
+  // Calculate image dimensions based on displaySize
+  const getImageDimensions = useCallback(() => {
+    // If custom dimensions are provided, use those
+    if (customWidth && customHeight) {
+      return { width: customWidth, height: customHeight };
+    }
+
+    // If width and height are provided directly, use those
+    if (width && height) {
+      return { width, height };
+    }
+
+    // If aspect ratio is provided, use it with a base width
+    if (aspectRatio) {
+      const [widthRatio, heightRatio] = aspectRatio.split('/').map(Number);
+      const baseWidth = 640; // Medium size base width
+      const calculatedHeight = (baseWidth * heightRatio) / widthRatio;
+      return { width: baseWidth, height: calculatedHeight };
+    }
+
+    // Otherwise, use displaySize to determine dimensions
+    switch (displaySize) {
+      case 'small':
+        return { width: 320, height: 180 }; // 16:9 aspect ratio
+      case 'medium':
+        return { width: 640, height: 360 }; // 16:9 aspect ratio
+      case 'large':
+        return { width: 960, height: 540 }; // 16:9 aspect ratio
+      default:
+        return { width: 640, height: 360 }; // Default to medium
+    }
+  }, [customWidth, customHeight, width, height, displaySize, aspectRatio]);
+
+  // Calculate dimensions
+  const dimensions = getImageDimensions();
 
   // Use lazy loading hook with different margins based on loading strategy
   const { ref, isVisible } = useLazyLoading<HTMLDivElement>({
@@ -133,11 +179,10 @@ const LazyImage: React.FC<LazyImageProps> = ({
 
         if (gallerySize) {
           try {
-            // For gallery images, resize them for better performance
-            // Using 16:9 aspect ratio (wider than tall)
+            // For gallery images, resize them based on calculated dimensions
             const response = await fetch(src);
             const blob = await response.blob();
-            const resizedBlob = await resizeImage(blob, 640, 360);
+            const resizedBlob = await resizeImage(blob, dimensions.width, dimensions.height);
 
             if (isMounted) {
               objectUrl = URL.createObjectURL(resizedBlob);
@@ -230,8 +275,10 @@ const LazyImage: React.FC<LazyImageProps> = ({
     }
   }, [src, isSupabaseUrl]);
 
-  // Calculate aspect ratio placeholder if width and height are provided
-  const aspectRatio = width && height ? (height / width) * 100 : 0;
+  // Calculate aspect ratio placeholder using the dimensions
+  const aspectRatioPercent = dimensions.width && dimensions.height
+    ? (dimensions.height / dimensions.width) * 100
+    : 0;
 
   return (
     <div
@@ -239,7 +286,9 @@ const LazyImage: React.FC<LazyImageProps> = ({
       className={`relative overflow-hidden ${className}`}
       style={{
         backgroundColor: 'transparent', // Changed from placeholderColor to transparent
-        paddingBottom: aspectRatio ? `${aspectRatio}%` : undefined,
+        paddingBottom: aspectRatioPercent ? `${aspectRatioPercent}%` : undefined,
+        width: dimensions.width ? `${dimensions.width}px` : '100%',
+        maxWidth: '100%',
         ...style
       }}
       onClick={onClick}
@@ -254,8 +303,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
           style={{ transform: `scale(${scale})` }} // Apply scale transformation
           onLoad={handleImageLoad}
           onError={handleImageError}
-          width={width}
-          height={height}
+          width={dimensions.width}
+          height={dimensions.height}
           sizes={sizes}
           srcSet={srcSet}
         />

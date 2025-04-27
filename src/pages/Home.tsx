@@ -227,6 +227,10 @@ const Home: React.FC = () => {
             style={{ background: 'rgba(255,255,255,0.05)' }}
             loadingStrategy="eager"
             scale={bannerScale}
+            width={getBannerImage()?.width}
+            height={getBannerImage()?.height}
+            aspectRatio={getBannerImage()?.aspectRatio}
+            displaySize={getBannerImage()?.displaySize}
           />
         ) : (
           <div className="w-full h-48 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400">No banner uploaded yet.</div>
@@ -255,6 +259,10 @@ const Home: React.FC = () => {
                   style={{ boxShadow: '0 0 20px 2px rgba(0,255,255,0.2)' }}
                   gallerySize={true}
                   scale={imageScales[img] || 1}
+                  width={getScannerImages().find(image => image.src === img)?.width}
+                  height={getScannerImages().find(image => image.src === img)?.height}
+                  aspectRatio={getScannerImages().find(image => image.src === img)?.aspectRatio}
+                  displaySize={getScannerImages().find(image => image.src === img)?.displaySize}
                 />
               </div>
             ))
@@ -276,6 +284,10 @@ const Home: React.FC = () => {
               className="rounded-lg shadow-2xl w-full h-full"
               loadingStrategy="eager"
               scale={fullscreenImage ? imageScales[fullscreenImage] || 1 : 1}
+              width={fullscreenImage ? getScannerImages().find(image => image.src === fullscreenImage)?.width : undefined}
+              height={fullscreenImage ? getScannerImages().find(image => image.src === fullscreenImage)?.height : undefined}
+              aspectRatio={fullscreenImage ? getScannerImages().find(image => image.src === fullscreenImage)?.aspectRatio : undefined}
+              displaySize={fullscreenImage ? getScannerImages().find(image => image.src === fullscreenImage)?.displaySize : undefined}
             />
           </div>
         </div>

@@ -128,6 +128,43 @@ export const useContentManager = (): ContentManagerHook => {
     updateContent(id, { displayText });
   }, [updateContent]);
 
+  // New functions for updating image size properties
+  const updateImageSize = useCallback((id: string, width?: number, height?: number) => {
+    updateContent(id, { width, height });
+
+    // Trigger a custom event to notify other components about the size change
+    const event = new CustomEvent('image-size-changed', {
+      detail: { id, width, height }
+    });
+    window.dispatchEvent(event);
+
+    console.log('Image size updated and event dispatched:', { id, width, height });
+  }, [updateContent]);
+
+  const updateImageAspectRatio = useCallback((id: string, aspectRatio: string) => {
+    updateContent(id, { aspectRatio });
+
+    // Trigger a custom event to notify other components about the aspect ratio change
+    const event = new CustomEvent('image-aspect-ratio-changed', {
+      detail: { id, aspectRatio }
+    });
+    window.dispatchEvent(event);
+
+    console.log('Image aspect ratio updated and event dispatched:', { id, aspectRatio });
+  }, [updateContent]);
+
+  const updateImageDisplaySize = useCallback((id: string, displaySize: 'small' | 'medium' | 'large' | 'custom') => {
+    updateContent(id, { displaySize });
+
+    // Trigger a custom event to notify other components about the display size change
+    const event = new CustomEvent('image-display-size-changed', {
+      detail: { id, displaySize }
+    });
+    window.dispatchEvent(event);
+
+    console.log('Image display size updated and event dispatched:', { id, displaySize });
+  }, [updateContent]);
+
   return {
     contents,
     addContent,
@@ -135,7 +172,10 @@ export const useContentManager = (): ContentManagerHook => {
     deleteContent,
     uploadImage,
     updateImageScale,
-    updateImageDisplayText
+    updateImageDisplayText,
+    updateImageSize,
+    updateImageAspectRatio,
+    updateImageDisplaySize
   };
 };
 

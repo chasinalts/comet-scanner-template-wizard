@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import TrashIcon from './TrashIcon';
+import ImageSizeControls from './ImageSizeControls';
 
 interface ImageThumbnailProps {
   id: string;
   src: string;
   alt: string;
   scale?: number;
+  width?: number;
+  height?: number;
+  aspectRatio?: string;
+  displaySize?: 'small' | 'medium' | 'large' | 'custom';
   onScaleChange: (id: string, scale: number) => void;
   onDelete: (id: string) => void;
+  onSizeChange?: (id: string, size: 'small' | 'medium' | 'large' | 'custom') => void;
+  onDimensionsChange?: (id: string, width: number, height: number) => void;
+  onAspectRatioChange?: (id: string, aspectRatio: string) => void;
   className?: string;
 }
 
@@ -16,11 +24,19 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
   src,
   alt,
   scale = 1,
+  width,
+  height,
+  aspectRatio = '16/9',
+  displaySize = 'medium',
   onScaleChange,
   onDelete,
+  onSizeChange,
+  onDimensionsChange,
+  onAspectRatioChange,
   className = '',
 }) => {
   const [localScale, setLocalScale] = useState<number>(scale);
+  const [showSizeControls, setShowSizeControls] = useState<boolean>(false);
 
   // Update local scale when prop changes
   useEffect(() => {
@@ -82,6 +98,28 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Toggle size controls button */}
+        <button
+          onClick={() => setShowSizeControls(!showSizeControls)}
+          className="mt-2 text-sm text-cyan-500 hover:text-cyan-400 transition-colors"
+        >
+          {showSizeControls ? 'Hide Size Controls' : 'Show Size Controls'}
+        </button>
+
+        {/* Size controls */}
+        {showSizeControls && onSizeChange && onDimensionsChange && onAspectRatioChange && (
+          <ImageSizeControls
+            id={id}
+            currentSize={displaySize}
+            currentWidth={width}
+            currentHeight={height}
+            currentAspectRatio={aspectRatio}
+            onSizeChange={onSizeChange}
+            onDimensionsChange={onDimensionsChange}
+            onAspectRatioChange={onAspectRatioChange}
+          />
+        )}
       </div>
     </div>
   );
