@@ -75,21 +75,31 @@ const LazyImage: React.FC<LazyImageProps> = ({
           return;
         }
 
-        // For Supabase Storage URLs, use our proxy function to avoid CORS issues
+        // For Supabase Storage URLs, handle them specially
         if (isSupabaseUrl) {
           try {
             console.log('Processing Supabase URL:', src);
 
-            // Check if it's already a public URL
-            if (src.includes('/public/')) {
+            // Check if it's already a signed URL (contains token=)
+            if (src.includes('token=')) {
+              console.log('Already a signed URL, using directly:', src);
+              setImageSrc(src);
+              if (!gallerySize) {
+                setIsLoaded(true);
+                return;
+              }
+            }
+            // Check if it's a public URL
+            else if (src.includes('/public/')) {
               console.log('Already a public URL, using directly:', src);
               setImageSrc(src);
               if (!gallerySize) {
                 setIsLoaded(true);
                 return;
               }
-            } else {
-              // Try to get a proxied URL
+            }
+            // Otherwise, try to get a proxied URL
+            else {
               console.log('Getting proxied URL for:', src);
               const proxiedUrl = await getProxiedImageUrl(src);
               console.log('Proxied URL:', proxiedUrl);
@@ -183,15 +193,29 @@ const LazyImage: React.FC<LazyImageProps> = ({
   // Generate srcSet when src changes
   useEffect(() => {
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
-      // For Supabase images, we need to get a signed URL
+      // For Supabase images, handle them specially
       if (isSupabaseUrl) {
         (async () => {
           try {
-            const proxiedUrl = await getProxiedImageUrl(src);
-            setSrcSet(`${proxiedUrl} 1x, ${proxiedUrl} 2x`);
+            // If it's already a signed URL, use it directly
+            if (src.includes('token=')) {
+              setSrcSet(`${src} 1x, ${src} 2x`);
+            }
+            // If it's a public URL, use it directly
+            else if (src.includes('/public/')) {
+              setSrcSet(`${src} 1x, ${src} 2x`);
+            }
+            // Otherwise, try to get a proxied URL
+            else {
+              const proxiedUrl = await getProxiedImageUrl(src);
+              setSrcSet(`${proxiedUrl} 1x, ${proxiedUrl} 2x`);
+            }
           } catch (error) {
             console.error('Error generating srcSet:', error);
-            setSrcSet(`${src} 1x, ${src} 2x`); // Fallback to original URL
+            // Add a cache-busting parameter to the URL
+            const cacheBuster = `?t=${Date.now()}`;
+            const urlWithCacheBuster = src.includes('?') ? `${src}&t=${Date.now()}` : `${src}${cacheBuster}`;
+            setSrcSet(`${urlWithCacheBuster} 1x, ${urlWithCacheBuster} 2x`); // Fallback to original URL with cache buster
           }
         })();
       } else {

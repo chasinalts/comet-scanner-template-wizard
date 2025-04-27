@@ -59,13 +59,34 @@ const Home: React.FC = () => {
         const realBannerFiles = bannerData?.filter(file => !file.name.startsWith('.'));
 
         if (realBannerFiles && realBannerFiles.length > 0) {
-          // Get the public URL for the banner image
-          const { data: bannerUrlData } = await supabase.storage
-            .from('images')
-            .getPublicUrl(`banner/${realBannerFiles[0].name}`);
+          // Try to get a signed URL for the banner image (more reliable with RLS)
+          try {
+            const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+              .from('images')
+              .createSignedUrl(`banner/${realBannerFiles[0].name}`, 60 * 60); // 1 hour expiry
 
-          console.log('Banner URL:', bannerUrlData.publicUrl);
-          setBannerUrl(bannerUrlData.publicUrl);
+            if (signedUrlError) {
+              console.error('Error getting signed URL for banner:', signedUrlError);
+              throw signedUrlError;
+            }
+
+            if (signedUrlData?.signedUrl) {
+              console.log('Banner signed URL:', signedUrlData.signedUrl);
+              setBannerUrl(signedUrlData.signedUrl);
+            } else {
+              throw new Error('No signed URL returned for banner');
+            }
+          } catch (signedUrlError) {
+            console.error('Failed to get signed URL, falling back to public URL:', signedUrlError);
+
+            // Fallback to public URL
+            const { data: bannerUrlData } = await supabase.storage
+              .from('images')
+              .getPublicUrl(`banner/${realBannerFiles[0].name}`);
+
+            console.log('Banner public URL:', bannerUrlData.publicUrl);
+            setBannerUrl(bannerUrlData.publicUrl);
+          }
         } else {
           console.log('No banner images found');
         }
@@ -88,14 +109,46 @@ const Home: React.FC = () => {
         const realGalleryFiles = galleryData?.filter(file => !file.name.startsWith('.'));
 
         if (realGalleryFiles && realGalleryFiles.length > 0) {
-          // Get public URLs for all gallery images
-          const urls = realGalleryFiles.map(img => {
-            const { data } = supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`);
-            return data.publicUrl;
-          });
+          // Get signed URLs for all gallery images (more reliable with RLS)
+          try {
+            const signedUrls = await Promise.all(
+              realGalleryFiles.map(async (img) => {
+                try {
+                  // Try to get a signed URL first
+                  const { data, error } = await supabase.storage
+                    .from('images')
+                    .createSignedUrl(`gallery/${img.name}`, 60 * 60); // 1 hour expiry
 
-          console.log('Gallery URLs:', urls);
-          setGalleryImages(urls);
+                  if (error) {
+                    console.error(`Error getting signed URL for gallery image ${img.name}:`, error);
+                    throw error;
+                  }
+
+                  return data.signedUrl;
+                } catch (signedUrlError) {
+                  console.error(`Failed to get signed URL for ${img.name}, falling back to public URL:`, signedUrlError);
+
+                  // Fallback to public URL
+                  const { data } = supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`);
+                  return data.publicUrl;
+                }
+              })
+            );
+
+            console.log('Gallery URLs:', signedUrls);
+            setGalleryImages(signedUrls);
+          } catch (error) {
+            console.error('Error getting gallery image URLs:', error);
+
+            // Fallback to public URLs if there's an error with the signed URLs
+            const publicUrls = realGalleryFiles.map(img => {
+              const { data } = supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`);
+              return data.publicUrl;
+            });
+
+            console.log('Gallery public URLs (fallback):', publicUrls);
+            setGalleryImages(publicUrls);
+          }
         } else {
           console.log('No gallery images found');
         }

@@ -1,10 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
-// Replace these with your actual Supabase URL and anon key
-// You can find these in your Supabase project settings
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Support for both Netlify environment variables and local .env variables
+// Netlify integration will set SUPABASE_URL and SUPABASE_ANON_KEY
+// Local development will use VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+const supabaseUrl =
+  import.meta.env.SUPABASE_URL ||
+  import.meta.env.VITE_SUPABASE_URL ||
+  '';
+
+const supabaseAnonKey =
+  import.meta.env.SUPABASE_ANON_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  '';
 
 // Create Supabase client with auth configuration
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -50,9 +58,9 @@ export const getProxiedImageUrl = async (url: string): Promise<string> => {
     if (url.includes('supabase.co/storage')) {
       console.log('URL is a Supabase Storage URL');
 
-      // If it already has a token, just add a cache buster
+      // If it already has a token, it's a signed URL - just add a cache buster
       if (url.includes('token=')) {
-        console.log('URL already has a token, adding cache buster');
+        console.log('URL is already a signed URL, adding cache buster');
         return addCacheBuster(url);
       }
 
@@ -96,7 +104,8 @@ export const getProxiedImageUrl = async (url: string): Promise<string> => {
       // Try to get a public URL first
       try {
         console.log('Getting public URL for bucket:', bucket, 'path:', path);
-        const { data: publicUrlData } = await supabase.storage
+        // getPublicUrl is synchronous, no need for await
+        const { data: publicUrlData } = supabase.storage
           .from(bucket)
           .getPublicUrl(path);
 
@@ -142,7 +151,8 @@ export const getProxiedImageUrl = async (url: string): Promise<string> => {
  */
 export const getUserId = async () => {
   try {
-    const { data: sessionData } = await supabase.auth.getSession();
+    // Get session (not used directly but ensures we have the latest auth state)
+    await supabase.auth.getSession();
     const { data: userData } = await supabase.auth.getUser();
 
     if (!userData || !userData.user) {
@@ -195,14 +205,15 @@ export const initializeStorage = async () => {
 
     // Update bucket to be public (in case it was created with different settings)
     const { error: updateError } = await supabase.storage.updateBucket(STORAGE_BUCKET, {
-      public: true,
+      public: true, // Make bucket public but use RLS for fine-grained control
       fileSizeLimit: 5242880, // 5MB limit
     });
 
+    // Log the bucket update result
     if (updateError) {
       console.error('Error updating bucket settings:', updateError);
     } else {
-      console.log(`Updated bucket '${STORAGE_BUCKET}' settings`);
+      console.log(`Updated bucket '${STORAGE_BUCKET}' settings to be public`);
     }
 
     // Create required folders if they don't exist
@@ -246,20 +257,25 @@ export const initializeStorage = async () => {
     console.log(`
     Storage policies should be set up in the Supabase dashboard:
 
-    1. Allow public read access to all files:
-       - Policy name: "Allow public read access"
+    1. Allow authenticated users to view images:
+       - Policy name: "Allow authenticated read access"
        - Operations: SELECT
-       - Expression: true
-
-    2. Allow authenticated users to upload files:
-       - Policy name: "Allow authenticated uploads"
-       - Operations: INSERT
        - Expression: auth.role() = 'authenticated'
 
-    3. Allow owners to manage files:
-       - Policy name: "Allow owners to manage files"
-       - Operations: INSERT, UPDATE, DELETE
-       - Expression: auth.uid() IN (SELECT id FROM auth.users WHERE raw_user_meta_data->>'is_owner' = 'true')
+    2. Allow owners to upload images:
+       - Policy name: "Allow owners to upload images"
+       - Operations: INSERT
+       - Expression: auth.uid() IN (SELECT id FROM user_profiles WHERE is_owner = true)
+
+    3. Allow owners to update images:
+       - Policy name: "Allow owners to update images"
+       - Operations: UPDATE
+       - Expression: auth.uid() IN (SELECT id FROM user_profiles WHERE is_owner = true)
+
+    4. Allow owners to delete images:
+       - Policy name: "Allow owners to delete images"
+       - Operations: DELETE
+       - Expression: auth.uid() IN (SELECT id FROM user_profiles WHERE is_owner = true)
     `);
 
     return true;
