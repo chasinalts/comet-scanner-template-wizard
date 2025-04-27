@@ -2,7 +2,6 @@ import { useState, useRef, type FormEvent, useEffect } from '../utils/react-impo
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-// Import types from Supabase
 import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
@@ -28,13 +27,9 @@ const Login = () => {
   // If user is already logged in, redirect to the home page
   useEffect(() => {
     if (currentUser && !authLoading) {
-      const homePath = '/home';
-      console.log('User already logged in, redirecting to:', homePath);
-      navigate(homePath);
+      navigate('/home');
     }
   }, [currentUser, authLoading, navigate]);
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,32 +44,22 @@ const Login = () => {
       setIsLoading(true);
       console.log('Attempting to login with email:', email);
 
-      // Define the redirect path here to ensure it's in scope
-      const redirectPath = '/home';
-      console.log('Will redirect to:', redirectPath);
-
-      // Call the updated login function from AuthContext
+      // Call the login function from AuthContext
       await login(email, password);
 
-      console.log('Login successful, navigating to:', redirectPath);
-
-      // Navigate to the intended destination or home page upon successful login
-      navigate(redirectPath);
+      // Navigate to home page upon successful login
+      navigate('/home');
     } catch (error: any) {
       console.error('Login error details:', error);
-      console.error("Login failed:", error);
       let errorMessage = 'Failed to sign in. Please check your credentials.';
 
       // Provide more specific feedback for common Supabase errors
       if (error.message) {
-        // Handle specific Supabase errors
         if (error.message === 'Invalid login credentials' || error.message === 'Email not confirmed') {
           errorMessage = 'Invalid email or password.';
         }
-        // Add more Supabase-specific error handling here if needed
-        // e.g., rate limiting errors, etc.
       }
-      setError(errorMessage); // Set the potentially updated or default error message
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -91,8 +76,8 @@ const Login = () => {
       setResetEmailSent(true);
       setError('')
     } catch (error) {
-        console.log(error);
-        setError('Failed to send password reset email. Please try again later.');
+      console.log(error);
+      setError('Failed to send password reset email. Please try again later.');
     }
   };
 
@@ -168,13 +153,13 @@ const Login = () => {
               />
               <div className="mt-1">
                 <input
-                  id="email" // Change id to email
-                  name="email" // Change name to email
-                  type="email" // Change type to email
-                  autoComplete="email" // Add autocomplete
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
-                  value={email} // Bind value to email state
-                  onChange={(e) => setEmail(e.target.value)} // Update email state
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
                 />
               </div>
@@ -192,7 +177,7 @@ const Login = () => {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password" // Add autocomplete
+                  autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -235,8 +220,7 @@ const Login = () => {
             </div>
           </form>
 
-
-           <div className="mt-2">
+          <div className="mt-2">
             <button
               onClick={handleForgotPassword}
               className="text-sm"
@@ -248,10 +232,6 @@ const Login = () => {
               />
             </button>
           </div>
-
-
-
-
 
           <div className="mt-6">
             <div className="relative">
@@ -277,12 +257,11 @@ const Login = () => {
                     className="text-cyan-400 hover:text-cyan-300"
                   />
                 </Link>
-                {/* Owner setup link removed - owner account already created */}
               </div>
             </div>
           </div>
         </div>
-          {isModalOpen && (
+        {isModalOpen && (
           <div
             ref={modalRef}
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
@@ -319,17 +298,17 @@ const Login = () => {
                   <span className="block sm:inline">{error}</span>
                 </div>
               )}
-                 {resetEmailSent ? (
-                   <div>
-                        <HolographicText
-                          text="Password reset email has been sent!"
-                          as="p"
-                          className="mb-4"
-                        />
-                        <button onClick={handleCloseModal} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>Close</button>
-                    </div>
-                ) : (
-                  <form onSubmit={handleResetPassword}>
+              {resetEmailSent ? (
+                <div>
+                  <HolographicText
+                    text="Password reset email has been sent!"
+                    as="p"
+                    className="mb-4"
+                  />
+                  <button onClick={handleCloseModal} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>Close</button>
+                </div>
+              ) : (
+                <form onSubmit={handleResetPassword}>
                   <div className="mb-4">
                     <HolographicText
                       text="Email"
@@ -355,7 +334,7 @@ const Login = () => {
                     />
                   </button>
                 </form>
-                )}
+              )}
             </div>
           </div>
         )}
