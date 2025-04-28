@@ -1,3 +1,4 @@
+// Theme context that manages the application's visual theme (always set to futuristic)
 import { createContext, useContext, useEffect, ReactNode } from 'react';
 
 type Theme = 'futuristic';

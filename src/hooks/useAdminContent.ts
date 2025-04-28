@@ -1,3 +1,4 @@
+// Hook that provides access to admin-managed content like banner images, scanner variations, and templates
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { memoize } from '../utils/memoization';
 

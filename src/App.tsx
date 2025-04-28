@@ -1,3 +1,4 @@
+// Main application component that defines the routing structure and overall layout of the COMET Scanner Template Wizard app
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import React from 'react';
 import { useEffect } from './utils/react-imports';

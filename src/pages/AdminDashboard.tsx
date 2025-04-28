@@ -1,3 +1,4 @@
+// Admin dashboard component that provides content management, user administration, and system logging capabilities for owners and admins
 import { useState, ChangeEvent, useEffect } from '../utils/react-imports';
 
 import { motion, Reorder, AnimatePresence } from 'framer-motion';

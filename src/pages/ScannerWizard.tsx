@@ -1,3 +1,4 @@
+// Scanner wizard component that guides users through creating customized COMET scanner templates
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Modal from '../components/ui/Modal';

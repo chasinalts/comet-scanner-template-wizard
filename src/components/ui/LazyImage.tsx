@@ -1,3 +1,4 @@
+// Lazy-loading image component that handles responsive images, scaling, and size controls
 import React, { useState, useEffect } from 'react';
 import { useLazyLoading } from '../../hooks/useLazyLoading';
 import { resizeImage } from '../../utils/imageHandlers';

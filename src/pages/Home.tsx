@@ -1,3 +1,4 @@
+// Home page component that displays the banner, gallery images, and COMET Scanner information to users
 import React, { useState, useEffect } from '../utils/react-imports';
 
 import HolographicText from '../components/ui/HolographicText';

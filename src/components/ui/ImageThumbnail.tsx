@@ -1,3 +1,4 @@
+// Component that displays an image thumbnail with controls for scaling, sizing, and deletion
 import React, { useState, useEffect } from 'react';
 import TrashIcon from './TrashIcon';
 import ImageSizeControls from './ImageSizeControls';

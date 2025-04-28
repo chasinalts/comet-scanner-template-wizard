@@ -1,3 +1,4 @@
+// Component that provides controls for adjusting image size, dimensions, and aspect ratio
 import React, { useState } from 'react';
 import Button from './Button';
 
@@ -25,7 +26,7 @@ const ImageSizeControls: React.FC<ImageSizeControlsProps> = ({
   const [showCustomControls, setShowCustomControls] = useState(currentSize === 'custom');
   const [width, setWidth] = useState(currentWidth);
   const [height, setHeight] = useState(currentHeight);
-  
+
   // Common aspect ratios
   const aspectRatios = [
     { label: '16:9 (Widescreen)', value: '16/9' },
@@ -34,11 +35,11 @@ const ImageSizeControls: React.FC<ImageSizeControlsProps> = ({
     { label: '3:2 (Classic)', value: '3/2' },
     { label: '21:9 (Ultrawide)', value: '21/9' }
   ];
-  
+
   const handleSizeChange = (size: 'small' | 'medium' | 'large' | 'custom') => {
     onSizeChange(id, size);
     setShowCustomControls(size === 'custom');
-    
+
     // Set default dimensions based on size
     if (size === 'small') {
       setWidth(320);
@@ -51,23 +52,23 @@ const ImageSizeControls: React.FC<ImageSizeControlsProps> = ({
       setHeight(540);
     }
   };
-  
+
   const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newWidth = parseInt(e.target.value, 10);
     setWidth(newWidth);
     onDimensionsChange(id, newWidth, height);
   };
-  
+
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newHeight = parseInt(e.target.value, 10);
     setHeight(newHeight);
     onDimensionsChange(id, width, newHeight);
   };
-  
+
   const handleAspectRatioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newAspectRatio = e.target.value;
     onAspectRatioChange(id, newAspectRatio);
-    
+
     // Update height based on new aspect ratio
     if (newAspectRatio) {
       const [widthRatio, heightRatio] = newAspectRatio.split('/').map(Number);
@@ -76,34 +77,34 @@ const ImageSizeControls: React.FC<ImageSizeControlsProps> = ({
       onDimensionsChange(id, width, newHeight);
     }
   };
-  
+
   return (
     <div className="mt-4 p-4 bg-gray-800 rounded-lg">
       <h3 className="text-cyan-300 text-lg mb-2">Image Size Controls</h3>
-      
+
       <div className="flex flex-wrap gap-2 mb-4">
-        <Button 
+        <Button
           onClick={() => handleSizeChange('small')}
           variant={currentSize === 'small' ? 'primary' : 'secondary'}
           size="sm"
         >
           Small
         </Button>
-        <Button 
+        <Button
           onClick={() => handleSizeChange('medium')}
           variant={currentSize === 'medium' ? 'primary' : 'secondary'}
           size="sm"
         >
           Medium
         </Button>
-        <Button 
+        <Button
           onClick={() => handleSizeChange('large')}
           variant={currentSize === 'large' ? 'primary' : 'secondary'}
           size="sm"
         >
           Large
         </Button>
-        <Button 
+        <Button
           onClick={() => handleSizeChange('custom')}
           variant={currentSize === 'custom' ? 'primary' : 'secondary'}
           size="sm"
@@ -111,7 +112,7 @@ const ImageSizeControls: React.FC<ImageSizeControlsProps> = ({
           Custom
         </Button>
       </div>
-      
+
       <div className="mb-4">
         <label className="block text-cyan-300 mb-1">Aspect Ratio</label>
         <select
@@ -126,7 +127,7 @@ const ImageSizeControls: React.FC<ImageSizeControlsProps> = ({
           ))}
         </select>
       </div>
-      
+
       {showCustomControls && (
         <div className="grid grid-cols-2 gap-4">
           <div>

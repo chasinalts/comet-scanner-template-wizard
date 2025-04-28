@@ -1,6 +1,5 @@
+// Supabase configuration file that initializes the client, handles storage setup, and provides utility functions
 import { createClient } from '@supabase/supabase-js';
-
-// Supabase configuration
 // Support for both Netlify environment variables and local .env variables
 // Netlify integration will set SUPABASE_URL and SUPABASE_ANON_KEY
 // Local development will use VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY

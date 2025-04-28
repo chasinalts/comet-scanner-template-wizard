@@ -1,3 +1,4 @@
+// Login page component that handles user authentication and redirects based on user role
 import { useState, useRef, type FormEvent, useEffect } from '../utils/react-imports';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';

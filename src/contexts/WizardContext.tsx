@@ -1,3 +1,4 @@
+// Wizard context that manages the state of the COMET Scanner Template Wizard, including user answers and progress
 import { createContext, useContext, useReducer, ReactNode } from 'react';
 import type { Question } from '../types/questions';
 import type { Section } from '../hooks/useSections';

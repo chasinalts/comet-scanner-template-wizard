@@ -1,3 +1,4 @@
+// Authentication context that manages user authentication state, login/logout functionality, and user profiles
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
 import { supabase } from '../supabaseConfig'; // Import Supabase client
 import {
