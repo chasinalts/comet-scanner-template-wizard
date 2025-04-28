@@ -93,7 +93,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
   // Show loading state while checking auth
   if (isLoading || isCheckingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="flex flex-col items-center space-y-4">
           <svg
             className="animate-spin h-8 w-8 text-blue-600"
@@ -115,7 +115,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             />
           </svg>
-          <span className="text-gray-600">Loading...</span>
+          <span className="text-gray-300">Verifying access...</span>
         </div>
       </div>
     );
