@@ -16,6 +16,19 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
   const [hasAccess, setHasAccess] = useState(false);
 
   useEffect(() => {
+    // Set a timeout to prevent getting stuck in checking auth state
+    const authCheckTimeout = setTimeout(() => {
+      console.log('ProtectedRoute: Auth check timed out after 5 seconds, forcing completion');
+      setIsCheckingAuth(false);
+
+      // If we have a session but no access determination, grant access
+      // This is a fallback to prevent users from getting stuck
+      if (session && !hasAccess) {
+        console.log('ProtectedRoute: Fallback - granting access due to timeout with valid session');
+        setHasAccess(true);
+      }
+    }, 5000);
+
     const checkAuth = async () => {
       try {
         console.log('ProtectedRoute: Checking authentication');
@@ -88,7 +101,12 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
     };
 
     checkAuth();
-  }, [currentUser, isLoading, requireOwner, requireAdmin, session]);
+
+    // Clean up the timeout on unmount or when dependencies change
+    return () => {
+      clearTimeout(authCheckTimeout);
+    };
+  }, [currentUser, isLoading, requireOwner, requireAdmin, session, hasAccess]);
 
   // Show loading state while checking auth
   if (isLoading || isCheckingAuth) {

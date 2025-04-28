@@ -61,11 +61,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Set up a timeout to prevent getting stuck in loading state
+    const authTimeout = setTimeout(() => {
+      console.log('Auth check timed out after 10 seconds, forcing completion');
+      setIsLoading(false);
+    }, 10000);
+
     // Set up Supabase auth state listener
     const handler: AuthStateChangeCallback = async (event, currentSession) => {
       console.log('Auth state changed:', event, currentSession?.user?.id);
       setIsLoading(true);
       setSession(currentSession);
+
+      // Clear the timeout since we got a response
+      clearTimeout(authTimeout);
 
       if (currentSession?.user) {
         try {
@@ -171,8 +180,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initializeAuth = async () => {
       try {
         console.log('Initializing auth - checking for existing session');
+
+        // Set up a timeout for the initial auth check
+        const initAuthTimeout = setTimeout(() => {
+          console.log('Initial auth check timed out after 8 seconds, forcing completion');
+          setIsLoading(false);
+        }, 8000);
+
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         console.log('Initial session check result:', initialSession ? 'Session found' : 'No session');
+
+        // Clear the timeout since we got a response
+        clearTimeout(initAuthTimeout);
 
         if (initialSession) {
           setSession(initialSession);
@@ -272,6 +291,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Cleanup subscription on unmount
     return () => {
       subscription.unsubscribe();
+      clearTimeout(authTimeout); // Clear the timeout on unmount
     };
   }, []);
 

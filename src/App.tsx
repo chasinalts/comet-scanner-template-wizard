@@ -55,6 +55,22 @@ function AppContent() {
     init();
   }, [currentUser, isLoading]);
 
+  // Set up a timeout to prevent getting stuck in loading state
+  useEffect(() => {
+    let loadingTimeout: NodeJS.Timeout | null = null;
+
+    if (isLoading) {
+      loadingTimeout = setTimeout(() => {
+        console.log('App: Auth loading timed out after 8 seconds, forcing navigation to login');
+        window.location.href = '/login'; // Force navigation to login page
+      }, 8000);
+    }
+
+    return () => {
+      if (loadingTimeout) clearTimeout(loadingTimeout);
+    };
+  }, [isLoading]);
+
   // Show a loading indicator while auth is being determined
   if (isLoading) {
     return (
@@ -62,6 +78,12 @@ function AppContent() {
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
           <p className="text-gray-300 text-lg">Verifying authentication...</p>
+          <button
+            onClick={() => window.location.href = '/login'}
+            className="mt-8 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          >
+            Go to Login
+          </button>
         </div>
       </div>
     );

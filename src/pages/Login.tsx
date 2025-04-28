@@ -40,6 +40,27 @@ const Login = () => {
     }
   }, [currentUser, authLoading, navigate]);
 
+  // Set a timeout to detect if auth is taking too long
+  useEffect(() => {
+    let authCheckTimeout: NodeJS.Timeout | null = null;
+
+    if (authLoading) {
+      console.log('Login: Auth is loading, setting timeout');
+      authCheckTimeout = setTimeout(() => {
+        console.log('Login: Auth check timed out after 5 seconds');
+        // Force auth state to be considered complete
+        setIsLoading(false);
+      }, 5000);
+    }
+
+    return () => {
+      if (authCheckTimeout) {
+        console.log('Login: Clearing auth check timeout');
+        clearTimeout(authCheckTimeout);
+      }
+    };
+  }, [authLoading]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
