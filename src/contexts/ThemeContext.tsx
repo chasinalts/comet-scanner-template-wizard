@@ -22,6 +22,24 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
     // Always add futuristic-theme class to body
     document.body.classList.add('futuristic-theme');
+
+    // Force background color
+    document.body.style.backgroundColor = '#0f172a';
+    document.documentElement.style.backgroundColor = '#0f172a';
+
+    // Create a style element to ensure background color
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+      html, body, #root {
+        background-color: #0f172a !important;
+        min-height: 100vh;
+      }
+    `;
+    document.head.appendChild(styleEl);
+
+    return () => {
+      // No cleanup needed as we always want dark theme
+    };
   }, []);
 
   return (

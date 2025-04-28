@@ -1,4 +1,4 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from '../utils/react-imports';
 import { motion } from 'framer-motion';
 
 interface Props {
@@ -29,6 +29,22 @@ class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
+
+    // Log to any monitoring service you might have
+    try {
+      // Report error to console in a structured way
+      console.group('React Error Boundary Caught Error');
+      console.error('Error:', error.message);
+      console.error('Component Stack:', errorInfo.componentStack);
+      console.groupEnd();
+
+      // Update state with error info
+      this.setState({
+        errorInfo
+      });
+    } catch (loggingError) {
+      console.error('Error logging failed:', loggingError);
+    }
   }
 
   private handleReload = () => {
@@ -43,11 +59,11 @@ class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         this.props.fallback || (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+          <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="max-w-md w-full bg-white rounded-lg shadow-lg p-6"
+              className="max-w-md w-full bg-gray-800 rounded-lg shadow-lg p-6 border border-blue-500"
             >
               <div className="flex flex-col items-center text-center">
                 <div className="mb-4">
@@ -65,13 +81,18 @@ class ErrorBoundary extends Component<Props, State> {
                     />
                   </svg>
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">
+                <h1 className="text-2xl font-bold text-cyan-400 mb-4">
                   Oops! Something went wrong
                 </h1>
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 text-left">
-                  <p className="text-sm text-red-700 font-mono overflow-auto max-h-32">
+                <div className="bg-gray-900 border-l-4 border-red-500 p-4 mb-6 text-left">
+                  <p className="text-sm text-red-400 font-mono overflow-auto max-h-32">
                     {this.state.error?.toString()}
                   </p>
+                  {this.state.errorInfo && (
+                    <p className="text-xs text-gray-400 font-mono mt-2 overflow-auto max-h-32">
+                      {this.state.errorInfo.componentStack}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2 w-full">
                   <button

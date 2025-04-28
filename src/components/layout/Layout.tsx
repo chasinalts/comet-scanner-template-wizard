@@ -27,6 +27,16 @@ const Layout = ({ children }: LayoutProps) => {
     return location.pathname.startsWith(path);
   };
 
+  // Force dark mode
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    document.body.style.backgroundColor = '#0f172a';
+
+    return () => {
+      // Cleanup not needed as we always want dark mode
+    };
+  }, []);
+
   return (
     <div className="min-h-screen dark">
       <div className="min-h-screen bg-gray-900 transition-colors duration-200" style={{ backgroundColor: '#0f172a' }}>

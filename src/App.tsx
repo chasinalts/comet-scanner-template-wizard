@@ -58,10 +58,10 @@ function AppContent() {
   // Show a loading indicator while auth is being determined
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-900" style={{ backgroundColor: '#0f172a' }}>
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
-          <p className="text-gray-300 text-lg">Loading application...</p>
+          <p className="text-gray-300 text-lg">Verifying authentication...</p>
         </div>
       </div>
     );

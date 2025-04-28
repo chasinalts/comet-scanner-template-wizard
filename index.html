@@ -13,16 +13,35 @@
 
     <style>
       /* Add a fallback background color */
-      body {
-        background-color: #0f172a; /* Tailwind slate-900 */
+      html, body {
+        background-color: #0f172a !important; /* Tailwind slate-900 */
         color: white;
         margin: 0;
         padding: 0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
           Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
       }
       #root {
         min-height: 100vh;
+        background-color: #0f172a !important;
+      }
+
+      /* Loading spinner */
+      .loading-spinner {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #3b82f6;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
       }
     </style>
 
@@ -47,8 +66,9 @@
   </head>
   <body>
     <div id="root">
-      <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-        Loading COMET Scanner Wizard...
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #0f172a;">
+        <div class="loading-spinner"></div>
+        <p style="margin-top: 20px; color: #94a3b8; font-size: 16px;">Loading COMET Scanner Wizard...</p>
       </div>
     </div>
     <script src="/unregister-sw.js"></script>

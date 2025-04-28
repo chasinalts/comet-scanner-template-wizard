@@ -4,7 +4,7 @@ import App from './App';
 import './index.css';
 import './styles/holographic.css'; // Import holographic styles directly
 import { AuthProvider } from './contexts/AuthContext';
-// Remove Firebase admin setup imports
+import ErrorBoundary from './components/ErrorBoundary';
 
 import analytics from './utils/analytics';
 import { initializeStorage } from './supabaseConfig';
@@ -23,9 +23,13 @@ if (!rootElement) {
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-900">
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </div>
+    </ErrorBoundary>
   </React.StrictMode>
 );
 
