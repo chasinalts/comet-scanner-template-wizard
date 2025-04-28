@@ -1,5 +1,5 @@
 // Hook that manages content creation, updating, and deletion, including image uploads and size adjustments
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from '../utils/react-imports';
 import type { ContentItem } from './useAdminContent';
 import { handleImageUpload, handleSupabaseImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, RefObject } from 'react';
+import { useEffect, useRef, useState, type RefObject } from '../utils/react-imports';
 
 interface UseLazyLoadingOptions {
   rootMargin?: string;
@@ -26,17 +26,17 @@ export const useLazyLoading = <T extends HTMLElement>(
     if (!ref.current || (isVisible && triggerOnce)) return;
 
     const element = ref.current;
-    
+
     // Create an observer instance
     const observer = new IntersectionObserver(
       (entries) => {
         // We're only observing one element, so we can just use the first entry
         const [entry] = entries;
-        
+
         // Update state when element becomes visible
         if (entry.isIntersecting) {
           setIsVisible(true);
-          
+
           // Stop observing if triggerOnce is true
           if (triggerOnce) {
             observer.unobserve(element);
@@ -48,17 +48,17 @@ export const useLazyLoading = <T extends HTMLElement>(
       },
       { rootMargin, threshold }
     );
-    
+
     // Start observing the element
     observer.observe(element);
-    
+
     // Clean up observer on unmount
     return () => {
       observer.unobserve(element);
       observer.disconnect();
     };
   }, [rootMargin, threshold, triggerOnce, isVisible]);
-  
+
   return { ref, isVisible };
 };
 

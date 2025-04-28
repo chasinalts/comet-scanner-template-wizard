@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from '../utils/react-imports';
 
 export interface Section {
   id: string;

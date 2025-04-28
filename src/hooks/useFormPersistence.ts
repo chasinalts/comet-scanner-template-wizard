@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from '../utils/react-imports';
 import { debounce } from '../utils/debounce';
 
 interface PersistenceOptions<T> {

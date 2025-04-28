@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from '../utils/react-imports';
 
 interface RetryOptions {
   maxAttempts?: number;
@@ -47,7 +47,7 @@ export function useRetry<T>(
 
   const execute = useCallback(async (): Promise<T> => {
     let lastError: Error | null = null;
-    
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
         if (attempt > 0) {

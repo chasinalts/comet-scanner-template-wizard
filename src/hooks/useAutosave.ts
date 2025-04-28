@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef } from '../utils/react-imports';
 import { useToast } from '../components/ui/Toast';
 
 declare global {
