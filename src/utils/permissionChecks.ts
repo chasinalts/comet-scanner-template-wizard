@@ -58,13 +58,40 @@ export const isOwner = async (): Promise<boolean> => {
     console.log('isOwner: User ID:', user.id);
     console.log('isOwner: User metadata:', user.user_metadata);
 
-    // Check if owner status is in metadata
+    // Check if owner status is in metadata (this is the most reliable source)
     if (user.user_metadata && (
       user.user_metadata.is_owner === true ||
       user.user_metadata.is_owner === 'true'
     )) {
       console.log('isOwner: User is owner based on metadata');
       return true;
+    }
+
+    // Check raw_user_meta_data directly from auth.users
+    try {
+      const { data: authUserData, error: authUserError } = await supabase.rpc(
+        'get_auth_user_data',
+        { user_id: user.id }
+      );
+
+      if (!authUserError && authUserData) {
+        console.log('isOwner: Auth user data:', authUserData);
+
+        // Check if is_owner is in raw_user_meta_data
+        if (authUserData.raw_user_meta_data && (
+          authUserData.raw_user_meta_data.is_owner === true ||
+          authUserData.raw_user_meta_data.is_owner === 'true'
+        )) {
+          console.log('isOwner: User is owner based on raw_user_meta_data');
+          return true;
+        }
+      } else if (authUserError) {
+        console.log('isOwner: Error getting auth user data:', authUserError);
+        // Continue to check user_profiles table
+      }
+    } catch (rpcError) {
+      console.log('isOwner: RPC error (this is normal if the function does not exist):', rpcError);
+      // Continue to check user_profiles table
     }
 
     // Get the user's profile from the database
@@ -89,8 +116,58 @@ export const isOwner = async (): Promise<boolean> => {
           user.user_metadata.is_owner === 'true'
         )) {
           console.log('isOwner: User should be owner based on metadata, but profile is missing');
-          return true;
+
+          // Try to create a user profile
+          try {
+            const { error: insertError } = await supabase
+              .from('user_profiles')
+              .insert({
+                id: user.id,
+                email: user.email || '',
+                is_owner: true,
+                permissions: {
+                  content_management: true,
+                  user_management: true,
+                  system_configuration: true,
+                  media_uploads: true,
+                  security_settings: true,
+                  site_customization: true
+                }
+              });
+
+            if (insertError) {
+              console.error('isOwner: Error creating user profile:', insertError);
+              // Still return true since metadata indicates owner
+            } else {
+              console.log('isOwner: Created user profile for owner');
+            }
+
+            return true;
+          } catch (insertError) {
+            console.error('isOwner: Error creating user profile:', insertError);
+            // Still return true since metadata indicates owner
+            return true;
+          }
         }
+
+        // Provide guidance on how to set up owner status
+        console.log(`
+          ⚠️ OWNER SETUP REQUIRED ⚠️
+
+          To set up your account as an owner:
+
+          1. Go to the Supabase dashboard
+          2. Navigate to Authentication > Users
+          3. Find your user (${user.email})
+          4. Click on the user to edit
+          5. In the metadata section, add:
+             {
+               "is_owner": "true"
+             }
+          6. Save the changes
+
+          This will give you owner privileges in the application.
+        `);
       }
 
       return false;

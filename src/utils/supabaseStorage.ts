@@ -49,6 +49,27 @@ export const uploadFileToSupabase = async (
 
     if (error) {
       console.error('Error uploading file to Supabase Storage:', error);
+
+      // Provide more helpful error messages for common issues
+      if (error.message.includes('violates row-level security policy')) {
+        throw new Error(`
+          Storage permission denied: Your account doesn't have permission to upload files.
+
+          This is likely due to one of these issues:
+
+          1. Your user account is not marked as an owner in Supabase
+             - Check Authentication > Users in the Supabase dashboard
+             - Ensure your user has "is_owner": "true" in the raw_user_meta_data
+
+          2. The storage bucket RLS policies are not set up correctly
+             - Go to Storage > Policies in the Supabase dashboard
+             - Ensure you have an INSERT policy for the "images" bucket with:
+               Expression: auth.uid() IN (SELECT id FROM auth.users WHERE raw_user_meta_data->>'is_owner' = 'true')
+
+          Please fix these settings in the Supabase dashboard and try again.
+        `);
+      }
+
       throw error;
     }
 

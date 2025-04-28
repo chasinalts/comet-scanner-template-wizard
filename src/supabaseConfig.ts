@@ -168,52 +168,43 @@ export const getUserId = async () => {
 
 /**
  * Initialize Supabase storage
- * Creates the images bucket and required folders if they don't exist
+ * Checks if the images bucket exists and creates required folders
  */
 export const initializeStorage = async () => {
   try {
     console.log('Initializing Supabase storage...');
 
-    // Check if the bucket exists
-    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+    // Check if we can access the bucket
+    // We won't try to create it from the client side as this requires admin privileges
+    // The bucket should be created manually in the Supabase dashboard
+    const { error: listError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .list();
 
     if (listError) {
-      console.error('Error listing buckets:', listError);
+      console.error('Error accessing storage bucket:', listError);
+
+      // If the error is about the bucket not existing, show a helpful message
+      if (listError.message.includes('The resource was not found') ||
+          listError.message.includes('not found')) {
+        console.error(`
+          The storage bucket '${STORAGE_BUCKET}' does not exist.
+          Please create it manually in the Supabase dashboard:
+          1. Go to Storage in your Supabase dashboard
+          2. Click "New Bucket"
+          3. Name it "${STORAGE_BUCKET}"
+          4. Check "Public bucket" (we'll use RLS for access control)
+          5. Click "Create bucket"
+        `);
+      }
+
       return false;
     }
 
-    const bucketExists = buckets?.some(bucket => bucket.name === STORAGE_BUCKET);
+    console.log(`Storage bucket '${STORAGE_BUCKET}' exists and is accessible`);
 
-    // Create the bucket if it doesn't exist
-    if (!bucketExists) {
-      console.log(`Creating storage bucket '${STORAGE_BUCKET}'...`);
-      const { error } = await supabase.storage.createBucket(STORAGE_BUCKET, {
-        public: true, // Make bucket public but use RLS for fine-grained control
-        fileSizeLimit: 5242880, // 5MB limit
-      });
-
-      if (error) {
-        console.error('Error creating storage bucket:', error);
-        return false;
-      }
-
-      console.log(`Storage bucket '${STORAGE_BUCKET}' created successfully`);
-    } else {
-      console.log(`Storage bucket '${STORAGE_BUCKET}' already exists`);
-    }
-
-    // Update bucket to be public (in case it was created with different settings)
-    const { error: updateError } = await supabase.storage.updateBucket(STORAGE_BUCKET, {
-      public: true, // Make bucket public but use RLS for fine-grained control
-      fileSizeLimit: 5242880, // 5MB limit
-    });
-
-    // Log the bucket update result
-    if (updateError) {
-      console.error('Error updating bucket settings:', updateError);
-    } else {
-      console.log(`Updated bucket '${STORAGE_BUCKET}' settings to be public`);
-    }
+    // We won't try to update bucket settings from the client side
+    // as this requires admin privileges
 
     // Create required folders if they don't exist
     const requiredFolders = ['banner', 'gallery', 'scanner'];
@@ -221,61 +212,113 @@ export const initializeStorage = async () => {
     for (const folder of requiredFolders) {
       console.log(`Checking if folder '${folder}' exists...`);
 
-      // Try to list files in the folder to check if it exists
-      const { data, error } = await supabase.storage.from(STORAGE_BUCKET).list(folder);
+      try {
+        // Try to list files in the folder to check if it exists
+        const { data, error } = await supabase.storage.from(STORAGE_BUCKET).list(folder);
 
-      if (error && error.message.includes('not found')) {
-        // Folder doesn't exist, create it by uploading an empty placeholder file
-        console.log(`Creating folder '${folder}'...`);
+        if (error) {
+          if (error.message.includes('not found')) {
+            // Folder doesn't exist, try to create it
+            console.log(`Folder '${folder}' doesn't exist, attempting to create it...`);
+          } else if (error.message.includes('violates row-level security policy') ||
+                    error.message.includes('permission denied')) {
+            // RLS policy violation - this is expected if the user doesn't have permission
+            console.log(`RLS policy prevents checking folder '${folder}' - this is normal if you're not the owner`);
+            continue; // Skip to the next folder
+          } else {
+            // Some other error
+            console.error(`Error checking folder '${folder}':`, error);
+            continue; // Skip to the next folder
+          }
+        } else {
+          console.log(`Folder '${folder}' already exists with ${data?.length || 0} files`);
+          continue; // Skip to the next folder since it exists
+        }
 
-        // Create a small placeholder file
+        // Try to create the folder by uploading an empty placeholder file
         const placeholderFile = new Blob([''], { type: 'text/plain' });
 
-        // Upload the placeholder file to create the folder
         const { error: uploadError } = await supabase.storage
           .from(STORAGE_BUCKET)
           .upload(`${folder}/.placeholder`, placeholderFile);
 
         if (uploadError) {
-          console.error(`Error creating folder '${folder}':`, uploadError);
+          if (uploadError.message.includes('violates row-level security policy') ||
+              uploadError.message.includes('permission denied')) {
+            // RLS policy violation - this is expected if the user doesn't have permission
+            console.log(`RLS policy prevents creating folder '${folder}' - this is normal if you're not the owner`);
+          } else {
+            console.error(`Error creating folder '${folder}':`, uploadError);
+          }
         } else {
           console.log(`Folder '${folder}' created successfully`);
         }
-      } else if (error) {
-        console.error(`Error checking folder '${folder}':`, error);
-      } else {
-        console.log(`Folder '${folder}' already exists with ${data?.length || 0} files`);
+      } catch (folderError) {
+        console.error(`Unexpected error handling folder '${folder}':`, folderError);
       }
     }
 
-    // Set up public access policy for the bucket
-    console.log('Setting up storage policies...');
+    // Provide guidance on setting up storage policies
+    console.log('Checking storage policies...');
 
-    // This is just for logging - we can't actually set policies from the client
-    // Policies need to be set up in the Supabase dashboard
-    console.log(`
-    Storage policies should be set up in the Supabase dashboard:
+    // Try to upload a test file to check if policies are set up correctly
+    try {
+      const testFile = new Blob(['test'], { type: 'text/plain' });
+      const testPath = `test-${Date.now()}.txt`;
 
-    1. Allow authenticated users to view images:
-       - Policy name: "Allow authenticated read access"
-       - Operations: SELECT
-       - Expression: auth.role() = 'authenticated'
+      const { error: uploadError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .upload(testPath, testFile);
 
-    2. Allow owners to upload images:
-       - Policy name: "Allow owners to upload images"
-       - Operations: INSERT
-       - Expression: auth.uid() IN (SELECT id FROM user_profiles WHERE is_owner = true)
+      if (uploadError) {
+        if (uploadError.message.includes('violates row-level security policy')) {
+          console.log(`
+          ⚠️ RLS POLICY ERROR DETECTED ⚠️
 
-    3. Allow owners to update images:
-       - Policy name: "Allow owners to update images"
-       - Operations: UPDATE
-       - Expression: auth.uid() IN (SELECT id FROM user_profiles WHERE is_owner = true)
+          Your Supabase storage policies need to be set up correctly.
+          Please go to the Supabase dashboard and set up the following policies:
 
-    4. Allow owners to delete images:
-       - Policy name: "Allow owners to delete images"
-       - Operations: DELETE
-       - Expression: auth.uid() IN (SELECT id FROM user_profiles WHERE is_owner = true)
-    `);
+          1. For the "images" bucket, create these policies:
+
+             a) Allow authenticated users to view images:
+                - Policy name: "Allow authenticated read access"
+                - Operations: SELECT
+                - Expression: auth.role() = 'authenticated'
+
+             b) Allow owners to upload images:
+                - Policy name: "Allow owners to upload images"
+                - Operations: INSERT
+                - Expression: auth.uid() IN (SELECT id FROM auth.users WHERE raw_user_meta_data->>'is_owner' = 'true')
+
+             c) Allow owners to update images:
+                - Policy name: "Allow owners to update images"
+                - Operations: UPDATE
+                - Expression: auth.uid() IN (SELECT id FROM auth.users WHERE raw_user_meta_data->>'is_owner' = 'true')
+
+             d) Allow owners to delete images:
+                - Policy name: "Allow owners to delete images"
+                - Operations: DELETE
+                - Expression: auth.uid() IN (SELECT id FROM auth.users WHERE raw_user_meta_data->>'is_owner' = 'true')
+
+          2. Make sure your user account has is_owner set to true:
+             - Go to Authentication > Users in the Supabase dashboard
+             - Find your user and check that raw_user_meta_data contains "is_owner": "true"
+             - If not, update it manually
+          `);
+        } else {
+          console.error('Error uploading test file:', uploadError);
+        }
+      } else {
+        console.log('Storage policies appear to be set up correctly!');
+
+        // Clean up the test file
+        await supabase.storage
+          .from(STORAGE_BUCKET)
+          .remove([testPath]);
+      }
+    } catch (policyError) {
+      console.error('Error checking storage policies:', policyError);
+    }
 
     return true;
   } catch (error) {
