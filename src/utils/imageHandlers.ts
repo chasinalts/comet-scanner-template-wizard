@@ -51,7 +51,9 @@ export const handleSupabaseImageUpload = (
         });
 
         // Upload to Supabase Storage
-        const storagePath = type; // e.g., 'banner' or 'scanner'
+        // Map scanner type to gallery folder since they are the same
+        const storagePath = type === 'scanner' ? 'gallery' : type;
+        console.log(`Uploading ${type} image to ${storagePath} folder`);
         const imageUrl = await uploadFileToSupabase(processedFile, storagePath);
 
         console.log('Image uploaded to Supabase:', {

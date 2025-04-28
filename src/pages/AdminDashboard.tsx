@@ -28,7 +28,7 @@ import { initializeStorage } from '../supabaseConfig';
 interface UploadingState {
   questionId?: string;
   optionId?: string;
-  contentType?: 'banner' | 'scanner';
+  contentType?: 'banner' | 'scanner' | 'gallery';
 }
 
 export default function AdminDashboard() {
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
   };
 
   // Generic image upload handler
-  const handleImageUpload = (file: File, type: 'banner' | 'scanner', title: string) => {
+  const handleImageUpload = (file: File, type: 'banner' | 'scanner' | 'gallery', title: string) => {
     if (uploadingImage) {
       showToast('error', 'Please wait for the current upload to complete');
       return;
@@ -256,7 +256,13 @@ export default function AdminDashboard() {
 
   // Handle scanner image upload
   const handleScannerImageUpload = (file: File) => {
+    console.log('Starting scanner image upload process');
     handleImageUpload(file, 'scanner', 'Scanner Variation');
+
+    // Log the current scanner images after a delay to allow for upload completion
+    setTimeout(() => {
+      console.log('Current scanner images after upload attempt:', getScannerImages());
+    }, 3000);
   };
 
   // Handle image scale change
@@ -308,7 +314,10 @@ export default function AdminDashboard() {
 
   // Load scanner images
   useEffect(() => {
-    setScannerImages(getScannerImages());
+    console.log('Loading scanner images in AdminDashboard');
+    const images = getScannerImages();
+    console.log('Scanner images loaded:', images.length);
+    setScannerImages(images);
   }, [getScannerImages]);
 
   // Handle reordering of scanner images

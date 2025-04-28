@@ -4,7 +4,7 @@ import { memoize } from '../utils/memoization';
 
 export interface ContentItem {
   id: string;
-  type: 'banner' | 'scanner' | 'template' | 'question';
+  type: 'banner' | 'scanner' | 'gallery' | 'template' | 'question';
   title: string;
   content: string;
   imageUrl?: string;
@@ -105,7 +105,14 @@ export const useAdminContent = (): AdminContentHook => {
 
   // Memoize the filter and transform functions for scanner images
   const filterScanners = useMemo(() =>
-    memoize((items: ContentItem[]) => items.filter(item => item.type === 'scanner')),
+    memoize((items: ContentItem[]) => {
+      console.log('Filtering scanner images from contents:', items.length);
+      // Include both scanner type and gallery images with scanner in the title
+      return items.filter(item =>
+        item.type === 'scanner' ||
+        (item.type === 'gallery' && item.title.toLowerCase().includes('scanner'))
+      );
+    }),
     []
   );
 
@@ -133,9 +140,13 @@ export const useAdminContent = (): AdminContentHook => {
   );
 
   const getScannerImages = useCallback((): ImageContent[] => {
+    console.log('Getting scanner images from contents:', contents.length);
     const filtered = filterScanners(contents);
+    console.log('Filtered scanner images:', filtered.length);
     const sorted = sortByUpdatedAt(filtered);
-    return transformToImageContent(sorted);
+    const result = transformToImageContent(sorted);
+    console.log('Transformed scanner images:', result.length);
+    return result;
   }, [contents, filterScanners, sortByUpdatedAt, transformToImageContent]);
 
   // Memoize the filter and transform functions for templates

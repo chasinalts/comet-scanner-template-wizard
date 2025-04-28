@@ -8,7 +8,7 @@ export interface ContentManagerHook {
   addContent: (content: Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>) => string;
   updateContent: (id: string, updates: Partial<Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>>) => void;
   deleteContent: (id: string) => void;
-  uploadImage: (file: File, type: 'banner' | 'scanner', title?: string) => Promise<string>;
+  uploadImage: (file: File, type: 'banner' | 'scanner' | 'gallery', title?: string) => Promise<string>;
   updateImageScale: (id: string, scale: number) => void;
   updateImageDisplayText: (id: string, displayText: string) => void;
 }
@@ -76,7 +76,7 @@ export const useContentManager = (): ContentManagerHook => {
     });
   }, []);
 
-  const uploadImage = useCallback((file: File, type: 'banner' | 'scanner', title = 'Uploaded Image'): Promise<string> => {
+  const uploadImage = useCallback((file: File, type: 'banner' | 'scanner' | 'gallery', title = 'Uploaded Image'): Promise<string> => {
     console.log(`Starting upload of ${type} image:`, { fileName: file.name, fileSize: file.size, fileType: file.type });
     return new Promise((resolve, reject) => {
       try {
