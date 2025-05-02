@@ -14,7 +14,7 @@ import SuspenseFallback from './components/ui/SuspenseFallback';
 import PerformanceMonitor from './components/dev/PerformanceMonitor';
 import UpdateNotification from './components/ui/UpdateNotification';
 import CacheDebugger from './components/dev/CacheDebugger';
-import { initializeStorage } from './supabaseConfig';
+import { initializeStorage } from './appwriteConfig';
 import { useAuth } from './contexts/AuthContext';
 
 // Lazy load page components
@@ -41,11 +41,11 @@ function AppContent() {
 
       if (isOwner) {
         try {
-          console.log('User is owner, initializing Supabase storage...');
+          console.log('User is owner, initializing Appwrite storage...');
           const result = await initializeStorage();
-          console.log('Supabase storage initialization result:', result);
+          console.log('Appwrite storage initialization result:', result);
         } catch (error) {
-          console.error('Error initializing Supabase storage:', error);
+          console.error('Error initializing Appwrite storage:', error);
         }
       } else {
         console.log('User is not an owner, skipping storage initialization');
