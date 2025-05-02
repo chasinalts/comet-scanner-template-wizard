@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from '../utils/react-imports';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../supabaseConfig';
+import { databases, DATABASE_ID } from '../appwriteConfig';
+import { ID, Query } from 'appwrite';
 
 interface Template {
   id: string;
@@ -28,36 +29,43 @@ const TemplateCreator: React.FC = () => {
     setError('');
     try {
       if (currentUser) {
-        const { error } = await supabase
-          .from('templates')
-          .insert([
+        try {
+          // Create a new template document
+          await databases.createDocument(
+            DATABASE_ID,
+            'templates', // Collection ID for templates
+            ID.unique(),
             {
               user_id: currentUser.id,
               template_name,
               template_data,
-            },
-          ]);
-        if (error) throw error;
-        setTemplateName('');
-        setTemplateData({});
-        // Optionally, refresh templates list
-        const { data, error: fetchError } = await supabase
-          .from('templates')
-          .select('*')
-          .eq('user_id', currentUser.id)
-          .order('created_at', { ascending: false });
-        if (!fetchError) {
-          const templates: Template[] = (data || []).map((row: unknown) => {
-            // TODO: Replace 'any' cast with a stricter type if possible
-            const r = row as any;
-            return {
-              id: r.id,
-              template_name: r.template_name,
-              template_data: r.template_data,
-              created_at: r.created_at,
-            };
-          });
+            }
+          );
+
+          setTemplateName('');
+          setTemplateData({});
+
+          // Refresh templates list
+          const response = await databases.listDocuments(
+            DATABASE_ID,
+            'templates', // Collection ID for templates
+            [
+              Query.equal('user_id', currentUser.id),
+              Query.orderDesc('created_at')
+            ]
+          );
+
+          const templates: Template[] = response.documents.map((doc) => ({
+            id: doc.$id,
+            template_name: doc.template_name,
+            template_data: doc.template_data,
+            created_at: doc.created_at,
+          }));
+
           setUserTemplates(templates);
+        } catch (error) {
+          console.error('Error saving template:', error);
+          throw error;
         }
       }
     } catch (err) {
@@ -72,24 +80,22 @@ const TemplateCreator: React.FC = () => {
       if (currentUser) {
         setIsLoading(true);
         try {
-          // Fetch templates for the current user from Supabase
-          const { data, error } = await supabase
-            .from('templates')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .order('created_at', { ascending: false });
-          if (error) {
-            throw error;
-          }
-          const templates: Template[] = (data || []).map((row: unknown) => {
-            const r = row as any;
-            return {
-              id: r.id,
-              template_name: r.template_name,
-              template_data: r.template_data,
-              created_at: r.created_at,
-            };
-          });
+          // Fetch templates for the current user from Appwrite
+          const response = await databases.listDocuments(
+            DATABASE_ID,
+            'templates', // Collection ID for templates
+            [
+              Query.equal('user_id', currentUser.id),
+              Query.orderDesc('created_at')
+            ]
+          );
+
+          const templates: Template[] = response.documents.map((doc) => ({
+            id: doc.$id,
+            template_name: doc.template_name,
+            template_data: doc.template_data,
+            created_at: doc.created_at,
+          }));
           setUserTemplates(templates);
         } catch (error) {
           setError('Failed to load templates.');

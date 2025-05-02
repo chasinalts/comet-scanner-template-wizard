@@ -1,8 +1,8 @@
 // Lazy-loading image component that handles responsive images, scaling, and size controls
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLazyLoading } from '../../hooks/useLazyLoading';
 import { resizeImage } from '../../utils/imageHandlers';
-import { getProxiedImageUrl } from '../../supabaseConfig';
+import { getFilePreview } from '../../utils/appwriteStorage';
 
 interface LazyImageProps {
   src: string;
@@ -97,8 +97,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
   // Check if this is a Firebase Storage URL
   const isFirebaseUrl = src.includes('firebasestorage.googleapis.com');
 
-  // Check if this is a Supabase Storage URL
-  const isSupabaseUrl = src.includes('supabase.co/storage');
+  // Check if this is an Appwrite Storage URL
+  const isAppwriteUrl = src.includes('appwrite.io') || src.includes('cloud.appwrite.io');
 
   // Load image when it becomes visible
   useEffect(() => {
@@ -124,37 +124,42 @@ const LazyImage: React.FC<LazyImageProps> = ({
           return;
         }
 
-        // For Supabase Storage URLs, handle them specially
-        if (isSupabaseUrl) {
+        // For Appwrite Storage URLs, handle them specially
+        if (isAppwriteUrl) {
           try {
-            console.log('Processing Supabase URL:', src);
+            console.log('Processing Appwrite URL:', src);
 
-            // Check if it's already a signed URL (contains token=)
-            if (src.includes('token=')) {
-              console.log('Already a signed URL, using directly:', src);
+            // Check if it's already a preview URL
+            if (src.includes('preview')) {
+              console.log('Already a preview URL, using directly:', src);
               setImageSrc(src);
               if (!gallerySize) {
                 setIsLoaded(true);
                 return;
               }
             }
-            // Check if it's a public URL
-            else if (src.includes('/public/')) {
-              console.log('Already a public URL, using directly:', src);
+            // Check if it's a download URL
+            else if (src.includes('download')) {
+              console.log('Already a download URL, using directly:', src);
               setImageSrc(src);
               if (!gallerySize) {
                 setIsLoaded(true);
                 return;
               }
             }
-            // Otherwise, try to get a proxied URL
+            // Otherwise, try to get a file preview
             else {
-              console.log('Getting proxied URL for:', src);
-              const proxiedUrl = await getProxiedImageUrl(src);
-              console.log('Proxied URL:', proxiedUrl);
+              console.log('Getting file preview for:', src);
+              // Assuming src is the file ID and we need to determine the bucket type
+              // This is a simplified approach - in a real app, you might need to store bucket info with the file ID
+              const bucketType = src.startsWith('gallery_') ? 'gallery' :
+                                src.startsWith('banner_') ? 'banner' : 'scanner';
+
+              const previewUrl = getFilePreview(src, bucketType as any);
+              console.log('Preview URL:', previewUrl);
 
               if (isMounted) {
-                setImageSrc(proxiedUrl);
+                setImageSrc(previewUrl);
                 if (!gallerySize) {
                   setIsLoaded(true);
                   return;
@@ -162,7 +167,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
               }
             }
           } catch (error) {
-            console.error('Error getting proxied URL:', error);
+            console.error('Error getting file preview:', error);
             if (isMounted) {
               // Add a cache-busting parameter to the URL
               const cacheBuster = `?t=${Date.now()}`;
@@ -223,7 +228,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [isVisible, src, gallerySize, isFirebaseUrl, isSupabaseUrl]);
+  }, [isVisible, src, gallerySize, isFirebaseUrl, isAppwriteUrl, dimensions]);
 
   // Handle image load event
   const handleImageLoad = () => {
@@ -242,22 +247,26 @@ const LazyImage: React.FC<LazyImageProps> = ({
   // Generate srcSet when src changes
   useEffect(() => {
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
-      // For Supabase images, handle them specially
-      if (isSupabaseUrl) {
+      // For Appwrite images, handle them specially
+      if (isAppwriteUrl) {
         (async () => {
           try {
-            // If it's already a signed URL, use it directly
-            if (src.includes('token=')) {
+            // If it's already a preview URL, use it directly
+            if (src.includes('preview')) {
               setSrcSet(`${src} 1x, ${src} 2x`);
             }
-            // If it's a public URL, use it directly
-            else if (src.includes('/public/')) {
+            // If it's a download URL, use it directly
+            else if (src.includes('download')) {
               setSrcSet(`${src} 1x, ${src} 2x`);
             }
-            // Otherwise, try to get a proxied URL
+            // Otherwise, try to get a file preview
             else {
-              const proxiedUrl = await getProxiedImageUrl(src);
-              setSrcSet(`${proxiedUrl} 1x, ${proxiedUrl} 2x`);
+              // Assuming src is the file ID and we need to determine the bucket type
+              const bucketType = src.startsWith('gallery_') ? 'gallery' :
+                                src.startsWith('banner_') ? 'banner' : 'scanner';
+
+              const previewUrl = getFilePreview(src, bucketType as any);
+              setSrcSet(`${previewUrl} 1x, ${previewUrl} 2x`);
             }
           } catch (error) {
             console.error('Error generating srcSet:', error);
@@ -274,7 +283,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
     } else {
       setSrcSet(undefined);
     }
-  }, [src, isSupabaseUrl]);
+  }, [src, isAppwriteUrl]);
 
   // Calculate aspect ratio placeholder using the dimensions
   const aspectRatioPercent = dimensions.width && dimensions.height

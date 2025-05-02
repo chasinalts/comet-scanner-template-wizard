@@ -1,7 +1,8 @@
 // Hook that manages content creation, updating, and deletion, including image uploads and size adjustments
 import { useState, useEffect, useCallback } from '../utils/react-imports';
 import type { ContentItem } from './useAdminContent';
-import { handleImageUpload, handleSupabaseImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
+import { handleAppwriteImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
+import { BucketType } from '../utils/appwriteStorage';
 
 export interface ContentManagerHook {
   contents: ContentItem[];
@@ -11,6 +12,9 @@ export interface ContentManagerHook {
   uploadImage: (file: File, type: 'banner' | 'scanner' | 'gallery', title?: string) => Promise<string>;
   updateImageScale: (id: string, scale: number) => void;
   updateImageDisplayText: (id: string, displayText: string) => void;
+  updateImageSize: (id: string, width?: number, height?: number) => void;
+  updateImageAspectRatio: (id: string, aspectRatio: string) => void;
+  updateImageDisplaySize: (id: string, displaySize: 'small' | 'medium' | 'large' | 'custom') => void;
 }
 
 export const useContentManager = (): ContentManagerHook => {
@@ -28,7 +32,7 @@ export const useContentManager = (): ContentManagerHook => {
   // Cleanup image URLs on unmount
   useEffect(() => {
     return () => {
-      contents.forEach((content) => {
+      contents.forEach((content: ContentItem) => {
         if (content.imageUrl) {
           const isFirebaseUrl = content.imageUrl.includes('firebasestorage.googleapis.com');
           cleanupImageUrl(content.imageUrl, isFirebaseUrl);
@@ -48,13 +52,13 @@ export const useContentManager = (): ContentManagerHook => {
       updatedAt: timestamp
     };
 
-    setContents(prev => [...prev, newContent]);
+    setContents((prev: ContentItem[]) => [...prev, newContent]);
     return id;
   }, []);
 
   const updateContent = useCallback((id: string, updates: Partial<Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>>) => {
-    setContents(prev =>
-      prev.map(item =>
+    setContents((prev: ContentItem[]) =>
+      prev.map((item: ContentItem) =>
         item.id === id
           ? { ...item, ...updates, updatedAt: Date.now() }
           : item
@@ -63,16 +67,16 @@ export const useContentManager = (): ContentManagerHook => {
   }, []);
 
   const deleteContent = useCallback((id: string) => {
-    setContents(prev => {
-      const contentToDelete = prev.find(item => item.id === id);
+    setContents((prev: ContentItem[]) => {
+      const contentToDelete = prev.find((item: ContentItem) => item.id === id);
 
       // Cleanup image URL if it exists
       if (contentToDelete?.imageUrl) {
-        const isCloudUrl = contentToDelete.imageUrl.includes('supabase');
+        const isCloudUrl = contentToDelete.imageUrl.includes('appwrite.io');
         cleanupImageUrl(contentToDelete.imageUrl, isCloudUrl);
       }
 
-      return prev.filter(item => item.id !== id);
+      return prev.filter((item: ContentItem) => item.id !== id);
     });
   }, []);
 
@@ -80,13 +84,13 @@ export const useContentManager = (): ContentManagerHook => {
     console.log(`Starting upload of ${type} image:`, { fileName: file.name, fileSize: file.size, fileType: file.type });
     return new Promise((resolve, reject) => {
       try {
-        // Use Supabase Storage for image uploads
-        handleSupabaseImageUpload(
+        // Use Appwrite Storage for image uploads
+        handleAppwriteImageUpload(
           file,
           type,
           (imageUrl: string, _imagePreview: string) => {
             try {
-              console.log(`Adding ${type} content with Supabase Storage URL`);
+              console.log(`Adding ${type} content with Appwrite Storage URL`);
               const id = addContent({
                 type,
                 title,
@@ -96,17 +100,17 @@ export const useContentManager = (): ContentManagerHook => {
               });
               console.log(`${type} image added with ID:`, id);
               resolve(id);
-            } catch (innerError) {
+            } catch (innerError: any) {
               console.error(`Error adding ${type} content:`, innerError);
               reject(innerError);
             }
           },
-          (error) => {
-            console.error(`Error uploading ${type} image to Supabase Storage:`, error);
-            reject(new Error(`Failed to upload to Supabase Storage: ${error.message}`));
+          (error: any) => {
+            console.error(`Error uploading ${type} image to Appwrite Storage:`, error);
+            reject(new Error(`Failed to upload to Appwrite Storage: ${error instanceof Error ? error.message : 'Unknown error'}`));
           }
         );
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Error setting up ${type} image upload:`, error);
         reject(error);
       }

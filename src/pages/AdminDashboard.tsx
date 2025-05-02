@@ -8,7 +8,7 @@ import Button from '../components/ui/Button';
 import DragDropUpload from '../components/ui/DragDropUpload';
 import { TextField, TextArea, CheckboxField, SelectField } from '../components/ui/FormField';
 import { useTheme } from '../contexts/ThemeContext';
-import { handleSupabaseImageUpload } from '../utils/imageHandlers';
+// Import image handling utilities
 import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
 import { useContentManager } from '../hooks/useContentManager';
@@ -23,7 +23,7 @@ import { isOwner } from '../utils/permissionChecks';
 import LogViewer from '../components/admin/LogViewer';
 import UserManagement from '../components/admin/UserManagement';
 import loggingService from '../utils/loggingService';
-import { initializeStorage } from '../supabaseConfig';
+import { initializeStorage } from '../appwriteConfig';
 
 interface UploadingState {
   questionId?: string;
@@ -164,11 +164,16 @@ export default function AdminDashboard() {
     try {
       setUploadingImage({ questionId, optionId });
 
-      // Use Supabase Storage for image uploads
-      handleSupabaseImageUpload(
-        file,
-        'option',
-        (imageUrl: string, imagePreview: string) => {
+      // Create a temporary preview URL for immediate display
+      const imagePreview = URL.createObjectURL(file);
+
+      // Process the image in a non-blocking way
+      (async () => {
+        try {
+          // Upload to Appwrite Storage
+          const result = await uploadImage(file, 'gallery', 'Option Image');
+          const imageUrl = result;
+
           const currentQuestion = questions.find((q: Question) => q.id === questionId);
           if (!currentQuestion) return;
 
@@ -185,13 +190,15 @@ export default function AdminDashboard() {
 
           showToast('success', 'Image uploaded successfully');
           setUploadingImage(null);
-        },
-        (error) => {
+        } catch (error) {
           console.error('Failed to upload option image:', error);
-          showToast('error', 'Failed to upload image to Supabase Storage.');
+          showToast('error', 'Failed to upload image to Appwrite Storage.');
           setUploadingImage(null);
+
+          // Clean up the preview URL
+          URL.revokeObjectURL(imagePreview);
         }
-      );
+      })();
     } catch (error) {
       showToast('error', 'Failed to upload image');
       setUploadingImage(null);
@@ -486,7 +493,7 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
                       />
                       <TextField
                         value={getBannerImage()?.displayText || ''}
-                        onChange={(e) => handleImageDisplayTextChange(getBannerImage()?.id || '', e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleImageDisplayTextChange(getBannerImage()?.id || '', e.target.value)}
                         placeholder="Enter text to display on the banner"
                         className="w-full"
                       />
@@ -673,7 +680,7 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
             <CheckboxField
               label="Make Available to Users"
               checked={localStorage.getItem('fullTemplateEnabled') === 'true'}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 localStorage.setItem('fullTemplateEnabled', e.target.checked.toString());
                 showToast('success', `Full template ${e.target.checked ? 'enabled' : 'disabled'} for users`);
               }}
@@ -684,7 +691,7 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
           </p>
           <TextArea
             value={localStorage.getItem('fullTemplateCode') || '// Enter your complete template code here'}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
               localStorage.setItem('fullTemplateCode', e.target.value);
               showToast('success', 'Full template code saved');
             }}
@@ -716,7 +723,7 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
                 <div className="flex items-center justify-between mb-3">
                   <TextField
                     value={section.title}
-                    onChange={(e) => updateSection(section.id, { title: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateSection(section.id, { title: e.target.value })}
                     className="text-lg font-medium text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900"
                     placeholder="Section Title"
                   />
@@ -724,7 +731,7 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
                     <CheckboxField
                       label="Mandatory"
                       checked={section.isMandatory}
-                      onChange={(e) => updateSection(section.id, { isMandatory: e.target.checked })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateSection(section.id, { isMandatory: e.target.checked })}
                     />
                     <Button
                       variant="danger"
@@ -737,7 +744,7 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
                 </div>
                 <TextArea
                   value={section.code}
-                  onChange={(e) => updateSection(section.id, { code: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateSection(section.id, { code: e.target.value })}
                   className="w-full font-mono text-sm text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
                   rows={5}
                   placeholder="Enter section code here..."
@@ -780,7 +787,7 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
               />
               <TextArea
                 value={cometExplanation}
-                onChange={(e) => setCometExplanation(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCometExplanation(e.target.value)}
                 className="w-full font-mono text-sm text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
                 rows={8}
                 placeholder="Enter COMET explanation text..."
@@ -796,7 +803,7 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
               />
               <TextArea
                 value={scannerUsage}
-                onChange={(e) => setScannerUsage(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setScannerUsage(e.target.value)}
                 className="w-full font-mono text-sm text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
                 rows={10}
                 placeholder="Enter COMET Scanner usage text..."

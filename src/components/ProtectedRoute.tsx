@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../supabaseConfig';
+import { account } from '../appwriteConfig';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -46,12 +46,19 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
           console.log('ProtectedRoute: Have session but no user profile, checking session');
 
           // Double-check session validity
-          const { data: sessionData } = await supabase.auth.getSession();
-          console.log('Session check result:', sessionData.session ? 'Valid session' : 'No valid session');
+          try {
+            const currentSession = await account.getSession('current');
+            console.log('Session check result:', currentSession ? 'Valid session' : 'No valid session');
 
-          if (!sessionData.session) {
-            // Session is invalid, set access to false
-            console.log('ProtectedRoute: Session is invalid');
+            if (!currentSession) {
+              // Session is invalid, set access to false
+              console.log('ProtectedRoute: Session is invalid');
+              setHasAccess(false);
+              setIsCheckingAuth(false);
+              return;
+            }
+          } catch (error) {
+            console.log('ProtectedRoute: No valid session found');
             setHasAccess(false);
             setIsCheckingAuth(false);
             return;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from '../../utils/react-imports';
-import { supabase } from '../../supabaseConfig';
+import { account, databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../../appwriteConfig';
+import { ID, Query } from 'appwrite';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';
 import Button from '../../components/ui/Button';
@@ -39,7 +40,7 @@ const UserManagement = () => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        
+
         // Only owners can see all users
         if (!currentUser?.is_owner) {
           showToast('error', 'Only owners can manage users');
@@ -48,29 +49,32 @@ const UserManagement = () => {
         }
 
         // Fetch all user profiles
-        const { data, error } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
+        try {
+          const response = await databases.listDocuments(
+            DATABASE_ID,
+            USER_PROFILES_COLLECTION_ID,
+            [
+              Query.orderDesc('created_at')
+            ]
+          );
 
-        if (error) {
+          // Transform data to match our User interface
+          const transformedUsers: User[] = response.documents.map((user: any) => ({
+            id: user.$id,
+            email: user.email,
+            username: user.username || '',
+            role: user.is_owner ? 'owner' : (user.permissions?.user_management ? 'admin' : 'user'),
+            is_owner: user.is_owner,
+            created_at: user.created_at,
+            last_sign_in_at: user.last_sign_in_at
+          }));
+
+          setUsers(transformedUsers);
+        } catch (error) {
           console.error('Error fetching users:', error);
           showToast('error', 'Failed to fetch users');
           return;
         }
-
-        // Transform data to match our User interface
-        const transformedUsers: User[] = data.map((user: any) => ({
-          id: user.id,
-          email: user.email,
-          username: user.username || '',
-          role: user.is_owner ? 'owner' : (user.permissions?.user_management ? 'admin' : 'user'),
-          is_owner: user.is_owner,
-          created_at: user.created_at,
-          last_sign_in_at: user.last_sign_in_at
-        }));
-
-        setUsers(transformedUsers);
       } catch (error) {
         console.error('Error in fetchUsers:', error);
         showToast('error', 'An error occurred while fetching users');
@@ -83,7 +87,7 @@ const UserManagement = () => {
   }, [currentUser, showToast]);
 
   // Filter users based on search term
-  const filteredUsers = users.filter(user => 
+  const filteredUsers = users.filter(user =>
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (user.username && user.username.toLowerCase().includes(searchTerm.toLowerCase()))
   );
@@ -110,21 +114,23 @@ const UserManagement = () => {
       };
 
       // Update the user profile in the database
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ permissions })
-        .eq('id', userId);
-
-      if (error) {
+      try {
+        await databases.updateDocument(
+          DATABASE_ID,
+          USER_PROFILES_COLLECTION_ID,
+          userId,
+          { permissions }
+        );
+      } catch (error) {
         console.error('Error updating user role:', error);
         showToast('error', 'Failed to update user role');
         return;
       }
 
       // Update local state
-      setUsers(users.map(user => 
-        user.id === userId 
-          ? { ...user, role: newRole, permissions } 
+      setUsers(users.map(user =>
+        user.id === userId
+          ? { ...user, role: newRole, permissions }
           : user
       ));
 
@@ -151,13 +157,14 @@ const UserManagement = () => {
       }
 
       // Delete the user profile
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .delete()
-        .eq('id', userId);
-
-      if (profileError) {
-        console.error('Error deleting user profile:', profileError);
+      try {
+        await databases.deleteDocument(
+          DATABASE_ID,
+          USER_PROFILES_COLLECTION_ID,
+          userId
+        );
+      } catch (error) {
+        console.error('Error deleting user profile:', error);
         showToast('error', 'Failed to delete user profile');
         return;
       }
@@ -165,7 +172,7 @@ const UserManagement = () => {
       // Delete the user from auth (requires admin privileges)
       // Note: This would typically be done through a server function
       // For now, we'll just remove from our local state
-      
+
       // Update local state
       setUsers(users.filter(user => user.id !== userId));
 
@@ -179,33 +186,39 @@ const UserManagement = () => {
   // Handle adding a new user
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // Validate inputs
       if (!newUserEmail || !newUserPassword) {
         showToast('error', 'Email and password are required');
         return;
       }
 
-      // Create user with Supabase Auth
-      const { data, error } = await supabase.auth.admin.createUser({
-        email: newUserEmail,
-        password: newUserPassword,
-        email_confirm: true,
-        user_metadata: {
-          is_owner: false
-        }
-      });
+      // Create user with Appwrite Auth
+      let userId;
+      try {
+        const user = await account.create(
+          ID.unique(),
+          newUserEmail,
+          newUserPassword,
+          newUserEmail
+        );
 
-      if (error) {
+        userId = user.$id;
+
+        // Set user preferences
+        await account.updatePrefs({
+          is_owner: false
+        });
+      } catch (error) {
         console.error('Error creating user:', error);
-        showToast('error', `Failed to create user: ${error.message}`);
+        showToast('error', `Failed to create user: ${error instanceof Error ? error.message : 'Unknown error'}`);
         return;
       }
 
-      if (!data.user) {
+      if (!userId) {
         showToast('error', 'Failed to create user');
         return;
       }
@@ -222,25 +235,27 @@ const UserManagement = () => {
       };
 
       // Create user profile
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert({
-          id: data.user.id,
-          email: newUserEmail,
-          is_owner: false,
-          created_at: new Date().toISOString(),
-          permissions
-        });
-
-      if (profileError) {
-        console.error('Error creating user profile:', profileError);
+      try {
+        await databases.createDocument(
+          DATABASE_ID,
+          USER_PROFILES_COLLECTION_ID,
+          userId,
+          {
+            email: newUserEmail,
+            is_owner: false,
+            created_at: new Date().toISOString(),
+            permissions
+          }
+        );
+      } catch (error) {
+        console.error('Error creating user profile:', error);
         showToast('error', 'Failed to create user profile');
         return;
       }
 
       // Add new user to local state
       const newUser: User = {
-        id: data.user.id,
+        id: userId,
         email: newUserEmail,
         role: newUserRole,
         is_owner: false,
@@ -248,13 +263,13 @@ const UserManagement = () => {
       };
 
       setUsers([newUser, ...users]);
-      
+
       // Reset form
       setNewUserEmail('');
       setNewUserPassword('');
       setNewUserRole('user');
       setShowAddUserForm(false);
-      
+
       showToast('success', 'User created successfully');
     } catch (error) {
       console.error('Error in handleAddUser:', error);
@@ -408,7 +423,7 @@ const UserManagement = () => {
                           {user.is_owner && <option value="owner">Owner</option>}
                         </SelectField>
                       ) : (
-                        <span 
+                        <span
                           className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(user.role)}`}
                           onClick={() => !user.is_owner && setEditingUserId(user.id)}
                         >
@@ -440,7 +455,7 @@ const UserManagement = () => {
           </div>
         )}
       </div>
-      
+
       <div className="mt-4 text-xs text-gray-500">
         <p>* Click on a user's role to change it (except for owners)</p>
         <p>* Only owners can delete users</p>

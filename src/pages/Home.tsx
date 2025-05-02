@@ -4,7 +4,7 @@ import React, { useState, useEffect } from '../utils/react-imports';
 import HolographicText from '../components/ui/HolographicText';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseConfig';
+import { storage, BANNER_BUCKET_ID, GALLERY_BUCKET_ID } from '../appwriteConfig';
 import LazyImage from '../components/ui/LazyImage';
 import Button from '../components/ui/Button';
 
@@ -57,126 +57,54 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Fetch banner and gallery images from Supabase Storage
+  // Fetch banner and gallery images from Appwrite Storage
   const fetchImages = async () => {
     try {
-      console.log('Fetching images from Supabase Storage...');
+      console.log('Fetching images from Appwrite Storage...');
 
-      // Make sure the storage is initialized
-      await supabase.storage.from('images').list('', { limit: 1 }).catch(err => {
-        console.log('Storage initialization check:', err);
-      });
-
-      // Fetch banner (assume single file in 'banner' folder)
+      // Fetch banner images
       console.log('Fetching banner images...');
-      const { data: bannerData, error: bannerError } = await supabase.storage.from('images').list('banner', {
-        limit: 10, // Increased limit to make sure we get all files
-        sortBy: { column: 'name', order: 'asc' }
-      });
+      try {
+        const bannerFiles = await storage.listFiles(BANNER_BUCKET_ID);
+        console.log('Banner data:', bannerFiles);
 
-      if (bannerError) {
-        console.error('Error fetching banner:', bannerError);
-        throw new Error(`Banner fetch error: ${bannerError.message}`);
-      }
+        if (bannerFiles.files.length > 0) {
+          // Get the first banner image
+          const bannerFile = bannerFiles.files[0];
 
-      console.log('Banner data:', bannerData);
+          // Get preview URL for the banner image
+          const previewUrl = storage.getFilePreview(BANNER_BUCKET_ID, bannerFile.$id);
 
-      // Filter out placeholder files and get the first real image
-      const realBannerFiles = bannerData?.filter(file => !file.name.startsWith('.'));
-
-      if (realBannerFiles && realBannerFiles.length > 0) {
-        // Try to get a signed URL for the banner image (more reliable with RLS)
-        try {
-          const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-            .from('images')
-            .createSignedUrl(`banner/${realBannerFiles[0].name}`, 60 * 60); // 1 hour expiry
-
-          if (signedUrlError) {
-            console.error('Error getting signed URL for banner:', signedUrlError);
-            throw signedUrlError;
-          }
-
-          if (signedUrlData?.signedUrl) {
-            console.log('Banner signed URL:', signedUrlData.signedUrl);
-            setBannerUrl(signedUrlData.signedUrl);
-          } else {
-            throw new Error('No signed URL returned for banner');
-          }
-        } catch (signedUrlError) {
-          console.error('Failed to get signed URL, falling back to public URL:', signedUrlError);
-
-          // Fallback to public URL
-          const { data: bannerUrlData } = await supabase.storage
-            .from('images')
-            .getPublicUrl(`banner/${realBannerFiles[0].name}`);
-
-          console.log('Banner public URL:', bannerUrlData.publicUrl);
-          setBannerUrl(bannerUrlData.publicUrl);
+          console.log('Banner preview URL:', previewUrl);
+          setBannerUrl(previewUrl.toString());
+        } else {
+          console.log('No banner images found');
         }
-      } else {
-        console.log('No banner images found');
+      } catch (error) {
+        console.error('Error fetching banner:', error);
+        throw new Error(`Banner fetch error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
 
-      // Fetch gallery images (all files in 'gallery' folder)
+      // Fetch gallery images
       console.log('Fetching gallery images...');
-      const { data: galleryData, error: galleryError } = await supabase.storage.from('images').list('gallery', {
-        limit: 100, // Increased limit to get more images
-        sortBy: { column: 'name', order: 'asc' }
-      });
+      try {
+        const galleryFiles = await storage.listFiles(GALLERY_BUCKET_ID);
+        console.log('Gallery data:', galleryFiles);
 
-      if (galleryError) {
-        console.error('Error fetching gallery:', galleryError);
-        throw new Error(`Gallery fetch error: ${galleryError.message}`);
-      }
-
-      console.log('Gallery data:', galleryData);
-
-      // Filter out placeholder files
-      const realGalleryFiles = galleryData?.filter(file => !file.name.startsWith('.'));
-
-      if (realGalleryFiles && realGalleryFiles.length > 0) {
-        // Get signed URLs for all gallery images (more reliable with RLS)
-        try {
-          const signedUrls = await Promise.all(
-            realGalleryFiles.map(async (img) => {
-              try {
-                // Try to get a signed URL first
-                const { data, error } = await supabase.storage
-                  .from('images')
-                  .createSignedUrl(`gallery/${img.name}`, 60 * 60); // 1 hour expiry
-
-                if (error) {
-                  console.error(`Error getting signed URL for gallery image ${img.name}:`, error);
-                  throw error;
-                }
-
-                return data.signedUrl;
-              } catch (signedUrlError) {
-                console.error(`Failed to get signed URL for ${img.name}, falling back to public URL:`, signedUrlError);
-
-                // Fallback to public URL
-                const { data } = supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`);
-                return data.publicUrl;
-              }
-            })
+        if (galleryFiles.files.length > 0) {
+          // Get preview URLs for all gallery images
+          const previewUrls = galleryFiles.files.map((file: any) =>
+            storage.getFilePreview(GALLERY_BUCKET_ID, file.$id).toString()
           );
 
-          console.log('Gallery URLs:', signedUrls);
-          setGalleryImages(signedUrls);
-        } catch (error) {
-          console.error('Error getting gallery image URLs:', error);
-
-          // Fallback to public URLs if there's an error with the signed URLs
-          const publicUrls = realGalleryFiles.map(img => {
-            const { data } = supabase.storage.from('images').getPublicUrl(`gallery/${img.name}`);
-            return data.publicUrl;
-          });
-
-          console.log('Gallery public URLs (fallback):', publicUrls);
-          setGalleryImages(publicUrls);
+          console.log('Gallery URLs:', previewUrls);
+          setGalleryImages(previewUrls);
+        } else {
+          console.log('No gallery images found');
         }
-      } else {
-        console.log('No gallery images found');
+      } catch (error) {
+        console.error('Error fetching gallery:', error);
+        throw new Error(`Gallery fetch error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     } catch (err: any) {
       console.error('Failed to load images:', err);
@@ -251,7 +179,7 @@ const Home: React.FC = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-gradient-to-br from-cyan-800/30 to-blue-900/30 p-4 rounded-xl shadow-inner">
           {galleryImages.length > 0 ? (
-            galleryImages.map((img, i) => (
+            galleryImages.map((img: string, i: number) => (
               <div key={img} className="aspect-[16/9]">
                 <LazyImage
                   src={img}
