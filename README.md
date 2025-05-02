@@ -126,21 +126,22 @@ npm run test:netlify
 
 ### Storage Configuration
 
-#### Supabase Storage (Recommended)
+#### Appwrite Storage (Recommended)
 
-This project uses Supabase Storage for image uploads. To configure Supabase Storage:
+This project uses Appwrite Storage for image uploads. To configure Appwrite Storage:
 
-1. Create a Supabase account at https://supabase.com
+1. Create an Appwrite account at https://appwrite.io
 2. Create a new project
-3. Go to the project settings and copy the URL and anon key
+3. Go to the project settings and copy the endpoint and project ID
 4. Create a `.env` file in the root of the project with the following content:
 
 ```
-VITE_SUPABASE_URL=https://your-supabase-project-url.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+VITE_APPWRITE_PROJECT_ID=your-project-id
+VITE_APPWRITE_DATABASE_ID=your-database-id
 ```
 
-5. The application will automatically create a storage bucket named `images` when it starts
+5. Create storage buckets named `banner`, `gallery`, and `scanner` in the Appwrite dashboard
 
 #### Firebase Storage CORS Configuration
 

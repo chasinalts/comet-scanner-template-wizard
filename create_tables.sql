@@ -27,5 +27,5 @@ CREATE POLICY "Users can update their own profile"
     ON user_profiles FOR UPDATE
     USING (auth.uid() = id);
 
--- Storage configuration is handled automatically by Supabase when you create
--- a storage bucket named 'images' through the dashboard or API
+-- Storage configuration is handled through the Appwrite dashboard
+-- by creating buckets for 'banner', 'gallery', and 'scanner' images

@@ -9,7 +9,7 @@ DECLARE
     user_data JSONB;
 BEGIN
     -- Get user data from auth.users
-    SELECT 
+    SELECT
         jsonb_build_object(
             'id', id,
             'email', email,
@@ -17,7 +17,7 @@ BEGIN
         ) INTO user_data
     FROM auth.users
     WHERE id = user_id;
-    
+
     RETURN user_data;
 END;
 $$ LANGUAGE plpgsql;
@@ -26,7 +26,7 @@ $$ LANGUAGE plpgsql;
 GRANT EXECUTE ON FUNCTION get_auth_user_data TO authenticated;
 
 -- Create storage policies for the images bucket
--- These need to be run in the Supabase SQL editor
+-- These need to be run in the database SQL editor
 
 -- 1. Allow authenticated users to view images
 CREATE POLICY "Allow authenticated read access"
@@ -37,7 +37,7 @@ USING (bucket_id = 'images' AND auth.role() = 'authenticated');
 CREATE POLICY "Allow owners to upload images"
 ON storage.objects FOR INSERT
 WITH CHECK (
-    bucket_id = 'images' AND 
+    bucket_id = 'images' AND
     (
         -- Check user_metadata for is_owner flag
         (auth.jwt() ->> 'user_metadata')::jsonb ->> 'is_owner' = 'true'
@@ -54,7 +54,7 @@ WITH CHECK (
 CREATE POLICY "Allow owners to update images"
 ON storage.objects FOR UPDATE
 USING (
-    bucket_id = 'images' AND 
+    bucket_id = 'images' AND
     (
         -- Check user_metadata for is_owner flag
         (auth.jwt() ->> 'user_metadata')::jsonb ->> 'is_owner' = 'true'
@@ -71,7 +71,7 @@ USING (
 CREATE POLICY "Allow owners to delete images"
 ON storage.objects FOR DELETE
 USING (
-    bucket_id = 'images' AND 
+    bucket_id = 'images' AND
     (
         -- Check user_metadata for is_owner flag
         (auth.jwt() ->> 'user_metadata')::jsonb ->> 'is_owner' = 'true'
