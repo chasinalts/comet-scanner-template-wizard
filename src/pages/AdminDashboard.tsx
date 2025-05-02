@@ -245,7 +245,7 @@ export default function AdminDashboard() {
           setUploadingImage(null);
         })
         .catch(error => {
-          showToast('error', `Failed to upload ${title.toLowerCase()} to Supabase Storage.`);
+          showToast('error', `Failed to upload ${title.toLowerCase()} to Appwrite Storage.`);
           console.error(`Error uploading ${title.toLowerCase()}:`, error);
           setUploadingImage(null);
         });

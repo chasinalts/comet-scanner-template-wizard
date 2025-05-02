@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState } from '../utils/react-imports';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-// Import types from Supabase // Import FirebaseError for better error handling
+// Import HolographicText component for UI
 import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
@@ -55,7 +55,7 @@ const Signup = () => {
     } catch (error: any) {
       console.error("Signup failed:", error);
       let errorMessage = 'Failed to create account. Please try again.';
-      // Provide more specific feedback for common Supabase errors
+      // Provide more specific feedback for common authentication errors
       if (error.message) {
         if (error.message.includes('already registered')) {
           errorMessage = 'This email address is already registered.';
@@ -154,7 +154,7 @@ const Signup = () => {
                   autoComplete="email"
                   required
                   value={email} // Bind value to email state
-                  onChange={(e) => setEmail(e.target.value)} // Update email state
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} // Update email state
                   className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
                 />
               </div>
@@ -175,7 +175,7 @@ const Signup = () => {
                   autoComplete="new-password" // Use new-password for signup
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
                 />
               </div>
@@ -196,7 +196,7 @@ const Signup = () => {
                   autoComplete="new-password" // Use new-password for signup
                   required
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
                 />
               </div>

@@ -98,7 +98,7 @@ const Login = () => {
       console.error('Login error details:', error);
       let errorMessage = 'Failed to sign in. Please check your credentials.';
 
-      // Provide more specific feedback for common Supabase errors
+      // Provide more specific feedback for common authentication errors
       if (error.message) {
         if (error.message === 'Invalid login credentials' || error.message === 'Email not confirmed') {
           errorMessage = 'Invalid email or password.';

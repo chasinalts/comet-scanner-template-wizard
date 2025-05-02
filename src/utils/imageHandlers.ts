@@ -4,7 +4,7 @@ import { BucketType } from './appwriteStorage';
 
 /**
  * Handles image upload using local storage (base64 encoding)
- * @deprecated Use handleSupabaseImageUpload instead for better performance
+ * @deprecated Use handleAppwriteImageUpload instead for better performance
  */
 export const handleLocalImageUpload = (
   file: File,

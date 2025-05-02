@@ -30,7 +30,7 @@ import Home from './pages/Home';
 function AppContent() {
   const { currentUser, isLoading } = useAuth();
 
-  // Initialize Supabase storage only when the user is authenticated and is an owner
+  // Initialize Appwrite storage only when the user is authenticated and is an owner
   useEffect(() => {
     const init = async () => {
       // Only proceed if authentication is complete and we have a user
