@@ -1,25 +1,7 @@
 // Authentication context that manages user authentication state, login/logout functionality, and user profiles
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
-import { supabase } from '../supabaseConfig'; // Import Supabase client
-import {
-  Session,
-  PostgrestError,
-  AuthError,
-  AuthChangeEvent,
-  User
-} from '@supabase/supabase-js';
-
-// Define explicit types for Supabase auth responses
-interface AuthResponse {
-  data: {
-    session: Session | null;
-    user: User | null;
-  };
-  error: AuthError | null;
-}
-
-// Define explicit types for the auth state change callback
-type AuthStateChangeCallback = (event: AuthChangeEvent, session: Session | null) => void;
+import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig';
+import { ID, Models, Query } from 'appwrite';
 
 // User profile data structure
 export interface UserProfile {
@@ -45,8 +27,8 @@ export interface UserProfile {
 
 interface AuthContextType {
   currentUser: UserProfile | null;
-  session: Session | null;
-  login: (email: string, password: string) => Promise<{ session: Session } | undefined>;
+  session: Models.Session | null;
+  login: (email: string, password: string) => Promise<{ session: Models.Session } | undefined>;
   signup: (email: string, password: string, isOwner: boolean) => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -57,7 +39,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<Models.Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -67,282 +49,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }, 10000);
 
-    // Set up Supabase auth state listener
-    const handler: AuthStateChangeCallback = async (event, currentSession) => {
-      console.log('Auth state changed:', event, currentSession?.user?.id);
-      setIsLoading(true);
-      setSession(currentSession);
-
-      // Clear the timeout since we got a response
-      clearTimeout(authTimeout);
-
-      if (currentSession?.user) {
-        try {
-          console.log('User authenticated, fetching profile for ID:', currentSession.user.id);
-          // Fetch user profile from Supabase
-          const { data, error }: { data: UserProfile | null; error: PostgrestError | null } = await supabase
-            .from('user_profiles')
-            .select('*')
-            .eq('id', currentSession.user.id)
-            .single();
-
-          if (error) {
-            console.error('Error fetching user profile:', error);
-            console.error('Error details:', JSON.stringify(error, null, 2));
-
-            // If profile doesn't exist, create a default one
-            if (error.code === 'PGRST116') { // No rows returned
-              console.log('No user profile found, creating a new one');
-
-              // Check if user has owner metadata
-              const { data: userData } = await supabase.auth.getUser();
-              const userMetadata = userData?.user?.user_metadata;
-              console.log('User metadata:', userMetadata);
-
-              // Check if is_owner is a string 'true' or boolean true
-              const isOwnerFromMetadata =
-                userMetadata?.is_owner === true ||
-                userMetadata?.is_owner === 'true';
-              console.log('Is owner from metadata:', isOwnerFromMetadata);
-
-              const newProfile: UserProfile = {
-                id: currentSession.user.id,
-                email: currentSession.user.email || '',
-                is_owner: isOwnerFromMetadata || false, // Use metadata or default to false
-                created_at: new Date().toISOString(),
-                permissions: isOwnerFromMetadata ? {
-                  content_management: true,
-                  user_management: true,
-                  system_configuration: true,
-                  media_uploads: true,
-                  security_settings: true,
-                  site_customization: true,
-                } : {
-                  content_management: false,
-                  user_management: false,
-                  system_configuration: false,
-                  media_uploads: false,
-                  security_settings: false,
-                  site_customization: false,
-                }
-              };
-
-              console.log('Creating new profile:', newProfile);
-
-              // Insert the new profile
-              const { error: insertError, data: insertData } = await supabase
-                .from('user_profiles')
-                .insert(newProfile)
-                .select();
-
-              if (insertError) {
-                console.error('Error creating user profile:', insertError);
-                console.error('Insert error details:', JSON.stringify(insertError, null, 2));
-              } else {
-                console.log('Profile created successfully:', insertData);
-                setCurrentUser(newProfile);
-              }
-            }
-          } else if (data) {
-            // Profile exists, use it
-            console.log('User profile found:', data);
-
-            // Set the role based on permissions
-            const profileWithRole = {
-              ...data,
-              role: data.is_owner ? 'owner' :
-                    (data.permissions?.user_management ? 'admin' : 'user')
-            };
-
-            setCurrentUser(profileWithRole);
-          } else {
-            console.warn('No data returned but no error either');
-          }
-        } catch (error) {
-          console.error('Error in auth state change:', error);
-          if (error instanceof Error) {
-            console.error('Error details:', error.message, error.stack);
-          }
-        }
-      } else {
-        // User is signed out
-        console.log('User is signed out');
-        setCurrentUser(null);
-      }
-
-      setIsLoading(false);
-    };
-
-    // Subscribe to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(handler);
-
-    // Initial session check
-    const initializeAuth = async () => {
+    // Check for an existing session
+    const checkSession = async () => {
       try {
-        console.log('Initializing auth - checking for existing session');
+        const currentSession = await account.getSession('current');
+        setSession(currentSession);
 
-        // Set up a timeout for the initial auth check
-        const initAuthTimeout = setTimeout(() => {
-          console.log('Initial auth check timed out after 8 seconds, forcing completion');
-          setIsLoading(false);
-        }, 8000);
+        // Get user data
+        const user = await account.get();
 
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
-        console.log('Initial session check result:', initialSession ? 'Session found' : 'No session');
+        // Get user profile from database
+        try {
+          const profile = await databases.getDocument(
+            DATABASE_ID,
+            USER_PROFILES_COLLECTION_ID,
+            user.$id
+          );
 
-        // Clear the timeout since we got a response
-        clearTimeout(initAuthTimeout);
+          // Set the role based on permissions
+          const profileWithRole = {
+            ...profile,
+            id: profile.$id,
+            role: profile.is_owner ? 'owner' :
+                  (profile.permissions?.user_management ? 'admin' : 'user')
+          };
 
-        if (initialSession) {
-          setSession(initialSession);
-          console.log('User ID from session:', initialSession.user.id);
+          setCurrentUser(profileWithRole);
+        } catch (error) {
+          // If profile doesn't exist, create a default one
+          console.log('No user profile found, creating a new one');
 
-          // Fetch user profile
-          const { data, error }: { data: UserProfile | null; error: PostgrestError | null } = await supabase
-            .from('user_profiles')
-            .select('*')
-            .eq('id', initialSession.user.id)
-            .single();
+          // Check if user has owner metadata
+          const isOwnerFromMetadata = user.prefs?.is_owner === true ||
+                                     user.prefs?.is_owner === 'true';
 
-          if (error) {
-            console.error('Error fetching user profile during initialization:', error);
-            console.error('Error details:', JSON.stringify(error, null, 2));
-
-            // If profile doesn't exist, create a default one
-            if (error.code === 'PGRST116') { // No rows returned
-              console.log('No user profile found during initialization, creating a new one');
-
-              // Check if user has owner metadata
-              const { data: userData } = await supabase.auth.getUser();
-              const userMetadata = userData?.user?.user_metadata;
-              console.log('User metadata:', userMetadata);
-
-              // Check if is_owner is a string 'true' or boolean true
-              const isOwnerFromMetadata =
-                userMetadata?.is_owner === true ||
-                userMetadata?.is_owner === 'true';
-              console.log('Is owner from metadata:', isOwnerFromMetadata);
-
-              const newProfile: UserProfile = {
-                id: initialSession.user.id,
-                email: initialSession.user.email || '',
-                is_owner: isOwnerFromMetadata || false, // Use metadata or default to false
-                created_at: new Date().toISOString(),
-                permissions: isOwnerFromMetadata ? {
-                  content_management: true,
-                  user_management: true,
-                  system_configuration: true,
-                  media_uploads: true,
-                  security_settings: true,
-                  site_customization: true,
-                } : {
-                  content_management: false,
-                  user_management: false,
-                  system_configuration: false,
-                  media_uploads: false,
-                  security_settings: false,
-                  site_customization: false,
-                }
-              };
-
-              console.log('Creating new profile during initialization:', newProfile);
-
-              // Insert the new profile
-              const { error: insertError, data: insertData } = await supabase
-                .from('user_profiles')
-                .insert(newProfile)
-                .select();
-
-              if (insertError) {
-                console.error('Error creating user profile during initialization:', insertError);
-                console.error('Insert error details:', JSON.stringify(insertError, null, 2));
-              } else {
-                console.log('Profile created successfully during initialization:', insertData);
-                setCurrentUser(newProfile);
-              }
-            }
-          } else if (data) {
-            console.log('User profile found during initialization:', data);
-
-            // Set the role based on permissions
-            const profileWithRole = {
-              ...data,
-              role: data.is_owner ? 'owner' :
-                    (data.permissions?.user_management ? 'admin' : 'user')
-            };
-
-            setCurrentUser(profileWithRole);
-          } else {
-            console.warn('No data returned but no error either during initialization');
-          }
-        }
-      } catch (error) {
-        console.error('Error checking initial session:', error);
-        if (error instanceof Error) {
-          console.error('Error details:', error.message, error.stack);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeAuth();
-
-    // Cleanup subscription on unmount
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(authTimeout); // Clear the timeout on unmount
-    };
-  }, []);
-
-  const login = async (email: string, password: string): Promise<{ session: Session } | undefined> => {
-    try {
-      console.log('Attempting to sign in with Supabase auth');
-
-      // Use the AuthResponse interface for proper typing
-      const response: AuthResponse = await supabase.auth.signInWithPassword({ email, password });
-      const { data, error } = response;
-
-      if (error) {
-        console.error('Supabase auth error:', error);
-        alert(`Login Error: ${error.message}`);
-        throw new Error(`Supabase auth error: ${error.message}`);
-      }
-
-      if (!data || !data.session) {
-        console.error('No session returned from login:', data);
-        alert('Login failed: No session returned from Supabase.');
-        throw new Error('Login failed: No session returned from Supabase.');
-      }
-
-      console.log('Supabase auth successful:', data);
-      // Return the session data
-      return { session: data.session };
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(`Login Error: ${error.message}`);
-      }
-      console.error('Error logging in:', error);
-      throw error;
-    }
-  };
-
-  const signup = async (email: string, password: string, isOwner: boolean = false): Promise<void> => {
-    // Prevent creating new owner accounts from UI
-    if (isOwner) {
-      console.warn('Attempt to create owner account prevented - owner already exists');
-      throw new Error('Owner account already exists. Please use a regular account.');
-    }
-    try {
-      // First create the auth user
-      const { data, error }: AuthResponse = await supabase.auth.signUp({
-        email,
-        password,
-        // Important: Include the initial profile data in the metadata
-        options: {
-          data: {
-            is_owner: isOwner, // Changed to match database column name
-            permissions: isOwner ? {
+          const newProfile = {
+            id: user.$id,
+            email: user.email,
+            is_owner: isOwnerFromMetadata || false,
+            created_at: new Date().toISOString(),
+            permissions: isOwnerFromMetadata ? {
               content_management: true,
               user_management: true,
               system_configuration: true,
@@ -357,38 +103,122 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               security_settings: false,
               site_customization: false,
             }
+          };
+
+          // Create the profile in the database
+          try {
+            const createdProfile = await databases.createDocument(
+              DATABASE_ID,
+              USER_PROFILES_COLLECTION_ID,
+              user.$id,
+              {
+                email: newProfile.email,
+                is_owner: newProfile.is_owner,
+                created_at: newProfile.created_at,
+                permissions: newProfile.permissions
+              }
+            );
+
+            const profileWithRole = {
+              ...newProfile,
+              role: newProfile.is_owner ? 'owner' :
+                    (newProfile.permissions?.user_management ? 'admin' : 'user')
+            };
+
+            setCurrentUser(profileWithRole);
+          } catch (createError) {
+            console.error('Error creating user profile:', createError);
           }
+        }
+      } catch (error) {
+        console.log('No active session found');
+        setSession(null);
+        setCurrentUser(null);
+      } finally {
+        clearTimeout(authTimeout);
+        setIsLoading(false);
+      }
+    };
+
+    checkSession();
+
+    // Set up event listener for account changes
+    const unsubscribe = client.subscribe('account', (response) => {
+      if (response.events.includes('user.update') ||
+          response.events.includes('session.create') ||
+          response.events.includes('session.delete')) {
+        checkSession();
+      }
+    });
+
+    return () => {
+      clearTimeout(authTimeout);
+      unsubscribe();
+    };
+  }, []);
+
+  const login = async (email: string, password: string): Promise<{ session: Models.Session } | undefined> => {
+    try {
+      console.log('Attempting to sign in with Appwrite auth');
+
+      const session = await account.createEmailSession(email, password);
+
+      console.log('Appwrite auth successful:', session);
+      return { session };
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error;
+    }
+  };
+
+  const signup = async (email: string, password: string, isOwner: boolean = false): Promise<void> => {
+    // Prevent creating new owner accounts from UI
+    if (isOwner) {
+      console.warn('Attempt to create owner account prevented - owner already exists');
+      throw new Error('Owner account already exists. Please use a regular account.');
+    }
+
+    try {
+      // Create the user account
+      const user = await account.create(
+        ID.unique(),
+        email,
+        password,
+        email
+      );
+
+      // Set user preferences
+      await account.updatePrefs({
+        is_owner: isOwner,
+        permissions: isOwner ? {
+          content_management: true,
+          user_management: true,
+          system_configuration: true,
+          media_uploads: true,
+          security_settings: true,
+          site_customization: true,
+        } : {
+          content_management: false,
+          user_management: false,
+          system_configuration: false,
+          media_uploads: false,
+          security_settings: false,
+          site_customization: false,
         }
       });
 
-      if (error) {
-        console.error('Supabase signUp error:', error);
-        throw new Error(`Supabase signUp error: ${error.message}`);
-      }
+      // Sign in the user
+      await account.createEmailSession(email, password);
 
-      if (!data || !data.user) {
-        console.error('No user object returned from signUp:', data);
-        throw new Error('Signup failed: No user object returned from Supabase.');
-      }
-
-      // Sign in the user immediately after signup to ensure they're authenticated
-      const { error: signInError }: AuthResponse = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      if (signInError) {
-        console.error('Supabase signIn error after signUp:', signInError);
-        throw new Error(`Supabase signIn error after signUp: ${signInError.message}`);
-      }
-
-      // Now the user is authenticated, create their profile
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert({
-          id: data.user.id,  // Must match auth.uid()
+      // Create user profile in database
+      await databases.createDocument(
+        DATABASE_ID,
+        USER_PROFILES_COLLECTION_ID,
+        user.$id,
+        {
           email: email,
-          is_owner: isOwner, // Using snake_case to match database column name
-          created_at: new Date().toISOString(), // Changed to match database column name
+          is_owner: isOwner,
+          created_at: new Date().toISOString(),
           permissions: isOwner ? {
             content_management: true,
             user_management: true,
@@ -404,17 +234,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             security_settings: false,
             site_customization: false,
           }
-        });
-
-      if (profileError) {
-        console.error('Error creating profile in user_profiles:', profileError);
-        throw new Error(`Error creating profile in user_profiles: ${profileError.message}`);
-      }
+        }
+      );
     } catch (error) {
-      // Add more detailed error reporting for debugging
-      if (error instanceof Error) {
-        alert(`Signup Error: ${error.message}`);
-      }
       console.error('Error signing up:', error);
       throw error;
     }
@@ -422,8 +244,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async (): Promise<void> => {
     try {
-      const { error }: { error: AuthError | null } = await supabase.auth.signOut();
-      if (error) throw error;
+      await account.deleteSession('current');
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
@@ -432,11 +253,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const sendPasswordResetEmail = async (email: string): Promise<void> => {
     try {
-      const { error }: { error: AuthError | null } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset-password',
-      });
-
-      if (error) throw error;
+      await account.createRecovery(email, 'https://cometscanner.netlify.app/reset-password');
     } catch (error) {
       console.error('Error sending password reset:', error);
       throw error;

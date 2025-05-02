@@ -7,10 +7,10 @@ import { AuthProvider } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import analytics from './utils/analytics';
-import { initializeStorage } from './supabaseConfig';
+import { initializeStorage } from './appwriteConfig';
 import loggingService from './utils/loggingService';
 
-// Supabase handles authentication now
+// Appwrite handles authentication now
 
 // Make sure the root element exists
 const rootElement = document.getElementById('root');
@@ -43,16 +43,16 @@ if (typeof window !== 'undefined') {
   loggingService.initialize();
   console.log('Logging service initialized');
 
-  // Initialize Supabase storage
+  // Initialize Appwrite storage
   initializeStorage()
     .then(success => {
       if (success) {
-        console.log('Supabase storage initialized successfully');
+        console.log('Appwrite storage initialized successfully');
       } else {
-        console.warn('Failed to initialize Supabase storage');
+        console.warn('Failed to initialize Appwrite storage');
       }
     })
     .catch(error => {
-      console.error('Error initializing Supabase storage:', error);
+      console.error('Error initializing Appwrite storage:', error);
     });
 }

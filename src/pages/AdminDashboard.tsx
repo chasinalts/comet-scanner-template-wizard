@@ -379,6 +379,33 @@ export default function AdminDashboard() {
     </div>;
   }
 
+  // State for COMET description content
+  const [cometExplanation, setCometExplanation] = useState<string>(() => {
+    return localStorage.getItem('comet_explanation') ||
+      `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
+  });
+
+  const [scannerUsage, setScannerUsage] = useState<string>(() => {
+    return localStorage.getItem('scanner_usage') ||
+      `COMET Scanners are powerful tools for market analysis that help traders identify potential trading opportunities across multiple assets simultaneously. They work by applying custom filters and visualization techniques to price data, highlighting patterns that might be missed by traditional analysis methods.
+
+Key features of COMET Scanners include:
+• Multi-asset screening capability (up to 40 assets per scanner instance)
+• Custom visualization techniques for pattern recognition
+• Extreme parameter settings to identify edge cases
+• Real-time alerts for potential trading opportunities
+• Configurable filters to match your trading strategy
+
+The COMET Scanner Template Wizard helps you create a customized scanner template tailored to your specific trading needs and preferences.`;
+  });
+
+  // Handle saving COMET description content
+  const handleSaveCometDescription = () => {
+    localStorage.setItem('comet_explanation', cometExplanation);
+    localStorage.setItem('scanner_usage', scannerUsage);
+    showToast('success', 'COMET description updated successfully');
+  };
+
   return (
     <div className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''} futuristic-grid-bg`}>
       <HolographicText
@@ -661,7 +688,7 @@ export default function AdminDashboard() {
               localStorage.setItem('fullTemplateCode', e.target.value);
               showToast('success', 'Full template code saved');
             }}
-            className="w-full font-mono text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+            className="w-full font-mono text-sm text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
             rows={15}
             placeholder="Enter the complete template code here..."
           />
@@ -690,7 +717,7 @@ export default function AdminDashboard() {
                   <TextField
                     value={section.title}
                     onChange={(e) => updateSection(section.id, { title: e.target.value })}
-                    className="text-lg font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800"
+                    className="text-lg font-medium text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900"
                     placeholder="Section Title"
                   />
                   <div className="flex items-center space-x-4">
@@ -711,7 +738,7 @@ export default function AdminDashboard() {
                 <TextArea
                   value={section.code}
                   onChange={(e) => updateSection(section.id, { code: e.target.value })}
-                  className="w-full font-mono text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                  className="w-full font-mono text-sm text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
                   rows={5}
                   placeholder="Enter section code here..."
                 />
@@ -733,6 +760,57 @@ export default function AdminDashboard() {
           <UserManagement />
         </section>
       )}
+
+      {/* COMET Description Section */}
+      <section className="space-y-8">
+        <HolographicText
+          text="COMET Description"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-semibold"
+        />
+        <div className="rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 futuristic-container holo-glow">
+          <div className="space-y-6">
+            <div>
+              <HolographicText
+                text="What is COMET?"
+                as="h3"
+                variant="subtitle"
+                className="text-xl font-medium mb-4"
+              />
+              <TextArea
+                value={cometExplanation}
+                onChange={(e) => setCometExplanation(e.target.value)}
+                className="w-full font-mono text-sm text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
+                rows={8}
+                placeholder="Enter COMET explanation text..."
+              />
+            </div>
+
+            <div>
+              <HolographicText
+                text="COMET Scanner Usage"
+                as="h3"
+                variant="subtitle"
+                className="text-xl font-medium mb-4"
+              />
+              <TextArea
+                value={scannerUsage}
+                onChange={(e) => setScannerUsage(e.target.value)}
+                className="w-full font-mono text-sm text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
+                rows={10}
+                placeholder="Enter COMET Scanner usage text..."
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <Button onClick={handleSaveCometDescription}>
+                Save COMET Description
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* System Logs Section - Visible to owners and admins */}
       <section className="space-y-8">
@@ -770,7 +848,7 @@ export default function AdminDashboard() {
                     <TextArea
                       value={question.text}
                       onChange={(e: ChangeEvent<HTMLTextAreaElement>) => updateQuestion(question.id, { text: e.target.value })}
-                      className="w-full text-lg font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                      className="w-full text-lg font-medium text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
                       placeholder="Enter your question..."
                     />
                     <Button
@@ -795,7 +873,7 @@ export default function AdminDashboard() {
                         label="Link to Code Section"
                         value={question.linkedSectionId || ''}
                         onChange={(e: ChangeEvent<HTMLSelectElement>) => updateQuestion(question.id, { linkedSectionId: e.target.value || undefined })}
-                        className="text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                        className="text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
                       >
                         <option value="">None</option>
                         {sections.map((section: Section) => (
@@ -814,7 +892,7 @@ export default function AdminDashboard() {
                       value={question.placeholderVariable || ''}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => updateQuestion(question.id, { placeholderVariable: e.target.value })}
                       placeholder="e.g., {{USER_INPUT}}"
-                      className="text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 mb-6"
+                      className="text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600 mb-6"
                     />
                   )}
 
@@ -843,14 +921,14 @@ export default function AdminDashboard() {
                                   value={option.text}
                                   onChange={handleOptionTextChange(question.id, option.id)}
                                   placeholder="Enter answer option text"
-                                  className="text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                                  className="text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
                                 />
 
                                 <SelectField
                                   label="Link to Code Section"
                                   value={option.linkedSectionId || ''}
                                   onChange={(e: ChangeEvent<HTMLSelectElement>) => handleOptionSectionLink(question.id, option.id)(e)}
-                                  className="text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                                  className="text-gray-900 dark:text-white bg-gray-900 dark:bg-gray-900 border-gray-300 dark:border-gray-600"
                                 >
                                   <option value="">None</option>
                                   {sections.map((section: Section) => (

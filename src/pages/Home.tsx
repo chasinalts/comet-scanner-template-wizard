@@ -8,11 +8,11 @@ import { supabase } from '../supabaseConfig';
 import LazyImage from '../components/ui/LazyImage';
 import Button from '../components/ui/Button';
 
-// COMET Scanner description and explanation
-const COMET_EXPLANATION = `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
+// Default COMET Scanner description and explanation
+const DEFAULT_COMET_EXPLANATION = `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
 
-// Scanner usage description
-const SCANNER_USAGE = `COMET Scanners are powerful tools for market analysis that help traders identify potential trading opportunities across multiple assets simultaneously. They work by applying custom filters and visualization techniques to price data, highlighting patterns that might be missed by traditional analysis methods.
+// Default scanner usage description
+const DEFAULT_SCANNER_USAGE = `COMET Scanners are powerful tools for market analysis that help traders identify potential trading opportunities across multiple assets simultaneously. They work by applying custom filters and visualization techniques to price data, highlighting patterns that might be missed by traditional analysis methods.
 
 Key features of COMET Scanners include:
 • Multi-asset screening capability (up to 40 assets per scanner instance)
@@ -33,6 +33,29 @@ const Home: React.FC = () => {
   // State for image scales
   const [bannerScale, setBannerScale] = useState<number>(1);
   const [imageScales, setImageScales] = useState<Record<string, number>>({});
+
+  // State for COMET description content
+  const [cometExplanation, setCometExplanation] = useState<string>(() => {
+    return localStorage.getItem('comet_explanation') || DEFAULT_COMET_EXPLANATION;
+  });
+
+  const [scannerUsage, setScannerUsage] = useState<string>(() => {
+    return localStorage.getItem('scanner_usage') || DEFAULT_SCANNER_USAGE;
+  });
+
+  // Listen for changes to COMET description content in localStorage
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'comet_explanation' && e.newValue) {
+        setCometExplanation(e.newValue);
+      } else if (e.key === 'scanner_usage' && e.newValue) {
+        setScannerUsage(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // Fetch banner and gallery images from Supabase Storage
   const fetchImages = async () => {
@@ -288,7 +311,7 @@ const Home: React.FC = () => {
           className="text-2xl font-bold text-cyan-200 mb-4 text-center"
         />
         <div className="whitespace-pre-line text-white text-lg leading-relaxed mb-8">
-          {COMET_EXPLANATION}
+          {cometExplanation}
         </div>
 
         <HolographicText
@@ -298,7 +321,7 @@ const Home: React.FC = () => {
           className="text-xl font-bold text-cyan-200 mb-4 text-center"
         />
         <div className="whitespace-pre-line text-white text-lg leading-relaxed">
-          {SCANNER_USAGE}
+          {scannerUsage}
         </div>
       </section>
     </div>
