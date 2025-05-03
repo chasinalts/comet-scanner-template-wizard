@@ -4,7 +4,7 @@ import React, { useState, useEffect } from '../utils/react-imports';
 import HolographicText from '../components/ui/HolographicText';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { storage, BANNER_BUCKET_ID, GALLERY_BUCKET_ID } from '../appwriteConfig.ts';
+import { storage, BANNER_BUCKET_ID } from '../appwriteConfig.ts';
 import LazyImage from '../components/ui/LazyImage';
 import Button from '../components/ui/Button';
 
@@ -88,13 +88,14 @@ const Home: React.FC = () => {
       // Fetch gallery images
       console.log('Fetching gallery images...');
       try {
-        const galleryFiles = await storage.listFiles(GALLERY_BUCKET_ID);
+        // Use the same bucket as banner (BANNER_BUCKET_ID) for gallery images
+        const galleryFiles = await storage.listFiles(BANNER_BUCKET_ID);
         console.log('Gallery data:', galleryFiles);
 
         if (galleryFiles.files.length > 0) {
           // Get preview URLs for all gallery images
           const previewUrls = galleryFiles.files.map((file: any) =>
-            storage.getFilePreview(GALLERY_BUCKET_ID, file.$id).toString()
+            storage.getFilePreview(BANNER_BUCKET_ID, file.$id).toString()
           );
 
           console.log('Gallery URLs:', previewUrls);

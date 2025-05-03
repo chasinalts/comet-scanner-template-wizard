@@ -1,9 +1,15 @@
 // Utility functions for handling file storage with Appwrite
-import { storage, IMAGES_BUCKET_ID, databases, DATABASE_ID, IMAGES_COLLECTION_ID } from '../appwriteConfig.ts';
+import { storage, IMAGES_BUCKET_ID, BANNER_BUCKET_ID, databases, DATABASE_ID, IMAGES_COLLECTION_ID } from '../appwriteConfig.ts';
 import { ID } from 'appwrite';
 
 // Define bucket types
 export type BucketType = 'banner' | 'gallery' | 'scanner';
+
+// Log the bucket IDs for debugging
+console.log('Storage bucket configuration:', {
+  IMAGES_BUCKET_ID,
+  BANNER_BUCKET_ID
+});
 
 /**
  * Get the bucket ID for a given bucket type
@@ -12,7 +18,8 @@ export type BucketType = 'banner' | 'gallery' | 'scanner';
  */
 export const getBucketId = (bucketType: BucketType): string => {
   // With free tier limitations, we're using a single bucket for all image types
-  return IMAGES_BUCKET_ID;
+  console.log(`Getting bucket ID for type: ${bucketType}, returning: banner`);
+  return 'banner'; // Hardcoded to ensure we always use the banner bucket
 };
 
 /**

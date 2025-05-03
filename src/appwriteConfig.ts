@@ -40,9 +40,17 @@ export const IMAGES_COLLECTION_ID = 'images';
 
 // Storage bucket IDs - Using a single bucket for all images due to free tier limitations
 export const IMAGES_BUCKET_ID = 'banner'; // Using a single bucket for all images
-export const BANNER_BUCKET_ID = IMAGES_BUCKET_ID; // For backward compatibility
-export const GALLERY_BUCKET_ID = IMAGES_BUCKET_ID; // For backward compatibility
-export const SCANNER_BUCKET_ID = IMAGES_BUCKET_ID; // For backward compatibility
+export const BANNER_BUCKET_ID = 'banner'; // Explicitly set to 'banner' for compatibility
+export const GALLERY_BUCKET_ID = 'banner'; // Explicitly set to 'banner' for compatibility
+export const SCANNER_BUCKET_ID = 'banner'; // Explicitly set to 'banner' for compatibility
+
+// Log bucket configuration on initialization
+console.log('Appwrite bucket configuration:', {
+  IMAGES_BUCKET_ID,
+  BANNER_BUCKET_ID,
+  GALLERY_BUCKET_ID,
+  SCANNER_BUCKET_ID
+});
 
 // Helper function to get user ID
 export const getUserId = async () => {

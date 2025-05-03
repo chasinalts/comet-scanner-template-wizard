@@ -35,7 +35,9 @@
     "appwrite:create-content": "node scripts/create-initial-content.js",
     "appwrite:setup-resources": "node setup-appwrite-resources.js",
     "appwrite:setup-resources-limited": "node setup-appwrite-resources-limited.js",
-    "appwrite:update-env-api-key": "node update-env-with-api-key.js"
+    "appwrite:update-env-api-key": "node update-env-with-api-key.js",
+    "appwrite:ensure-banner-bucket": "node scripts/ensure-banner-bucket.js",
+    "prebuild": "npm run appwrite:ensure-banner-bucket"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
