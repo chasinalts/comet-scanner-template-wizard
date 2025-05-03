@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from '../utils/react-imports';
 import type { ContentItem } from './useAdminContent';
 import { handleAppwriteImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
 import { BucketType } from '../utils/appwriteStorage';
+import { useAuth } from '../contexts/AuthContext';
 
 export interface ContentManagerHook {
   contents: ContentItem[];
@@ -18,6 +19,7 @@ export interface ContentManagerHook {
 }
 
 export const useContentManager = (): ContentManagerHook => {
+  const { currentUser } = useAuth();
   const [contents, setContents] = useState<ContentItem[]>(() => {
     const savedContents = localStorage.getItem('admin_contents');
     return savedContents ? JSON.parse(savedContents) : [];
@@ -84,6 +86,9 @@ export const useContentManager = (): ContentManagerHook => {
     console.log(`Starting upload of ${type} image:`, { fileName: file.name, fileSize: file.size, fileType: file.type });
     return new Promise((resolve, reject) => {
       try {
+        // Get the current user ID for the upload
+        const userId = currentUser?.id || 'system';
+
         // Use Appwrite Storage for image uploads
         handleAppwriteImageUpload(
           file,
@@ -108,14 +113,15 @@ export const useContentManager = (): ContentManagerHook => {
           (error: any) => {
             console.error(`Error uploading ${type} image to Appwrite Storage:`, error);
             reject(new Error(`Failed to upload to Appwrite Storage: ${error instanceof Error ? error.message : 'Unknown error'}`));
-          }
+          },
+          userId // Pass the user ID to the upload function
         );
       } catch (error: any) {
         console.error(`Error setting up ${type} image upload:`, error);
         reject(error);
       }
     });
-  }, [addContent]);
+  }, [addContent, currentUser]);
 
   const updateImageScale = useCallback((id: string, scale: number) => {
     updateContent(id, { scale });

@@ -28,12 +28,14 @@ export const handleLocalImageUpload = (
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  * @param onError Optional callback function to be called when upload fails
+ * @param userId The ID of the user uploading the file
  */
 export const handleAppwriteImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void,
-  onError?: (error: any) => void
+  onError?: (error: any) => void,
+  userId?: string
 ) => {
   try {
     // Create a temporary preview URL for immediate display
@@ -54,7 +56,11 @@ export const handleAppwriteImageUpload = (
         // Map scanner type to gallery folder since they are the same
         const bucketType = type === 'scanner' ? 'gallery' : type as BucketType;
         console.log(`Uploading ${type} image to ${bucketType} bucket`);
-        const result = await uploadFile(processedFile, bucketType);
+
+        // If userId is not provided, use a default value
+        const userIdToUse = userId || 'system';
+
+        const result = await uploadFile(processedFile, bucketType, userIdToUse);
         const imageUrl = result.$id ? result.$id : '';
 
         console.log('Image uploaded to Appwrite:', {
@@ -101,15 +107,17 @@ export const handleAppwriteImageUpload = (
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  * @param onError Optional callback function to be called when upload fails
+ * @param userId The ID of the user uploading the file
  */
 export const handleImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void,
-  onError?: (error: any) => void
+  onError?: (error: any) => void,
+  userId?: string
 ) => {
   // Use Appwrite Storage
-  return handleAppwriteImageUpload(file, type, onSuccess, onError);
+  return handleAppwriteImageUpload(file, type, onSuccess, onError, userId);
 };
 
 /**

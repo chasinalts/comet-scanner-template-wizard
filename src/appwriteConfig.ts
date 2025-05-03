@@ -13,16 +13,36 @@ export const storage = new Storage(client);
 export const functions = new Functions(client);
 export const avatars = new Avatars(client);
 
+// Helper function to reconnect the client
+export const reconnectClient = () => {
+    try {
+        // Store the current configuration
+        const endpoint = client.config.endpoint;
+        const projectId = client.config.project;
+
+        // Reinitialize the client with the same endpoint and project ID
+        client.setEndpoint(endpoint);
+        client.setProject(projectId);
+
+        console.log('Reconnected Appwrite client');
+        return true;
+    } catch (error) {
+        console.error('Error reconnecting Appwrite client:', error);
+        return false;
+    }
+};
+
 // Database and collection IDs
 export const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID || '';
 export const USER_PROFILES_COLLECTION_ID = 'user_profiles';
 export const CONTENT_COLLECTION_ID = 'content';
 export const IMAGES_COLLECTION_ID = 'images';
 
-// Storage bucket IDs
-export const BANNER_BUCKET_ID = 'banner';
-export const GALLERY_BUCKET_ID = 'gallery';
-export const SCANNER_BUCKET_ID = 'scanner';
+// Storage bucket IDs - Using a single bucket for all images due to free tier limitations
+export const IMAGES_BUCKET_ID = 'banner'; // Using a single bucket for all images
+export const BANNER_BUCKET_ID = IMAGES_BUCKET_ID; // For backward compatibility
+export const GALLERY_BUCKET_ID = IMAGES_BUCKET_ID; // For backward compatibility
+export const SCANNER_BUCKET_ID = IMAGES_BUCKET_ID; // For backward compatibility
 
 // Helper function to get user ID
 export const getUserId = async () => {
@@ -40,19 +60,15 @@ export const initializeStorage = async () => {
     try {
         console.log('Initializing Appwrite storage...');
 
-        // Check if buckets exist
-        const buckets = [BANNER_BUCKET_ID, GALLERY_BUCKET_ID, SCANNER_BUCKET_ID];
-
-        for (const bucketId of buckets) {
-            try {
-                // Try to list files in the bucket to see if it exists
-                await storage.listFiles(bucketId, [], '', 1);
-                console.log(`Bucket '${bucketId}' exists`);
-            } catch (error) {
-                console.log(`Bucket '${bucketId}' doesn't exist, will need to be created in Appwrite console`);
-                // Note: Bucket creation typically requires admin privileges
-                // In a production environment, buckets should be created through the Appwrite console
-            }
+        // Check if the single bucket exists
+        try {
+            // Try to list files in the bucket to see if it exists
+            await storage.listFiles(IMAGES_BUCKET_ID, [], '', 1);
+            console.log(`Bucket '${IMAGES_BUCKET_ID}' exists`);
+        } catch (error) {
+            console.log(`Bucket '${IMAGES_BUCKET_ID}' doesn't exist, will need to be created in Appwrite console`);
+            // Note: Bucket creation typically requires admin privileges
+            // In a production environment, buckets should be created through the Appwrite console
         }
 
         return true;

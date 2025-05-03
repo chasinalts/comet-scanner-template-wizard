@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import HolographicText from '../components/ui/HolographicText';
+import { account } from '../appwriteConfig';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -75,25 +76,41 @@ const Login = () => {
       console.log('Attempting to login with email:', email);
 
       // Call the login function from AuthContext
-      await login(email, password);
+      const result = await login(email, password);
+      console.log('Login successful, session:', result?.session);
 
-      // Get the current user after login
-      const user = currentUser;
+      // Wait a moment for the session to be properly set in the context
+      setTimeout(() => {
+        // Check if we have a session now
+        if (result?.session) {
+          console.log('Session is available, redirecting...');
 
-      // Redirect to the appropriate page based on user role
-      if (user) {
-        const isOwner = user.is_owner === true || user.is_owner === 'true';
-        const isAdmin = user.role === 'admin';
+          // Force a check for the current user
+          account.get().then(user => {
+            console.log('User after login:', user);
 
-        if (isOwner || isAdmin) {
-          navigate('/dashboard');
+            // Determine where to navigate based on user preferences
+            const isOwner = user.prefs?.is_owner === true || user.prefs?.is_owner === 'true';
+
+            if (isOwner) {
+              console.log('User is owner, navigating to dashboard');
+              navigate('/dashboard');
+            } else {
+              console.log('User is not owner, navigating to home');
+              navigate('/home');
+            }
+          }).catch(err => {
+            console.error('Error getting user after login:', err);
+            navigate('/home'); // Fallback to home
+          }).finally(() => {
+            setIsLoading(false);
+          });
         } else {
+          console.log('No session available after login, navigating to home as fallback');
           navigate('/home');
+          setIsLoading(false);
         }
-      } else {
-        // If user is not available yet, navigate to home as fallback
-        navigate('/home');
-      }
+      }, 1000); // Wait 1 second for session to be properly set
     } catch (error: any) {
       console.error('Login error details:', error);
       let errorMessage = 'Failed to sign in. Please check your credentials.';
@@ -105,7 +122,6 @@ const Login = () => {
         }
       }
       setError(errorMessage);
-    } finally {
       setIsLoading(false);
     }
   };

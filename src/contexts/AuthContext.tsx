@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
 import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig.ts';
 import { ID, Models, Query } from 'appwrite';
+import { ensureSessionInLocalStorage } from '../utils/sessionHelper';
 
 // User profile data structure
 export interface UserProfile {
@@ -53,6 +54,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkSession = async () => {
       try {
         const currentSession = await account.getSession('current');
+
+        // Ensure the session is properly stored in localStorage
+        const sessionStored = await ensureSessionInLocalStorage(currentSession);
+        console.log('Session stored in localStorage during checkSession:', sessionStored);
+
         setSession(currentSession);
 
         // Get user data
@@ -66,12 +72,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user.$id
           );
 
+          // Parse permissions from string to object
+          let permissions;
+          try {
+            permissions = profile.permissions ? JSON.parse(profile.permissions) : null;
+          } catch (e) {
+            console.error('Error parsing permissions:', e);
+            permissions = null;
+          }
+
           // Set the role based on permissions
           const profileWithRole = {
             ...profile,
             id: profile.$id,
+            permissions, // Add parsed permissions
             role: profile.is_owner ? 'owner' :
-                  (profile.permissions?.user_management ? 'admin' : 'user')
+                  (permissions?.user_management ? 'admin' : 'user')
           };
 
           setCurrentUser(profileWithRole);
@@ -115,7 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email: newProfile.email,
                 is_owner: newProfile.is_owner,
                 created_at: newProfile.created_at,
-                permissions: newProfile.permissions
+                permissions: JSON.stringify(newProfile.permissions) // Convert to string for storage
               }
             );
 
@@ -162,8 +178,109 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Attempting to sign in with Appwrite auth');
 
       const session = await account.createEmailPasswordSession(email, password);
-
       console.log('Appwrite auth successful:', session);
+
+      // Ensure the session is properly stored in localStorage
+      const sessionStored = await ensureSessionInLocalStorage(session);
+      console.log('Session stored in localStorage:', sessionStored);
+
+      // Update the session state immediately
+      setSession(session);
+
+      // Get user data immediately after login
+      try {
+        const user = await account.get();
+        console.log('User data retrieved after login:', user);
+
+        // Get user profile from database
+        try {
+          const profile = await databases.getDocument(
+            DATABASE_ID,
+            USER_PROFILES_COLLECTION_ID,
+            user.$id
+          );
+
+          // Parse permissions from string to object
+          let permissions;
+          try {
+            permissions = profile.permissions ? JSON.parse(profile.permissions) : null;
+          } catch (e) {
+            console.error('Error parsing permissions:', e);
+            permissions = null;
+          }
+
+          // Set the role based on permissions
+          const profileWithRole = {
+            ...profile,
+            id: profile.$id,
+            permissions, // Add parsed permissions
+            role: profile.is_owner ? 'owner' :
+                  (permissions?.user_management ? 'admin' : 'user')
+          };
+
+          console.log('User profile retrieved after login:', profileWithRole);
+          setCurrentUser(profileWithRole);
+        } catch (profileError) {
+          console.error('Error getting user profile after login:', profileError);
+
+          // If profile doesn't exist, create a default one
+          console.log('No user profile found, creating a new one');
+
+          // Check if user has owner metadata
+          const isOwnerFromMetadata = user.prefs?.is_owner === true ||
+                                     user.prefs?.is_owner === 'true';
+
+          const newProfile = {
+            id: user.$id,
+            email: user.email,
+            is_owner: isOwnerFromMetadata || false,
+            created_at: new Date().toISOString(),
+            permissions: isOwnerFromMetadata ? {
+              content_management: true,
+              user_management: true,
+              system_configuration: true,
+              media_uploads: true,
+              security_settings: true,
+              site_customization: true,
+            } : {
+              content_management: false,
+              user_management: false,
+              system_configuration: false,
+              media_uploads: false,
+              security_settings: false,
+              site_customization: false,
+            }
+          };
+
+          // Create the profile in the database
+          try {
+            await databases.createDocument(
+              DATABASE_ID,
+              USER_PROFILES_COLLECTION_ID,
+              user.$id,
+              {
+                email: newProfile.email,
+                is_owner: newProfile.is_owner,
+                created_at: newProfile.created_at,
+                permissions: JSON.stringify(newProfile.permissions) // Convert to string for storage
+              }
+            );
+
+            const profileWithRole = {
+              ...newProfile,
+              role: newProfile.is_owner ? 'owner' :
+                    (newProfile.permissions?.user_management ? 'admin' : 'user')
+            };
+
+            setCurrentUser(profileWithRole);
+          } catch (createError) {
+            console.error('Error creating user profile after login:', createError);
+          }
+        }
+      } catch (userError) {
+        console.error('Error getting user data after login:', userError);
+      }
+
       return { session };
     } catch (error) {
       console.error('Error logging in:', error);
@@ -219,7 +336,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: email,
           is_owner: isOwner,
           created_at: new Date().toISOString(),
-          permissions: isOwner ? {
+          permissions: JSON.stringify(isOwner ? {
             content_management: true,
             user_management: true,
             system_configuration: true,
@@ -233,7 +350,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             media_uploads: false,
             security_settings: false,
             site_customization: false,
-          }
+          }) // Convert to string for storage
         }
       );
     } catch (error) {
