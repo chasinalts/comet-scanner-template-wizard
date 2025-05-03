@@ -25,9 +25,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-900">
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <App />
       </div>
     </ErrorBoundary>
   </React.StrictMode>

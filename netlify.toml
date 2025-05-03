@@ -2,9 +2,10 @@
   base = "." # Use current directory as base
   publish = "dist"
   command = "npm install && npm run build"
+  functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "18"  # Use a more stable version
+  NODE_VERSION = "22"  # Using latest LTS version
 
 # Production context: all deploys from the main branch
 [context.production]
@@ -39,3 +40,10 @@
 [[headers]]
   for = "/*"
   values = { Cache-Control = "public, max-age=31536000, immutable" }
+
+# Development settings
+[dev]
+  command = "npm run dev"
+  port = 8888
+  targetPort = 3000
+  framework = "vite"

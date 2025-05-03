@@ -11,9 +11,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import SuspenseFallback from './components/ui/SuspenseFallback';
-import PerformanceMonitor from './components/dev/PerformanceMonitor';
-import UpdateNotification from './components/ui/UpdateNotification';
-import CacheDebugger from './components/dev/CacheDebugger';
+
 import { initializeStorage } from './appwriteConfig';
 import { useAuth } from './contexts/AuthContext';
 
@@ -171,11 +169,9 @@ function App() {
       <WizardProvider>
         <ThemeProvider>
           <ToastProvider>
-            {/* Performance monitor (only visible in development) */}
-            <PerformanceMonitor />
-            <UpdateNotification />
-            <CacheDebugger />
-            <AppContent />
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
           </ToastProvider>
         </ThemeProvider>
       </WizardProvider>
