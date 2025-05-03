@@ -65,12 +65,16 @@ const Home: React.FC = () => {
       // Fetch banner images
       console.log('Fetching banner images...');
       try {
-        const bannerFiles = await storage.listFiles(BANNER_BUCKET_ID);
-        console.log('Banner data:', bannerFiles);
+        // Import the listFiles function from appwriteStorage to get filtered images
+        const { listFiles } = await import('../utils/appwriteStorage');
 
-        if (bannerFiles.files.length > 0) {
+        // Get banner images filtered by image_type
+        const bannerFiles = await listFiles('banner');
+        console.log('Banner data (filtered):', bannerFiles);
+
+        if (bannerFiles.length > 0) {
           // Get the first banner image
-          const bannerFile = bannerFiles.files[0];
+          const bannerFile = bannerFiles[0];
 
           // Get preview URL for the banner image
           const previewUrl = storage.getFilePreview(BANNER_BUCKET_ID, bannerFile.$id);
@@ -88,13 +92,16 @@ const Home: React.FC = () => {
       // Fetch gallery images
       console.log('Fetching gallery images...');
       try {
-        // Use the same bucket as banner (BANNER_BUCKET_ID) for gallery images
-        const galleryFiles = await storage.listFiles(BANNER_BUCKET_ID);
-        console.log('Gallery data:', galleryFiles);
+        // Import the listFiles function from appwriteStorage to get filtered images
+        const { listFiles } = await import('../utils/appwriteStorage');
 
-        if (galleryFiles.files.length > 0) {
+        // Get gallery images filtered by image_type
+        const galleryFiles = await listFiles('gallery');
+        console.log('Gallery data (filtered):', galleryFiles);
+
+        if (galleryFiles.length > 0) {
           // Get preview URLs for all gallery images
-          const previewUrls = galleryFiles.files.map((file: any) =>
+          const previewUrls = galleryFiles.map((file: any) =>
             storage.getFilePreview(BANNER_BUCKET_ID, file.$id).toString()
           );
 
