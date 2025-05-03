@@ -1,0 +1,196 @@
+//╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+//║                                                                                                                  ║
+//║    ██████╗ ██████╗ ███╗   ███╗███████╗████████╗  ███████╗ ██████╗ █████╗ ███╗   ██╗███╗   ██╗███████╗██████╗     ║
+//║   ██╔════╝██╔═══██╗████╗ ████║██╔════╝╚══██╔══╝  ██╔════╝██╔════╝██╔══██╗████╗  ██║████╗  ██║██╔════╝██╔══██╗    ║
+//║   ██║     ██║   ██║██╔████╔██║█████╗     ██║     ███████╗██║     ███████║██╔██╗ ██║██╔██╗ ██║█████╗  ██████╔╝    ║
+//║   ██║     ██║   ██║██║╚██╔╝██║██╔══╝     ██║     ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗    ║
+//║   ╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗   ██║     ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║    ║
+//║    ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝   ╚═╝     ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝    ║
+//║                                                                                                                  ║
+//║                                      FIND your EDGE                                                              ║
+//║                                             BUILD your EDGE                                            by        ║ 
+//║                                                     TRADE your EDGE                               © ChasinAlts   ║ 
+//║                                                                                                 @ A_Traders_Edge ║
+//╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+// Use, modify and spread freely, but:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+//      (1) always include the above ASCII Signature Banner for the COMET Scanners at the start of your code and 
+//      (2) begin indicator titles with "COMET" (ie. "COMET MACD")
+//@version=6                                                                                                   
+
+//== Scanner is in price action window
+indicator(title="COMET (2)", shorttitle='(3)', overlay=true, scale=scale.right, max_labels_count=500, max_lines_count=500, max_boxes_count=500)
+
+//== Scanner is not in price action window
+indicator(title="COMET (2)", shorttitle='(3)', overlay=false, scale=scale.right, max_labels_count=500, max_lines_count=500, max_boxes_count=500)
+
+//== LIBRARY IMPORTS ==\\ // This allows for the use of functions that were created in a library that allows you to call it's functions within other scripts. It's sole purposes to make calculations faster and code shorter
+import A_Traders_Edge/ATE_Common_Functions_Library/1 as ATE  // Imports library 'ATE_Common_Functions_Library' v1 from user A_Traders_Edge, aliased as ATE (Remove if unused).
+import A_Traders_Edge/COMET_Scanner_Library/32 as COMET      // Imports library 'COMET_Scanner_Library' v32 from user A_Traders_Edge (defined previously), aliased as COMET.
+
+//== GROUP NAMES ==\\ // Group Names used to separate the groups of Inputs in the Settings Window
+var g1 = "//== (2) INPUTS ==\\"                            
+var g2 = "//======= COMET SCANNER INPUTS ========\\"         
+
+//== TICKERID AND ASSET SHORTNAME ==\\ // allTickers are used in the security function to determine which assets data to be used in the calculations. allNames are the asset names as you would like them shown in the Alert Labels/Line Plot Name Labels     
+var allTickers = "LOOKS,GTC,DATA,MYRIA,SC,CELR,CKB,GODS,SLP,RDNT,HOOK,MANTA,LQTY,NFP,XCH,BAL,MASA,MAGIC,BICO,JST,DODOX,C98,ETHW,ALPHA,XVG,ARPA,JOE,MBOX,RIF,PRCL,HFT,DUSK,NTRN,ALT,T,MEMEFI,TAIKO,SUNDOG,1000CATS,ICX,POWR,MANEKI,ALU,HPOS10I,ALICE,CLOUD,KNC,HOT,SNT,ACX,REX,RLC,EDU,RVN,STRK,AVAIL,SCA,TLM,SHELL,SFP,AGI,1000000PEIPEI,GPS,10000COQ,OXT,TROY,MOBILE,NULS,DENT,PUFFER,ARK,SLF,STG,THE,1000MUMU,PHB,SLERF,WAVES,GMT,LUMIA,ONG,OMNI,USTC,AIDOGE,SPELL,TOKEN,DBR,BLUR,CELO,ORDER,DYM,PIPPIN,LUNA2,D,BIO,MAV,BAND,HEI,GMX,HIFI,CHR,BID,ASTR,XAI,COS,AEVO,YGG,ULTI,DUCK,ANIME,FXS,ACE,FOXY,DEGEN,KOMA,STEEM,LRC,COOKIE,SAGA,BAKE,HIGH,RPL,ELX,MOCA,1000WHY,UMA,MVL,VRA,TWT,AXL,LOKA,WAXP,GHST,SKL,XION,MTL,ONE,ALPACA,OSMO,IOTX,XTZ,FLOW,ONT,CSPR,SYS,BLAST,CHILLGUY,BNT,EIGEN,HNT,TNSR,MINA,SANTOS,PROS,OGN,MOVR,BAN,CHESS,FIO,VELODROME,FLOCK,CATI,DASH,ZIL,LISTA,ENJ,KMNO,ID,LSK,PHA,SCRT,AGLD,MOODENG,SNX,NMR,ZRX,BADGER,VANRY,VIC,APE,RON,B3,1000BTT,REI,BUZZ,NEIRO,PIXEL,SWELL,AI,CYBER,BAT,CTSI,AKT,DF,ANKR,1000APU,ATA,1000XEC,LUNC,GOAT,ARKM,DOG,SPEC,ZKJ,SYN,PERP,GAS,POLYX,ROSE,1000000MOG,QTUM,VTHO,PEOPLE,1INCH,PROM,AVA,MEME,GLM,STORJ,OL,PYTH,CHZ,SUN,SSV,MELANIA,IOTA,KAVA,FLUX,ILV,MNT,FIDA,ALEO,CGPT,AVAAI,1000000BABYDOGE,METIS,DEGO,PONKE,BB,XNO,AIOZ,MYRO,ZEREBRO,HIVE,CETUS,LEVER,RED,EPIC,ROAM,1000RATS,COTI,NEIROETH,KSM,ATH,ZBCN,FUEL,BEL,KAIA,SAND,TST,AXS,IOST,SXP,WOO,NOT,SEND,CAT,DIA,SONIC,ZK,XVS,MANA,COW,DRIFT,SUSHI,ETC,HMSTR,BOME,TRU,SAFE,EGLD,FLM,QUICK,ARB,ETHFI,NKN,FWOG,VVV,TRB,BANANAS31,BMT,ME,LPT,SCR,ACH,SOLV,G,IO,API3,FORM,CVC,GRT,MASK,CRO,ORCA,MORPHO,W,YFI,SIREN,J,BSW,PORTAL,RUNE,AIXBT,PRIME,ZEC,ICP,JTO,1000FLOKI,JELLYJELLY,BOBA,ENS,SEI,DOGS,GRIFFAIN,AR,10000SATS,TAI,LDO,VELO,DYDX,STX,BR,MLN,WLD,IMX,QNT,CORE,ZETA,MUBARAK,MAVIA,PENGU,VANA,DEEP,BANANA,SWARMS,CFX,JASMY,TURBO,VET,CAKE,REZ,THETA,POL,GIGA,HIPPO,BEAM,GALA,BRETT,MEW,NEO,RAY,MOVE,DEXE,OP,ALGO,USUAL,UXLINK,JUP,AERO,VOXEL,PNUT,BSV,KAS,COMP,ARC,FET,ORDI,GUN,KDA,X,ZEN,TUT,SUPER,XMR,KAITO,RENDER,VIRTUAL,INJ,RSR,NIL,WAL,UNI,L3,PLUME,TIA,IP,POPCAT,1000CHEEMS,BROCCOLI714,ALCH,WIF,BROCCOLIF3B,VIDT,DOT,S,BIGTIME,RARE,ACT,BCH,1000BONK,APT,TRUMP,NEAR,VINE,SPX,FIL,ZRO,TON,ENA,BNB,SHIB,MKR,FUN,AI16Z,BERA,ATOM,PENDLE,LAYER,TAO,AUCTION,ONDO,CRV,XLM,GRASS,EOS,HBAR,PARTI,OM,AAVE,TRX,LINK,AVAX,HYPE,LTC,ADA,PEPE,DOGE,SUI,FARTCOIN,XRP,ETH,SOL,BTC"                 // Add your comma-separated list of tickerIDs here (might be easiest to add the assets you want to scan to an AI and prompt/guide it to create your comma-separated list of assets into a single string for you)
+var allNames   = allTickers                                  // same thing as the line above except for each asset, only include what you want to be shown in the Alert Trigger Labels(if used) and in the Asset Name Labels at the end of the line plots.
+
+//== INPUT TO SHOW OR HIDE SETS OF LINE PLOTS(EACH ONE IS A SET OF 10). WHEN MULTIPLE SCANNERS ARE PUT ON ONE CHART THINGS CAN GET CLUTTERED. THIS HELPS HIDE SOME PLOTS FOR BETTER CLARITY OF LINE PLOTS. ==\\
+var plot01_10 = input.bool(true,                   title="1-10",                      group=g2, inline='2')      // Input checkbox to show/hide plots 1-10, default true.
+var plot11_20 = input.bool(true,                   title="11-20",                     group=g2, inline='2')      // Input checkbox to show/hide plots 11-20, default true.
+var plot21_30 = input.bool(true,                   title="21-30",                     group=g2, inline='2')      // Input checkbox to show/hide plots 21-30, default true.
+var plot31_40 = input.bool(true,                   title="31-40",                     group=g2, inline='2', tooltip="These are to be able to hide/show the plots in sets of 10 (applicable if using line plots due to window cluttering from labels and plots") // Input toggle (checkbox) to show/hide plots 31-40, default true, with tooltip.
+
+//== INPUTS NEEDED FOR EVERY COMET SCANNER ==\\
+var set       = input.int(1,                       title="Set to Scan",               group=g2, inline="1", tooltip="1st Input: This will be how many assets you want to scan per copy of the COMET Scanner on the chart (max of 40). Decreasing this value will assist the COMET Scanner in loading faster but will cause you to have more copies of the COMET Scanners on the chart.\n\n2nd Input: Your string of Assets in the last 2 settings below will be broken up into Sets of ___(the amount put in the 1st setting on this line), this setting is where you select which Set of the Assets that this COMET Scanner will be scanning. (if you put a value higher than the amount of Sets you have the chart could  error out") // Input integer to select which group/set this instance scans, default 1, with detailed tooltip.
+var perSet    = input.int(40, minval=0, maxval=40, title="In each Set",               group=g2, inline="1")       // Input integer for number of assets per scanner instance, default 40.
+var lblSz     = input.string(size.normal,          title="All Label Sizes",           group=g2, options=[size.tiny,size.small,size.normal,size.large,size.huge]) // Input dropdown for label text size, default normal.
+
+//== INPUTS FOR EXCHANGE NAME CONSTANT AND TICKERID QUOTE ASSET CONSTANT (determine if needed by reading tooltip of quote input or by comments at end of lines of code) ==\\
+var tIDs      = input.text_area(allTickers,        title="Ticker IDs",                group=g2, tooltip="This will be the input for your entire string of assets being scanned in ALL of your COMET Scanners. This SINGLE STRING of tickerIDs must be SEPARATED BY A COMMA(all blank spaces are removed prior ro processing tickerIDs). *** If the Exchange input above is left blank (if necessary per its tooltip instructions) then 'Exchange:' (Exchange name WITH A COLON AT THE END) must be at the start of the tickerID....if QUOTE ASSET in the above setting is left blank and your traded market consists of TRADING PAIRS as the TickerID, then you must include BOTH PAIRS (the BASE & the QUOTE asset) in the tickerID string.") // Input text area for the *full* list of comma-separated Ticker IDs for *all* sets, with detailed tooltip.
+var nIDs      = input.text_area(allNames,          title="Asset Names",               group=g2, tooltip="Input the asset names AS YOU WANT THEM TO APPEAR IN THE LABELS AND ALERTS. Best if the names you assign are as short as possible as charts can get crowded with name labels), but MOST IMPORTANTLY, \n(1) the order of the assets in this string MUST BE in the exact same order as those in the 'Ticker IDs' input above this one.\n(2) each assets name must be SEPARATED BY A SINGLE COMMA (blank spaces are removed prior to processing tickerID)for it to be properly processed in the security() function, the labels, and the alerts.") // Input text area for the corresponding comma-separated asset names (same order as tIDs), with detailed tooltip.
+var exch      = input.string("blofin:",            title="Exchange Name",             group=g2, inline="3")      // Input string for exchange prefix (e.g., "BINANCE:"), default "blofin:", leave blank if tickers include it.
+var quote     = input.string("usdt.p",             title="Quote Asset (SEE TOOLTIP)", group=g2, inline="3", tooltip="Both of these inputs have the same rule but act independently from the other, depending on if the rule is followed for that input. \n\n*** RULE *** \n Leave settings on this line blank UNLESS every asset in your entire scanned list has the same Exchange(1st input) / Quote Asset(2nd input)") // Input string for quote asset suffix (e.g., "USDT"), default "usdt.p", with tooltip on usage.
+
+//== INPUT FOR SIGNAL COOLDOWN PERIOD ==\\
+var sigCoolDn = input.int(1000,                    title="Signal Cooldown Period",    group=g2, tooltip="Number of bars that must pass before another signal of the same type can occur") // Input integer for minimum bars between alerts for the same asset, default 1000.
+
+//== MAXIMUM AMOUNT OF 'SETS' THAT CAN BE USED IN THE SCRIPT ==\\ // This value will only show on the bottom right of the chart when the 'set' input = 1. This value will show the highest value that can be used in the 'set' input.
+var tbl=table.new(position.bottom_right,1,1,bgcolor=#00000000,frame_color=#00000000,border_color=#00000000)             // Creates a persistent, invisible 1x1 table in the bottom right corner ONCE per script instance.
+if barstate.islast and set==1                                                                                                 // Executes block only on the last bar AND only for the script instance where input 'set' is 1.
+    allTicks = allTickers                                                                                                     // Assigns the value of 'allTickers' (placeholder, likely needs `tIDs` input) to a local variable.
+    allTickArr = str.split(allTicks,',')                                                                                      // Splits the 'allTicks' string (needs `tIDs`) into a string array using the comma delimiter.
+    table.cell(tbl,0,0,str.tostring(math.ceil(array.size(allTickArr)/perSet)),text_color=chart.fg_color,text_size=size.small) // Calculates total sets needed (total tickers / assets per set), rounds up, converts to string, and displays it in the invisible table's cell.
+
+//== TICKERID INITILIALIZATIONS & ASSIGNMENTS ==\\ // We are using the import functions here to lighten the compilers load and it also helps to shorten the code bc we're using functions from different users published libraries. 
+tID = COMET.TickerString(tIDs,perSet,set)      // Extracts the Ticker ID string for *this* specific Set using the library function and inputs.
+nID = COMET.TickerString(nIDs,perSet,set)      // Extracts the corresponding asset name string for *this* specific Set using the library function and inputs.
+[t01,t02,t03,t04,t05,t06,t07,t08,t09,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,t27,t28,t29,t30,t31,t32,t33,t34,t35,t36,t37,t38,t39,t40] = COMET.TickerIDs(tID)        // Splits the extracted Ticker ID string ('tID') for this Set into up to 40 individual variables (t01-t40) using the library function.
+[n01,n02,n03,n04,n05,n06,n07,n08,n09,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20,n21,n22,n23,n24,n25,n26,n27,n28,n29,n30,n31,n32,n33,n34,n35,n36,n37,n38,n39,n40] = COMET.TickerIDs(nID)        // Splits the extracted asset name string ('nID') for this Set into up to 40 individual variables (n01-n40) using the library function.
+[l01,l02,l03,l04,l05,l06,l07,l08,l09,l10,l11,l12,l13,l14,l15,l16,l17,l18,l19,l20,l21,l22,l23,l24,l25,l26,l27,l28,l29,l30,l31,l32,l33,l34,l35,l36,l37,l38,l39,l40] = COMET.Locations(perSet,set) // Calculates the unique Y-axis integer locations (l01-l40) for alert labels for assets in *this* Set using the library function.
+
+//== USERS CUSTOM BASE FUNCTION(S) BEING USED TO SCAN ALL ASSETS WITH ==\\ // This funciton can have an ENTIRE script within it. It is the heart and soul of the scanner. The output of this fuction is what is used for your alert triggers and your line plots (there will be a video uploaded for this. If you were unsure of this then it can most likely be created using AI/LLM's so watch the video for clarification) 
+f_CustomFunc(_open, _high, _low, _close, _volume, _bar_index, _time) =>                                              // You can leave this as is UNLESS you need different series values from the assets being scanned...at which point, add the series variables to the list with a "_" in the front of the variable name (or else it will pull the value from the asset the chart is currently on). If you are adding additional variables make sure to add the variable name without the underscore("_") in the actual function call that is in the "request.security()" function below             
+    plot = na                    // The value being tracked that will become the line plot (if being used)           // Calculate the value to plot (e.g., oscillator value). Use 'na' if no plot needed.
+    LongSignal = false           // This will be what produces a LONG signal trigger                                 // Define the condition for a Long signal (e.g., ta.crossunder(rsi,30)).
+    ShortSignal = false          // This will be what produces a SHORT signal trigger                                // Define the condition for a Short signal (e.g., ta.crossover(rsi,70)).
+    [plot, LongSignal, ShortSignal, _close]                                                                          // The whole purpose of the tuple ("[]") is to output values created in the function so that these values can be used later in the script. Presently, the value are: PLOT VALUE(the value being tracked to be used for the line plot or to be used in a later calculation), Long/Short signal states(will be used for Long/Short Alerts and Alert Labels), close value of the asset in the security() function(used in a later function to determine any invalid tickerIDs). You can add/remove any as needed per your requirement but need to also add/remove the same ones that are being outputted when the function is being called later in teh script..
+
+//== COMET SCANNERS MAIN FUNCTION ==\\ // The f_CustomFunc() function is called in the request.security() function below which allows all the calculations in the f_CustomFunc() function to be used on the price action of all of the assets being scanned in this copy of the COMET Scanner on the chart.
+invalidArr = array.new_string(1,"")                                                                                  // Initializes a persistent empty string array to store invalid Ticker IDs.
+f_main(colorID, tickerID, nameID, locationID) =>                                                                     // Defines the main processing function called for each asset. Receives color, asset ticker, asset shortname, and alert label location(location is automatically and dynamically determined based on the "set" value that is selected by the user in the settings window).
+    [plotValue, LongSignal, ShortSignal, _close] = request.security(tickerID, timeframe.period, f_CustomFunc(open,high,low,close,volume,bar_index,time), ignore_invalid_symbol=true)     //== SECURITY CALL & INVALID ASSET NAME LOGIC ==\\   // Requests data for 'tickerID', executes 'f_CustomFunc' on it, ignores errors for invalid symbols, and unpacks the results.
+    COMET.InvalidTickerIDs(lblSz, _close, tickerID, invalidArr, set)                                                 // Calls library function to potentially add 'tickerID' to 'invalidArr' and display the array in a table based on 'set'.
+    
+    //== ALERT SIGNAL MESSAGES AND NAME LABEL TOOLTIPS ==\\ // These create the text that are in the floating tooltip as you hover your curser over an Alert Label and the text that appears as the message when you receive an alert.
+    tt_txt = nameID+"("+str.tostring(math.round(plotValue,2))+")"                                                    // Creates tooltip text combining asset name and rounded plot value.
+    alert_txt = nameID+":"+(LongSignal?"LONG ":"SHORT ") + "(2) COMET Scanner Alert"                                 // Creates text for the Long/Short alert message.
+
+    //== ASSET'S NAME LABELS THAT STAY WITH LINE PLOTS ==\\ // The below code is what creates the Asset Name Label that appears at the end of the Line Plots (so this code is not used if you will not have Line Plots)
+    var lbl = label.new(bar_index, plotValue, text='  '+nameID, tooltip=tt_txt, textcolor=colorID, color=#ffffff00, yloc=yloc.price, style=label.style_none, size=lblSz, textalign=text.align_right)            // Creates a persistent label ONCE per asset, displaying its name, positioned initially. Uses assigned color, transparent background.
+    label.set_xy(lbl, bar_index, plotValue)                                                                          // Updates the persistent asset name label's position on each bar to follow the current 'plotValue'.
+    label.set_tooltip(lbl, tt_txt)                                                                                   // Updates the labels tooltip text for newest value to update in label.
+
+    //== ALERT TRIGGER LABEL WITHOUT SIGNAL COOLDOWN PHASE ==\\ // Creates the Long/Short Alert Trigger Labels when all trigger conditions are met for an asset and also gives the ability to set ONE alert for all Long & Short Alert Triggers for up to ALL 40 ASSETS BEING SCANNED for 1 copy of the COMET Scanner on the chart.
+    if LongSignal or ShortSignal                                                                                     // Checks for LONG or SHORT signal trigger and draws label and sends alert if so
+        label.new(bar_index, locationID, text=tt_txt, tooltip=tt_txt, textcolor=LongSignal?color.green:color.red, color=#ffffff00, yloc=yloc.price, style=label.style_none, size=lblSz)                                    // Creates a *new* temporary alert label at the specific 'locationID' when a valid signal occurs (Green for Long, Red for Short).
+        alert(message=alert_txt, freq=alert.freq_once_per_bar_close)                                                 // Triggers a TradingView alert with 'alert_txt' once per bar close when the condition is met.
+
+    //== ALERT TRIGGER LABEL WITH A SIGNAL COOLDOWN PHASE ==\\ // Creates the Long/Short Alert Trigger Labels when all trigger conditions are met for an asset ***BUT ONLY IF THE USER SET AMOUNT OF BARS HAVE PASSED SINCE THE LAST SIGNAL FROM THE SAME SIDE (aka the Cool-Down Phase has passed)*** and also gives the ability to set ONE alert for all Long & Short Alert Triggers for up to ALL 40 ASSETS BEING SCANNED for 1 copy of the COMET Scanner on the chart.
+    var int bssLsig=na, bssLsig := LongSignal[1]  ? 0 : bssLsig+1                                                    // Persistent cooldown counter for Long signals per asset; resets to 0 *after* a signal, increments otherwise.
+    var int bssSsig=na, bssSsig := ShortSignal[1] ? 0 : bssSsig+1                                                    // Persistent cooldown counter for Short signals per asset; resets to 0 *after* a signal, increments otherwise.
+    if (LongSignal and (na(bssLsig) or bssLsig>=sigCoolDn)) or (ShortSignal and (na(bssSsig) or bssSsig>=sigCoolDn)) // Checks for a new Long/Short signal AND if the cooldown period ('sigCoolDn') has passed.
+        label.new(bar_index, locationID, text=tt_txt, tooltip=tt_txt, textcolor=LongSignal?color.green:color.red, color=#ffffff00, yloc=yloc.price, style=label.style_none, size=lblSz)                                    // Creates a *new* temporary alert label at the specific 'locationID' when a valid signal occurs (Green for Long, Red for Short).
+        alert(message=alert_txt, freq=alert.freq_once_per_bar_close)                                                 // Triggers a TradingView alert with 'alert_txt' once per bar close when the condition is met.
+
+    //== OUTPUT FROM THE CUSTOM FUNCTION ==\\
+    plotValue                                                                                                        // Returns the 'plotValue' from the security call, used for plotting later.
+
+//== CALLS TO MAIN COMET FUNCTION FOR PLOT() FUNCTION CALL + USE FOR LINEPLOTS ALL DIFF COLORS ==\\    
+plot01 = f_main(#96f567, exch+t01+quote, n01, l01)             // Calls 'f_main' for asset 1, passing color, combined ticker, name, location; stores plot value.
+plot02 = f_main(#f3e643, exch+t02+quote, n02, l02)             // Calls 'f_main' for asset 2
+plot03 = f_main(#5cbaff, exch+t03+quote, n03, l03)             // Calls 'f_main' for asset 3
+plot04 = f_main(#a57edf, exch+t04+quote, n04, l04)             // ............
+plot05 = f_main(#f79787, exch+t05+quote, n05, l05)             
+plot06 = f_main(#233efa, exch+t06+quote, n06, l06)             
+plot07 = f_main(#b59bbf, exch+t07+quote, n07, l07)             
+plot08 = f_main(#c1e3fe, exch+t08+quote, n08, l08)             
+plot09 = f_main(#f26047, exch+t09+quote, n09, l09)             
+plot10 = f_main(#6771f5, exch+t10+quote, n10, l10)             
+plot11 = f_main(#08fa69, exch+t11+quote, n11, l11)             
+plot12 = f_main(#d5a1e8, exch+t12+quote, n12, l12)             
+plot13 = f_main(#ee8803, exch+t13+quote, n13, l13)             
+plot14 = f_main(#3c8bec, exch+t14+quote, n14, l14)             
+plot15 = f_main(#a3d6d1, exch+t15+quote, n15, l15)             
+plot16 = f_main(#97c41b, exch+t16+quote, n16, l16)             
+plot17 = f_main(#b9db0d, exch+t17+quote, n17, l17)             
+plot18 = f_main(#6cb2d8, exch+t18+quote, n18, l18)             
+plot19 = f_main(#ff1224, exch+t19+quote, n19, l19)             
+plot20 = f_main(#c9ac80, exch+t20+quote, n20, l20)             
+plot21 = f_main(#99f85a, exch+t21+quote, n21, l21)             
+plot22 = f_main(#f8f194, exch+t22+quote, n22, l22)             
+plot23 = f_main(#1cb144, exch+t23+quote, n23, l23)             
+plot24 = f_main(#eb67f5, exch+t24+quote, n24, l24)             
+plot25 = f_main(#d44486, exch+t25+quote, n25, l25)             
+plot26 = f_main(#defba7, exch+t26+quote, n26, l26)             
+plot27 = f_main(#a0a7ff, exch+t27+quote, n27, l27)             
+plot28 = f_main(#bc03ff, exch+t28+quote, n28, l28)             
+plot29 = f_main(#93ecfd, exch+t29+quote, n29, l29)             
+plot30 = f_main(#5cbec3, exch+t30+quote, n30, l30)             
+plot31 = f_main(#b0fff7, exch+t31+quote, n31, l31)             
+plot32 = f_main(#9ec7a8, exch+t32+quote, n32, l32)             
+plot33 = f_main(#6d9a85, exch+t33+quote, n33, l33)             
+plot34 = f_main(#cdd378, exch+t34+quote, n34, l34)             
+plot35 = f_main(#2dc37e, exch+t35+quote, n35, l35)             
+plot36 = f_main(#ddfd07, exch+t36+quote, n36, l36)             
+plot37 = f_main(#4a87b6, exch+t37+quote, n37, l37)             
+plot38 = f_main(#ff00a6, exch+t38+quote, n38, l38)             
+plot39 = f_main(#e45faf, exch+t39+quote, n39, l39)             
+plot40 = f_main(#f0805e, exch+t40+quote, n40, l40)             
+ 
+//== PLOT FUNCTIONS ==\\
+plot(plot01_10?plot01:na, color=#96f567A7, title="Plot_01", style=plot.style_linebr)         // Plots 'plot01' value if 'plot01_10' input is true, otherwise plots nothing ('na'); sets color, title, style.
+plot(plot01_10?plot02:na, color=#f3e643A7, title="Plot_02", style=plot.style_linebr)         // Plots 'plot02' value conditionally; sets color, title, style.
+plot(plot01_10?plot03:na, color=#5cbaffA7, title="Plot_03", style=plot.style_linebr)         // Plots 'plot03' value conditionally; sets color, title, style.
+plot(plot01_10?plot04:na, color=#a57edfA7, title="Plot_04", style=plot.style_linebr)         // Plots 'plot04' value conditionally; sets color, title, style.
+plot(plot01_10?plot05:na, color=#f79787A7, title="Plot_05", style=plot.style_linebr)         // ............
+plot(plot01_10?plot06:na, color=#233efaA7, title="Plot_06", style=plot.style_linebr)         
+plot(plot01_10?plot07:na, color=#b59bbfA7, title="Plot_07", style=plot.style_linebr)         
+plot(plot01_10?plot08:na, color=#c1e3feA7, title="Plot_08", style=plot.style_linebr)         
+plot(plot01_10?plot09:na, color=#f26047A7, title="Plot_09", style=plot.style_linebr)         
+plot(plot01_10?plot10:na, color=#6771f5A7, title="Plot_10", style=plot.style_linebr)         
+plot(plot11_20?plot11:na, color=#08fa69A7, title="Plot_11", style=plot.style_linebr)         
+plot(plot11_20?plot12:na, color=#d5a1e8A7, title="Plot_12", style=plot.style_linebr)         
+plot(plot11_20?plot13:na, color=#ee8803A7, title="Plot_13", style=plot.style_linebr)         
+plot(plot11_20?plot14:na, color=#3c8becA7, title="Plot_14", style=plot.style_linebr)         
+plot(plot11_20?plot15:na, color=#a3d6d1A7, title="Plot_15", style=plot.style_linebr)         
+plot(plot11_20?plot16:na, color=#97c41bA7, title="Plot_16", style=plot.style_linebr)         
+plot(plot11_20?plot17:na, color=#b9db0dA7, title="Plot_17", style=plot.style_linebr)         
+plot(plot11_20?plot18:na, color=#6cb2d8A7, title="Plot_18", style=plot.style_linebr)         
+plot(plot11_20?plot19:na, color=#ff1224A7, title="Plot_19", style=plot.style_linebr)         
+plot(plot11_20?plot20:na, color=#c9ac80A7, title="Plot_20", style=plot.style_linebr)         
+plot(plot21_30?plot21:na, color=#99f85aA7, title="Plot_21", style=plot.style_linebr)         
+plot(plot21_30?plot22:na, color=#f8f194A7, title="Plot_22", style=plot.style_linebr)         
+plot(plot21_30?plot23:na, color=#1cb144A7, title="Plot_23", style=plot.style_linebr)         
+plot(plot21_30?plot24:na, color=#eb67f5A7, title="Plot_24", style=plot.style_linebr)         
+plot(plot21_30?plot25:na, color=#d44486A7, title="Plot_25", style=plot.style_linebr)         
+plot(plot21_30?plot26:na, color=#defba7A7, title="Plot_26", style=plot.style_linebr)         
+plot(plot21_30?plot27:na, color=#a0a7ffA7, title="Plot_27", style=plot.style_linebr)         
+plot(plot21_30?plot28:na, color=#bc03ffA7, title="Plot_28", style=plot.style_linebr)         
+plot(plot21_30?plot29:na, color=#93ecfdA7, title="Plot_29", style=plot.style_linebr)         
+plot(plot21_30?plot30:na, color=#5cbec3A7, title="Plot_30", style=plot.style_linebr)         
+plot(plot31_40?plot31:na, color=#b0fff7A7, title="Plot_31", style=plot.style_linebr)         
+plot(plot31_40?plot32:na, color=#9ec7a8A7, title="Plot_32", style=plot.style_linebr)         
+plot(plot31_40?plot33:na, color=#6d9a85A7, title="Plot_33", style=plot.style_linebr)         
+plot(plot31_40?plot34:na, color=#cdd378A7, title="Plot_34", style=plot.style_linebr)         
+plot(plot31_40?plot35:na, color=#2dc37eA7, title="Plot_35", style=plot.style_linebr)         
+plot(plot31_40?plot36:na, color=#ddfd07A7, title="Plot_36", style=plot.style_linebr)         
+plot(plot31_40?plot37:na, color=#4a87b6A7, title="Plot_37", style=plot.style_linebr)         
+plot(plot31_40?plot38:na, color=#ff00a6A7, title="Plot_38", style=plot.style_linebr)         
+plot(plot31_40?plot39:na, color=#e45fafA7, title="Plot_39", style=plot.style_linebr)         
+plot(plot31_40?plot40:na, color=#f0805eA7, title="Plot_40", style=plot.style_linebr)         
+
+//== HORIZONTAL LINE FUNCTIONS (if needed) ==\\                              
+hline(0,     color=chart.fg_color, linestyle=hline.style_solid)	    // Draws a horizontal line at y=0 using chart foreground color. (Remove if unused).
+hline(-100,  color=chart.fg_color, linestyle=hline.style_solid)	    // Draws a horizontal line at y=-100 using chart foreground color. (Remove if unused).
+hline(100,   color=chart.fg_color, linestyle=hline.style_solid)	    // Draws a horizontal line at y=100 using chart foreground color. (Remove if unused).
