@@ -1,5 +1,5 @@
 // Utility functions for handling file storage with Appwrite
-import { storage, BANNER_BUCKET_ID, GALLERY_BUCKET_ID, SCANNER_BUCKET_ID } from '../appwriteConfig';
+import { storage, BANNER_BUCKET_ID, GALLERY_BUCKET_ID, SCANNER_BUCKET_ID } from '../appwriteConfig.ts';
 import { ID } from 'appwrite';
 
 // Define bucket types
@@ -38,13 +38,13 @@ export const uploadFile = async (
   try {
     const bucketId = getBucketId(bucketType);
     const id = fileId || ID.unique();
-    
+
     const result = await storage.createFile(
       bucketId,
       id,
       file
     );
-    
+
     return result;
   } catch (error) {
     console.error(`Error uploading file to ${bucketType} bucket:`, error);

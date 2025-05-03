@@ -1,5 +1,5 @@
 // Utility functions for interacting with Appwrite database
-import { databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID, CONTENT_COLLECTION_ID, IMAGES_COLLECTION_ID } from '../appwriteConfig';
+import { databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID, CONTENT_COLLECTION_ID, IMAGES_COLLECTION_ID } from '../appwriteConfig.ts';
 import { ID, Query } from 'appwrite';
 
 /**

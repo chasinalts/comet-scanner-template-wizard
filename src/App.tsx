@@ -4,7 +4,7 @@ import React from 'react';
 import { useEffect } from './utils/react-imports';
 const { lazy, Suspense } = React;
 // ErrorBoundary removed to fix TypeScript errors
-// AuthProvider is already imported in main.tsx
+import { AuthProvider } from './contexts/AuthContext';
 import { WizardProvider } from './contexts/WizardContext';
 import { ToastProvider } from './components/ui/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -12,7 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import SuspenseFallback from './components/ui/SuspenseFallback';
 
-import { initializeStorage } from './appwriteConfig';
+import { initializeStorage } from './appwriteConfig.ts';
 import { useAuth } from './contexts/AuthContext';
 
 // Lazy load page components

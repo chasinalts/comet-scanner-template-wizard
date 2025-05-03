@@ -42,12 +42,28 @@ export default {
       {
         for: '/*.js',
         values: {
+          'Content-Type': 'application/javascript',
           'Cache-Control': 'public, max-age=31536000, immutable'
         }
       },
       {
         for: '/*.css',
         values: {
+          'Content-Type': 'text/css',
+          'Cache-Control': 'public, max-age=31536000, immutable'
+        }
+      },
+      {
+        for: '/assets/*.js',
+        values: {
+          'Content-Type': 'application/javascript',
+          'Cache-Control': 'public, max-age=31536000, immutable'
+        }
+      },
+      {
+        for: '/assets/*.css',
+        values: {
+          'Content-Type': 'text/css',
           'Cache-Control': 'public, max-age=31536000, immutable'
         }
       }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from '../utils/react-imports';
 import { useAuth } from '../contexts/AuthContext';
-import { databases, DATABASE_ID } from '../appwriteConfig';
+import { databases, DATABASE_ID } from '../appwriteConfig.ts';
 import { ID, Query } from 'appwrite';
 
 interface Template {

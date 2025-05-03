@@ -39,14 +39,14 @@ export const getUserId = async () => {
 export const initializeStorage = async () => {
     try {
         console.log('Initializing Appwrite storage...');
-        
+
         // Check if buckets exist
         const buckets = [BANNER_BUCKET_ID, GALLERY_BUCKET_ID, SCANNER_BUCKET_ID];
-        
+
         for (const bucketId of buckets) {
             try {
-                // Try to get the bucket to see if it exists
-                await storage.getBucket(bucketId);
+                // Try to list files in the bucket to see if it exists
+                await storage.listFiles(bucketId, [], '', 1);
                 console.log(`Bucket '${bucketId}' exists`);
             } catch (error) {
                 console.log(`Bucket '${bucketId}' doesn't exist, will need to be created in Appwrite console`);
@@ -54,7 +54,7 @@ export const initializeStorage = async () => {
                 // In a production environment, buckets should be created through the Appwrite console
             }
         }
-        
+
         return true;
     } catch (error) {
         console.error('Error initializing Appwrite storage:', error);

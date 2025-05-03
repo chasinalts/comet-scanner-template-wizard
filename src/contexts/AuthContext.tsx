@@ -1,6 +1,6 @@
 // Authentication context that manages user authentication state, login/logout functionality, and user profiles
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
-import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig';
+import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig.ts';
 import { ID, Models, Query } from 'appwrite';
 
 // User profile data structure
@@ -161,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log('Attempting to sign in with Appwrite auth');
 
-      const session = await account.createEmailSession(email, password);
+      const session = await account.createEmailPasswordSession(email, password);
 
       console.log('Appwrite auth successful:', session);
       return { session };
@@ -208,7 +208,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       // Sign in the user
-      await account.createEmailSession(email, password);
+      await account.createEmailPasswordSession(email, password);
 
       // Create user profile in database
       await databases.createDocument(

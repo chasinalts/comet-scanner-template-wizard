@@ -7,7 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import analytics from './utils/analytics';
-import { initializeStorage } from './appwriteConfig';
+import { initializeStorage } from './appwriteConfig.ts';
 import loggingService from './utils/loggingService';
 
 // Appwrite handles authentication now

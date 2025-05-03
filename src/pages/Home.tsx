@@ -4,7 +4,7 @@ import React, { useState, useEffect } from '../utils/react-imports';
 import HolographicText from '../components/ui/HolographicText';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { storage, BANNER_BUCKET_ID, GALLERY_BUCKET_ID } from '../appwriteConfig';
+import { storage, BANNER_BUCKET_ID, GALLERY_BUCKET_ID } from '../appwriteConfig.ts';
 import LazyImage from '../components/ui/LazyImage';
 import Button from '../components/ui/Button';
 

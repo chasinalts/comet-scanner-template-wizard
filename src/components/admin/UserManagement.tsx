@@ -1,5 +1,5 @@
 import { useState, useEffect } from '../../utils/react-imports';
-import { account, databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../../appwriteConfig';
+import { account, databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../../appwriteConfig.ts';
 import { ID, Query } from 'appwrite';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';

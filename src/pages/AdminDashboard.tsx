@@ -23,7 +23,7 @@ import { isOwner } from '../utils/permissionChecks';
 import LogViewer from '../components/admin/LogViewer';
 import UserManagement from '../components/admin/UserManagement';
 import loggingService from '../utils/loggingService';
-import { initializeStorage } from '../appwriteConfig';
+import { initializeStorage } from '../appwriteConfig.ts';
 
 interface UploadingState {
   questionId?: string;

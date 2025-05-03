@@ -1,0 +1,59 @@
+{
+    "projectId": "cstw",
+    "projectName": "comet-scanner-template-wizard",
+    "settings": {
+        "services": {
+            "account": true,
+            "avatars": true,
+            "databases": true,
+            "locale": true,
+            "health": true,
+            "storage": true,
+            "teams": true,
+            "users": true,
+            "functions": true,
+            "graphql": true,
+            "messaging": true
+        },
+        "auth": {
+            "methods": {
+                "jwt": true,
+                "phone": true,
+                "invites": true,
+                "anonymous": true,
+                "email-otp": true,
+                "magic-url": true,
+                "email-password": true
+            },
+            "security": {
+                "duration": 31536000,
+                "limit": 0,
+                "sessionsLimit": 10,
+                "passwordHistory": 0,
+                "passwordDictionary": false,
+                "personalDataCheck": false,
+                "sessionAlerts": false,
+                "mockNumbers": []
+            }
+        }
+    },
+    "databases": [
+        {
+            "$id": "db1",
+            "name": "db1",
+            "enabled": true
+        }
+    ],
+    "collections": [
+        {
+            "$id": "user_profiles",
+            "$permissions": [],
+            "databaseId": "db1",
+            "name": "user_profiles",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [],
+            "indexes": []
+        }
+    ]
+}

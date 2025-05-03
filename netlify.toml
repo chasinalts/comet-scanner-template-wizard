@@ -5,7 +5,7 @@
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "22"  # Using latest LTS version
+  NODE_VERSION = "18.20.0"  # Using version specified in package.json
 
 # Production context: all deploys from the main branch
 [context.production]
@@ -26,11 +26,19 @@
 # 2. Aggressively cache static assets (JS, CSS, etc.)
 [[headers]]
   for = "/*.js"
-  values = { Cache-Control = "public, max-age=31536000, immutable" }
+  values = { Cache-Control = "public, max-age=31536000, immutable", Content-Type = "application/javascript; charset=utf-8" }
 
 [[headers]]
   for = "/*.css"
-  values = { Cache-Control = "public, max-age=31536000, immutable" }
+  values = { Cache-Control = "public, max-age=31536000, immutable", Content-Type = "text/css; charset=utf-8" }
+
+[[headers]]
+  for = "/assets/*.js"
+  values = { Cache-Control = "public, max-age=31536000, immutable", Content-Type = "application/javascript; charset=utf-8" }
+
+[[headers]]
+  for = "/assets/*.css"
+  values = { Cache-Control = "public, max-age=31536000, immutable", Content-Type = "text/css; charset=utf-8" }
 
 [[headers]]
   for = "/assets/*"

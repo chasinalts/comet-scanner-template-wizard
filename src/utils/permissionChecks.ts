@@ -1,4 +1,4 @@
-import { account, databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig';
+import { account, databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig.ts';
 
 /**
  * Checks if the current user has a specific permission

@@ -58,6 +58,41 @@ try {
   console.log('\n🔨 Building the project...');
   execSync('npm run build', { stdio: 'inherit' });
 
+  // Copy necessary files to dist directory
+  console.log('\n📋 Copying necessary files to dist directory...');
+
+  // Ensure _redirects file is in the dist directory
+  if (fs.existsSync('public/_redirects')) {
+    fs.copyFileSync('public/_redirects', 'dist/_redirects');
+    console.log('Copied _redirects file to dist directory');
+  } else if (fs.existsSync('_redirects')) {
+    fs.copyFileSync('_redirects', 'dist/_redirects');
+    console.log('Copied _redirects file from root to dist directory');
+  } else {
+    // Create a default _redirects file
+    fs.writeFileSync('dist/_redirects', '/*    /index.html   200');
+    console.log('Created default _redirects file in dist directory');
+  }
+
+  // Create a _headers file in the dist directory
+  const headersContent = `
+# Ensure proper MIME types for JavaScript files
+/*.js
+  Content-Type: application/javascript; charset=utf-8
+
+/assets/js/*.js
+  Content-Type: application/javascript; charset=utf-8
+
+# Ensure proper MIME types for CSS files
+/*.css
+  Content-Type: text/css; charset=utf-8
+
+/assets/*.css
+  Content-Type: text/css; charset=utf-8
+`;
+  fs.writeFileSync('dist/_headers', headersContent);
+  console.log('Created _headers file in dist directory');
+
   console.log('\n✅ Build completed successfully!');
 } catch (error) {
   console.error('\n❌ Build failed:', error.message);
