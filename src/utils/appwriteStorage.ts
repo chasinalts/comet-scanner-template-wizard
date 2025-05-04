@@ -1,6 +1,6 @@
 // Utility functions for handling file storage with Appwrite
 import { storage, IMAGES_BUCKET_ID, BANNER_BUCKET_ID, databases, DATABASE_ID, IMAGES_COLLECTION_ID } from '../appwriteConfig.ts';
-import { ID } from 'appwrite';
+import { ID, Query } from 'appwrite';
 
 // Define bucket types
 export type BucketType = 'banner' | 'gallery' | 'scanner';
@@ -117,16 +117,19 @@ export const listFiles = async (bucketType: BucketType): Promise<any[]> => {
     const bucketId = getBucketId(bucketType);
 
     // Get all files from the single bucket
-    const result = await storage.listFiles(bucketId);
+    // Pass empty array for queries and null for search to avoid the "Invalid search param" error
+    // According to Appwrite docs, search must be a valid string between 1-256 chars if provided
+    const result = await storage.listFiles(bucketId, [], null);
 
     // Get metadata from the images collection to filter by image type
     const metadata = await databases.listDocuments(
       DATABASE_ID,
       IMAGES_COLLECTION_ID,
       [
-        // Filter by image type
-        { key: 'image_type', value: bucketType }
-      ]
+        // Filter by image type using the new Query syntax
+        Query.equal('image_type', [bucketType])
+      ],
+      100  // Limit to 100 documents
     );
 
     // Filter files based on metadata

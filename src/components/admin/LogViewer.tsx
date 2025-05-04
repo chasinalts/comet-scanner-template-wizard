@@ -32,7 +32,7 @@ const LogViewer = () => {
   // Initialize logging service
   useEffect(() => {
     loggingService.initialize();
-    
+
     // Cleanup on unmount
     return () => {
       // Don't restore console methods on unmount to keep capturing logs
@@ -74,8 +74,8 @@ const LogViewer = () => {
     // Apply search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(log => 
-        log.message.toLowerCase().includes(term) || 
+      result = result.filter(log =>
+        log.message.toLowerCase().includes(term) ||
         (log.stack && log.stack.toLowerCase().includes(term))
       );
     }
@@ -94,13 +94,13 @@ const LogViewer = () => {
     const json = loggingService.exportLogs();
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = `app-logs-${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a);
     a.click();
-    
+
     // Cleanup
     setTimeout(() => {
       document.body.removeChild(a);
@@ -187,7 +187,7 @@ const LogViewer = () => {
           <div className="divide-y divide-gray-800">
             {filteredLogs.map((log, index) => (
               <motion.div
-                key={log.timestamp + index}
+                key={`log-${log.timestamp}-${index}`}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
@@ -207,20 +207,20 @@ const LogViewer = () => {
                     {log.message}
                   </div>
                 </div>
-                
+
                 {expanded === index && (
                   <div className="mt-2 ml-8 text-xs">
                     <div className="bg-gray-900 p-2 rounded border border-gray-700 overflow-x-auto">
                       <pre className="text-gray-300">
                         {log.data?.map((item, i) => (
-                          <div key={i} className="mb-1">
+                          <div key={`log-data-${index}-${i}`} className="mb-1">
                             {typeof item === 'object' && item !== null
                               ? JSON.stringify(item, null, 2)
                               : String(item)}
                           </div>
                         ))}
                       </pre>
-                      
+
                       {showStackTrace && log.stack && (
                         <div className="mt-2 pt-2 border-t border-gray-700">
                           <div className="text-yellow-500 mb-1">Stack Trace:</div>
@@ -237,7 +237,7 @@ const LogViewer = () => {
           </div>
         )}
       </div>
-      
+
       <div className="mt-2 text-xs text-gray-500 flex justify-between">
         <span>Total logs: {logs.length}</span>
         <span>Filtered logs: {filteredLogs.length}</span>

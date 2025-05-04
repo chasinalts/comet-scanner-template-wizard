@@ -71,7 +71,8 @@ export const initializeStorage = async () => {
         // Check if the single bucket exists
         try {
             // Try to list files in the bucket to see if it exists
-            await storage.listFiles(IMAGES_BUCKET_ID, [], '', 1);
+            // Pass null for search parameter to avoid "Invalid search param" error
+            await storage.listFiles(IMAGES_BUCKET_ID, [], null);
             console.log(`Bucket '${IMAGES_BUCKET_ID}' exists`);
         } catch (error) {
             console.log(`Bucket '${IMAGES_BUCKET_ID}' doesn't exist, will need to be created in Appwrite console`);

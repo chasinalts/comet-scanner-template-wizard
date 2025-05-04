@@ -1,6 +1,5 @@
-import { uploadFile, deleteFile } from './appwriteStorage';
 import { processImageForUpload } from './imageCompression';
-import { BucketType } from './appwriteStorage';
+import { uploadFile, deleteFile, BucketType } from './supabaseImageStorage';
 
 /**
  * Handles image upload using local storage (base64 encoding)
@@ -23,14 +22,14 @@ export const handleLocalImageUpload = (
 };
 
 /**
- * Handles image upload using Appwrite Storage with compression
+ * Handles image upload using Supabase Storage with compression
  * @param file The file to upload
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  * @param onError Optional callback function to be called when upload fails
  * @param userId The ID of the user uploading the file
  */
-export const handleAppwriteImageUpload = (
+export const handleSupabaseImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void,
@@ -52,10 +51,10 @@ export const handleAppwriteImageUpload = (
           maxSizeInMB: 1
         });
 
-        // Upload to Appwrite Storage
+        // Upload to Supabase Storage
         // Map scanner type to gallery folder since they are the same
         const bucketType = type === 'scanner' ? 'gallery' : type as BucketType;
-        console.log(`Uploading ${type} image to ${bucketType} bucket`);
+        console.log(`Uploading ${type} image to ${bucketType} bucket in Supabase`);
 
         // If userId is not provided, use a default value
         const userIdToUse = userId || 'system';
@@ -63,15 +62,17 @@ export const handleAppwriteImageUpload = (
         const result = await uploadFile(processedFile, bucketType, userIdToUse);
         const imageUrl = result.$id ? result.$id : '';
 
-        console.log('Image uploaded to Appwrite:', {
+        console.log('Image uploaded to Supabase:', {
           originalSize: file.size,
           processedSize: processedFile.size,
           compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
-          imageUrl
+          imageUrl,
+          publicUrl: result.publicUrl
         });
 
-        // Call the success callback with the Appwrite URL and preview URL
-        onSuccess(imageUrl, imagePreview);
+        // Call the success callback with the image ID and preview URL
+        // We'll use the ID for metadata lookups and the publicUrl for direct display
+        onSuccess(imageUrl, result.publicUrl || imagePreview);
 
         // Clean up the preview URL after a delay to ensure it's used
         setTimeout(() => {
@@ -92,7 +93,7 @@ export const handleAppwriteImageUpload = (
       }
     })();
   } catch (error) {
-    console.error('Error in handleAppwriteImageUpload:', error);
+    console.error('Error in handleSupabaseImageUpload:', error);
     if (onError) {
       onError(error);
     } else {
@@ -103,6 +104,12 @@ export const handleAppwriteImageUpload = (
 
 /**
  * Handles image upload using Appwrite Storage with compression
+ * @deprecated Use handleSupabaseImageUpload instead
+ */
+export const handleAppwriteImageUpload = handleSupabaseImageUpload;
+
+/**
+ * Handles image upload using Supabase Storage with compression
  * @param file The file to upload
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
@@ -116,24 +123,24 @@ export const handleImageUpload = (
   onError?: (error: any) => void,
   userId?: string
 ) => {
-  // Use Appwrite Storage
-  return handleAppwriteImageUpload(file, type, onSuccess, onError, userId);
+  // Use Supabase Storage for all image uploads
+  return handleSupabaseImageUpload(file, type, onSuccess, onError, userId);
 };
 
 /**
  * Cleans up a URL, revoking object URLs if necessary
  * @param url The URL to clean up
  * @param isCloudUrl Whether the URL is from a cloud storage provider
- * @param bucketType Optional bucket type for Appwrite storage
+ * @param bucketType Optional bucket type for Supabase storage
  */
 export const cleanupImageUrl = async (url: string, isCloudUrl = false, bucketType?: BucketType) => {
   if (url.startsWith('blob:')) {
     URL.revokeObjectURL(url);
   } else if (isCloudUrl && bucketType) {
     try {
-      await deleteFile(url, bucketType);
+      await deleteFile(url);
     } catch (error) {
-      console.error(`Error deleting file from Appwrite Storage (${bucketType}):`, error);
+      console.error(`Error deleting file from Supabase Storage (${bucketType}):`, error);
     }
   }
 };

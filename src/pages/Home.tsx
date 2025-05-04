@@ -4,7 +4,7 @@ import React, { useState, useEffect } from '../utils/react-imports';
 import HolographicText from '../components/ui/HolographicText';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { storage, BANNER_BUCKET_ID } from '../appwriteConfig.ts';
+import { supabaseClient, BANNER_BUCKET } from '../supabaseConfig';
 import LazyImage from '../components/ui/LazyImage';
 import Button from '../components/ui/Button';
 
@@ -62,56 +62,54 @@ const Home: React.FC = () => {
     try {
       console.log('Fetching images from Appwrite Storage...');
 
-      // Fetch banner images
-      console.log('Fetching banner images...');
+      // Fetch banner images from Supabase
+      console.log('Fetching banner images from Supabase...');
       try {
-        // Import the listFiles function from appwriteStorage to get filtered images
-        const { listFiles } = await import('../utils/appwriteStorage');
+        // Import the listFiles function from supabaseImageStorage
+        const { listFiles } = await import('../utils/supabaseImageStorage');
 
         // Get banner images filtered by image_type
         const bannerFiles = await listFiles('banner');
-        console.log('Banner data (filtered):', bannerFiles);
+        console.log('Banner data from Supabase (filtered):', bannerFiles);
 
         if (bannerFiles.length > 0) {
           // Get the first banner image
           const bannerFile = bannerFiles[0];
 
-          // Get preview URL for the banner image
-          const previewUrl = storage.getFilePreview(BANNER_BUCKET_ID, bannerFile.$id);
+          // Use the public URL directly from Supabase
+          const publicUrl = bannerFile.publicUrl;
 
-          console.log('Banner preview URL:', previewUrl);
-          setBannerUrl(previewUrl.toString());
+          console.log('Banner public URL from Supabase:', publicUrl);
+          setBannerUrl(publicUrl);
         } else {
-          console.log('No banner images found');
+          console.log('No banner images found in Supabase');
         }
       } catch (error) {
-        console.error('Error fetching banner:', error);
+        console.error('Error fetching banner from Supabase:', error);
         throw new Error(`Banner fetch error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
 
-      // Fetch gallery images
-      console.log('Fetching gallery images...');
+      // Fetch gallery images from Supabase
+      console.log('Fetching gallery images from Supabase...');
       try {
-        // Import the listFiles function from appwriteStorage to get filtered images
-        const { listFiles } = await import('../utils/appwriteStorage');
+        // Import the listFiles function from supabaseImageStorage
+        const { listFiles } = await import('../utils/supabaseImageStorage');
 
         // Get gallery images filtered by image_type
         const galleryFiles = await listFiles('gallery');
-        console.log('Gallery data (filtered):', galleryFiles);
+        console.log('Gallery data from Supabase (filtered):', galleryFiles);
 
         if (galleryFiles.length > 0) {
-          // Get preview URLs for all gallery images
-          const previewUrls = galleryFiles.map((file: any) =>
-            storage.getFilePreview(BANNER_BUCKET_ID, file.$id).toString()
-          );
+          // Get public URLs for all gallery images
+          const publicUrls = galleryFiles.map((file: any) => file.publicUrl);
 
-          console.log('Gallery URLs:', previewUrls);
-          setGalleryImages(previewUrls);
+          console.log('Gallery URLs from Supabase:', publicUrls);
+          setGalleryImages(publicUrls);
         } else {
-          console.log('No gallery images found');
+          console.log('No gallery images found in Supabase');
         }
       } catch (error) {
-        console.error('Error fetching gallery:', error);
+        console.error('Error fetching gallery from Supabase:', error);
         throw new Error(`Gallery fetch error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     } catch (err: any) {

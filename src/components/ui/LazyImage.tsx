@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLazyLoading } from '../../hooks/useLazyLoading';
 import { resizeImage } from '../../utils/imageHandlers';
-import { getFilePreview } from '../../utils/appwriteStorage';
+import { getFilePreview } from '../../utils/supabaseImageStorage';
 
 interface LazyImageProps {
   src: string;
@@ -100,6 +100,9 @@ const LazyImage: React.FC<LazyImageProps> = ({
   // Check if this is an Appwrite Storage URL
   const isAppwriteUrl = src.includes('appwrite.io') || src.includes('cloud.appwrite.io');
 
+  // Check if this is a Supabase Storage URL
+  const isSupabaseUrl = src.includes('supabase.co') || src.includes('supabase.in');
+
   // Load image when it becomes visible
   useEffect(() => {
     // Skip if not visible yet or already loaded/errored
@@ -124,10 +127,20 @@ const LazyImage: React.FC<LazyImageProps> = ({
           return;
         }
 
-        // For Appwrite Storage URLs, handle them specially
-        if (isAppwriteUrl) {
+        // For Supabase Storage URLs, use them directly
+        if (isSupabaseUrl) {
+          console.log('Processing Supabase URL:', src);
+          setImageSrc(src);
+          if (!gallerySize) {
+            setIsLoaded(true);
+            return;
+          }
+        }
+
+        // For Appwrite Storage URLs, handle them specially (legacy support)
+        else if (isAppwriteUrl) {
           try {
-            console.log('Processing Appwrite URL:', src);
+            console.log('Processing Appwrite URL (legacy):', src);
 
             // Check if it's already a preview URL
             if (src.includes('preview')) {
@@ -155,19 +168,32 @@ const LazyImage: React.FC<LazyImageProps> = ({
               const bucketType = src.startsWith('gallery_') ? 'gallery' :
                                 src.startsWith('banner_') ? 'banner' : 'scanner';
 
-              const previewUrl = getFilePreview(src, bucketType as any);
-              console.log('Preview URL:', previewUrl);
+              try {
+                // Try to get the preview URL from Supabase instead
+                const previewUrl = await getFilePreview(src, bucketType as any);
+                console.log('Preview URL from Supabase:', previewUrl);
 
-              if (isMounted) {
-                setImageSrc(previewUrl);
-                if (!gallerySize) {
-                  setIsLoaded(true);
-                  return;
+                if (isMounted) {
+                  setImageSrc(previewUrl);
+                  if (!gallerySize) {
+                    setIsLoaded(true);
+                    return;
+                  }
+                }
+              } catch (previewError) {
+                console.error('Error getting file preview from Supabase:', previewError);
+                // Fallback to using the ID directly
+                if (isMounted) {
+                  setImageSrc(src);
+                  if (!gallerySize) {
+                    setIsLoaded(true);
+                    return;
+                  }
                 }
               }
             }
           } catch (error) {
-            console.error('Error getting file preview:', error);
+            console.error('Error processing Appwrite URL:', error);
             if (isMounted) {
               // Add a cache-busting parameter to the URL
               const cacheBuster = `?t=${Date.now()}`;
@@ -228,7 +254,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [isVisible, src, gallerySize, isFirebaseUrl, isAppwriteUrl, dimensions]);
+  }, [isVisible, src, gallerySize, isFirebaseUrl, isAppwriteUrl, isSupabaseUrl, dimensions]);
 
   // Handle image load event
   const handleImageLoad = () => {
@@ -247,8 +273,12 @@ const LazyImage: React.FC<LazyImageProps> = ({
   // Generate srcSet when src changes
   useEffect(() => {
     if (!src.startsWith('data:') && !src.startsWith('blob:')) {
-      // For Appwrite images, handle them specially
-      if (isAppwriteUrl) {
+      // For Supabase images, use the URL directly
+      if (isSupabaseUrl) {
+        setSrcSet(`${src} 1x, ${src} 2x`);
+      }
+      // For Appwrite images, handle them specially (legacy support)
+      else if (isAppwriteUrl) {
         (async () => {
           try {
             // If it's already a preview URL, use it directly
@@ -259,14 +289,20 @@ const LazyImage: React.FC<LazyImageProps> = ({
             else if (src.includes('download')) {
               setSrcSet(`${src} 1x, ${src} 2x`);
             }
-            // Otherwise, try to get a file preview
+            // Otherwise, try to get a file preview from Supabase
             else {
               // Assuming src is the file ID and we need to determine the bucket type
               const bucketType = src.startsWith('gallery_') ? 'gallery' :
                                 src.startsWith('banner_') ? 'banner' : 'scanner';
 
-              const previewUrl = getFilePreview(src, bucketType as any);
-              setSrcSet(`${previewUrl} 1x, ${previewUrl} 2x`);
+              try {
+                const previewUrl = await getFilePreview(src, bucketType as any);
+                setSrcSet(`${previewUrl} 1x, ${previewUrl} 2x`);
+              } catch (previewError) {
+                console.error('Error getting preview URL for srcSet:', previewError);
+                // Fallback to using the original URL
+                setSrcSet(`${src} 1x, ${src} 2x`);
+              }
             }
           } catch (error) {
             console.error('Error generating srcSet:', error);
@@ -283,7 +319,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
     } else {
       setSrcSet(undefined);
     }
-  }, [src, isAppwriteUrl]);
+  }, [src, isAppwriteUrl, isSupabaseUrl]);
 
   // Calculate aspect ratio placeholder using the dimensions
   const aspectRatioPercent = dimensions.width && dimensions.height
