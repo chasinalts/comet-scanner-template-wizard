@@ -1,5 +1,6 @@
 // Scanner wizard component that guides users through creating customized COMET scanner templates
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect } from '../utils/react-imports';
 import { motion } from 'framer-motion';
 import Modal from '../components/ui/Modal';
 import { useAdminContent } from '../hooks/useAdminContent';
@@ -59,11 +60,11 @@ const ScannerWizard = () => {
   const [templateName, setTemplateName] = useState<string>('');
 
   // Load admin-managed questions and sections into wizard context
-  React.useEffect(() => {
+  useEffect(() => {
     wizardDispatch({ type: 'SET_QUESTIONS', payload: questions });
   }, [questions, wizardDispatch]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     wizardDispatch({ type: 'SET_SECTIONS', payload: sections });
   }, [sections, wizardDispatch]);
 
@@ -73,7 +74,7 @@ const ScannerWizard = () => {
   // Get scanner images with error handling
   const [scannerImages, setScannerImages] = useState<any[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const images = getScannerImages();
       setScannerImages(images);
@@ -85,7 +86,7 @@ const ScannerWizard = () => {
   }, [getScannerImages]);
 
   // Load full template code if available
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       // Get full template from admin settings
       const { code, isEnabled } = getFullTemplate();

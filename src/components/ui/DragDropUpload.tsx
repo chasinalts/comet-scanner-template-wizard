@@ -1,4 +1,5 @@
-import React, { useCallback, useState, type DragEvent } from 'react';
+import React from 'react';
+import { useCallback, useState, useRef, type DragEvent } from '../../utils/react-imports';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface DragDropUploadProps {
@@ -97,7 +98,7 @@ export default function DragDropUpload({
 }: DragDropUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<FileError | null>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): FileError | null => {
     if (file.size > maxSize * 1024 * 1024) {
@@ -106,7 +107,7 @@ export default function DragDropUpload({
         message: `File size exceeds ${maxSize}MB limit`
       };
     }
-    
+
     if (!accept.includes('*') && !accept.includes(file.type)) {
       return {
         type: 'type',
@@ -180,7 +181,7 @@ export default function DragDropUpload({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       initial={{ opacity: 0 }}
-      animate={{ 
+      animate={{
         opacity: 1,
         borderColor: isDragging ? '#3B82F6' : error ? '#EF4444' : undefined,
         scale: isDragging ? 1.02 : 1
@@ -191,8 +192,8 @@ export default function DragDropUpload({
         ${isCompact ? 'p-3' : 'p-6'}
         rounded-lg border-2 border-dashed
         ${isLoading ? 'cursor-wait ' : ''}
-        ${error 
-          ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
+        ${error
+          ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
           : isDragging
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
             : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
