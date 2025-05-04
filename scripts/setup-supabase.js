@@ -83,6 +83,73 @@ async function setupSupabase() {
     // Create tables
     console.log('\nCreating database tables...');
     
+    // --- IMPORTANT: Combined SQL for full Supabase setup ---
+    const combinedSql = `
+-- 1. Create Tables
+CREATE TABLE IF NOT EXISTS extended_content (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  content TEXT,
+  section_id TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  owner_id UUID NOT NULL,
+  content_type TEXT
+);
+
+CREATE TABLE IF NOT EXISTS images (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  file_path TEXT NOT NULL,
+  bucket_id TEXT NOT NULL,
+  uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  owner_id UUID NOT NULL,
+  image_type TEXT NOT NULL,
+  size INTEGER,
+  width INTEGER,
+  height INTEGER,
+  metadata JSONB
+);
+
+CREATE TABLE IF NOT EXISTS logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event TEXT NOT NULL,
+  message TEXT NOT NULL,
+  timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  owner_id UUID NOT NULL,
+  level TEXT,
+  details JSONB
+);
+
+-- 2. Enable RLS and Owner Policies
+ALTER TABLE extended_content ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Owner full access" ON extended_content
+  USING (auth.uid() = owner_id)
+  WITH CHECK (auth.uid() = owner_id);
+
+ALTER TABLE images ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Owner full access" ON images
+  USING (auth.uid() = owner_id)
+  WITH CHECK (auth.uid() = owner_id);
+
+ALTER TABLE logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Owner full access" ON logs
+  USING (auth.uid() = owner_id)
+  WITH CHECK (auth.uid() = owner_id);
+
+-- 3. Storage Bucket Object Policies
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Owner can manage" ON storage.objects
+  USING (auth.uid() = owner_id)
+  WITH CHECK (auth.uid() = owner_id);
+-- (Optional) Allow public read access to storage objects:
+CREATE POLICY "Public read" ON storage.objects
+  FOR SELECT USING (true);
+`;
+
+    // Output SQL for user to run in Supabase SQL editor
+    console.log('\n⚠️  Please copy and run the following single SQL script in the Supabase SQL Editor after setup:');
+    console.log(combinedSql);
     // 1. Extended Content table
     const { error: extendedContentError } = await supabase.rpc('create_table_if_not_exists', {
       table_name: 'extended_content',
@@ -93,7 +160,7 @@ async function setupSupabase() {
         section_id text,
         created_at timestamp with time zone default now(),
         updated_at timestamp with time zone default now(),
-        created_by uuid,
+        owner_id uuid not null,
         content_type text
       `
     }).catch(err => ({ error: err }));
@@ -112,8 +179,8 @@ async function setupSupabase() {
         name text not null,
         file_path text not null,
         bucket_id text not null,
-        uploaded_by text,
         uploaded_at timestamp with time zone default now(),
+        owner_id uuid not null,
         image_type text not null,
         size integer,
         width integer,
@@ -136,7 +203,7 @@ async function setupSupabase() {
         event text not null,
         message text not null,
         timestamp timestamp with time zone default now(),
-        user_id text,
+        owner_id uuid not null,
         level text,
         details jsonb
       `
