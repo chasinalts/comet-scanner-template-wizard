@@ -8,12 +8,7 @@ export const client = new Client()
 
 // Configure the client to use localStorage for cookies
 // This helps with third-party cookie restrictions in modern browsers
-try {
-    client.setCookieFallback(true);
-    console.log('Appwrite cookie fallback enabled');
-} catch (error) {
-    console.error('Failed to set cookie fallback:', error);
-}
+// Removed call to setCookieFallback as it caused errors with Appwrite SDK v17.0.2
 
 // Initialize Appwrite services
 export const account = new Account(client);
