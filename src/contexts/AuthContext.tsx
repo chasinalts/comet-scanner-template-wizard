@@ -396,7 +396,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const sendPasswordResetEmail = async (email: string): Promise<void> => {
     try {
-      await account.createRecovery(email, 'https://cometscanner.netlify.app/reset-password');
+      // Use environment variable for reset password URL, with fallback
+      const resetPasswordUrl = import.meta.env.VITE_RESET_PASSWORD_URL ||
+                              `${import.meta.env.VITE_APP_URL || window.location.origin}/reset-password`;
+
+      console.log('Using reset password URL:', resetPasswordUrl);
+      await account.createRecovery(email, resetPasswordUrl);
     } catch (error) {
       console.error('Error sending password reset:', error);
       throw error;

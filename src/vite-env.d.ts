@@ -9,6 +9,9 @@ interface ImportMetaEnv {
   // Supabase configuration
   readonly VITE_SUPABASE_URL: string;
   readonly VITE_SUPABASE_ANON_KEY: string;
+  // Application URLs
+  readonly VITE_APP_URL: string;
+  readonly VITE_RESET_PASSWORD_URL: string;
   // Add any additional environment variables here
   // Add other environment variables as needed
 }
