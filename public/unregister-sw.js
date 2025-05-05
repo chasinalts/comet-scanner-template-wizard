@@ -1,4 +1,6 @@
 // Minimal service worker unregistration script - only runs if service workers exist
+// Temporarily disabled to test service worker behavior
+/*
 (function() {
   // Only check for service workers if the API exists
   if ('serviceWorker' in navigator) {
@@ -24,3 +26,4 @@
     });
   }
 })();
+*/
