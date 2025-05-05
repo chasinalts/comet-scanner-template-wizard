@@ -18,18 +18,36 @@ export const functions = new Functions(client);
 export const avatars = new Avatars(client);
 
 // Helper function to reconnect the client
-export const reconnectClient = () => {
+export const reconnectClient = async () => {
     try {
         // Store the current configuration
         const endpoint = client.config.endpoint;
         const projectId = client.config.project;
 
+        // Get stored session if available
+        const storedSession = localStorage.getItem('appwrite_session');
+        if (storedSession) {
+            const { data: session } = JSON.parse(storedSession);
+            if (session?.jwt) {
+                // Set the JWT token if available
+                client.setJWT(session.jwt);
+            }
+        }
+
         // Reinitialize the client with the same endpoint and project ID
         client.setEndpoint(endpoint);
         client.setProject(projectId);
 
-        console.log('Reconnected Appwrite client');
-        return true;
+        // Verify session is still valid
+        try {
+            await account.get();
+            console.log('Reconnected Appwrite client with valid session');
+            return true;
+        } catch (sessionError) {
+            console.log('Session invalid or expired, clearing stored session');
+            localStorage.removeItem('appwrite_session');
+            return false;
+        }
     } catch (error) {
         console.error('Error reconnecting Appwrite client:', error);
         return false;
