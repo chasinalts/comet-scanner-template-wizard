@@ -24,7 +24,7 @@ The following changes have been successfully committed to GitHub and deployed to
 ## Deployment Status
 
 - **GitHub Repository**: Successfully pushed changes to main branch
-- **Netlify Deployment**: Successfully deployed to https://cometscanner.netlify.app
+- **Netlify Deployment**: Successfully deployed to the Netlify URL
 - **Site Status**: Up and running (200 OK)
 
 ## Next Steps

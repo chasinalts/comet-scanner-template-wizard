@@ -54,8 +54,8 @@ This occurred because:
 ## Testing
 
 The application has been deployed and tested:
-- The site is up and running at https://cometscanner.netlify.app
-- The login page is accessible at https://cometscanner.netlify.app/login
+- The site is up and running at the Netlify deployment URL
+- The login page is accessible at the /login path
 
 ## Next Steps
 
