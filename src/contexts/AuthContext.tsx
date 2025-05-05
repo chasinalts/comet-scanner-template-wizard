@@ -1,8 +1,8 @@
 // Authentication context that manages user authentication state, login/logout functionality, and user profiles
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
-import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig.ts';
+import { account, databases, client, reconnectClient, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig.ts';
 import { ID, Models, Query } from 'appwrite';
-import { ensureSessionInLocalStorage, hasValidSessionInLocalStorage } from '../utils/sessionHelper';
+import { storeSession, hasValidSession } from '../utils/sessionHelper';
 
 // User profile data structure
 export interface UserProfile {
@@ -53,8 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check for an existing session
     const checkSession = async () => {
       try {
-        // First, ensure we're using the localStorage cookie fallback
-        client.setCookieFallback(true);
+        // Note: setCookieFallback has been removed as it's no longer supported in newer Appwrite SDK versions
+        // Using pure localStorage-based session management instead
 
         let currentSession;
         try {
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (sessionError) {
           console.log('Failed to get session directly, checking localStorage:', sessionError);
           // If we can't get the session directly, check localStorage
-          if (hasValidSessionInLocalStorage()) {
+          if (hasValidSession()) {
             console.log('Found valid session in localStorage, reconnecting client');
             reconnectClient();
             // Try again after reconnecting
@@ -81,8 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
 
-        // Ensure the session is properly stored in localStorage
-        const sessionStored = await ensureSessionInLocalStorage(currentSession);
+        // Store the session in localStorage
+        const sessionStored = await storeSession(currentSession);
         console.log('Session stored in localStorage during checkSession:', sessionStored);
 
         setSession(currentSession);
@@ -206,8 +206,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const session = await account.createEmailPasswordSession(email, password);
       console.log('Appwrite auth successful:', session);
 
-      // Ensure the session is properly stored in localStorage
-      const sessionStored = await ensureSessionInLocalStorage(session);
+      // Store the session in localStorage
+      const sessionStored = await storeSession(session);
       console.log('Session stored in localStorage:', sessionStored);
 
       // Update the session state immediately
