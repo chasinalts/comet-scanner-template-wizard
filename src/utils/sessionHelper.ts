@@ -1,51 +1,46 @@
-// Helper functions for managing Appwrite sessions using token-based authentication
+// Helper functions for managing Appwrite sessions using JWT-based authentication
 
 import { Models } from 'appwrite';
-import { account, client, reconnectClient } from '../appwriteConfig';
+import { account, client } from '../appwriteConfig';
 
-const SESSION_KEY = 'appwrite_session';
+const JWT_KEY = 'appwriteSession';
+
+interface SessionWithJWT extends Models.Session {
+  jwt?: string;
+}
 
 /**
- * Store session data in localStorage
+ * Store JWT in localStorage from session
  */
-export const storeSession = async (session?: Models.Session): Promise<boolean> => {
+export const storeSession = async (session?: SessionWithJWT): Promise<boolean> => {
   try {
-    const currentSession = session || await account.getSession('current');
-    
-    if (!currentSession) {
-      console.log('No session available to store');
+    if (!session || !session.jwt) {
+      console.log('No valid session or JWT available to store');
       return false;
     }
 
-    const sessionData = {
-      data: currentSession,
-      expires: new Date(currentSession.expire).getTime()
-    };
+    // Store the JWT
+    localStorage.setItem(JWT_KEY, session.jwt);
+    console.log('JWT stored in localStorage');
 
-    localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
-    console.log('Session stored in localStorage');
-
-    // Reconnect client with new session
-    reconnectClient();
+    // Set the JWT on the client
+    client.setJWT(session.jwt);
     return true;
   } catch (error) {
-    console.error('Error storing session:', error);
+    console.error('Error storing JWT:', error);
     return false;
   }
 };
 
 /**
- * Check if there is a valid session stored
+ * Check if there is a valid JWT stored
  */
 export const hasValidSession = (): boolean => {
   try {
-    const storedSession = localStorage.getItem(SESSION_KEY);
-    if (!storedSession) return false;
-
-    const sessionData = JSON.parse(storedSession);
-    return sessionData.expires > Date.now();
+    const jwt = localStorage.getItem(JWT_KEY);
+    return !!jwt;
   } catch (error) {
-    console.error('Error checking session validity:', error);
+    console.error('Error checking JWT validity:', error);
     return false;
   }
 };
@@ -53,34 +48,33 @@ export const hasValidSession = (): boolean => {
 /**
  * Initialize Appwrite session handling
  */
-export const initializeAppwriteSession = (): void => {
+export const initializeAppwriteSession = async (): Promise<void> => {
   try {
-    if (hasValidSession()) {
-      console.log('Found valid session in localStorage');
-      reconnectClient();
-    } else {
-      console.log('No valid session found');
-      localStorage.removeItem(SESSION_KEY);
-    }
-
-    // Listen for storage changes
-    window.addEventListener('storage', (event) => {
-      if (event.key === SESSION_KEY) {
-        console.log('Session changed in localStorage, reconnecting client');
-        reconnectClient();
+    const jwt = localStorage.getItem(JWT_KEY);
+    if (jwt) {
+      console.log('Found JWT in localStorage');
+      client.setJWT(jwt);
+      
+      // Verify the session is still valid
+      try {
+        await account.get();
+        console.log('JWT is valid');
+      } catch (error) {
+        console.log('JWT is invalid, clearing session');
+        clearSession();
       }
-    });
-
-    console.log('Appwrite session handling initialized');
+    } else {
+      console.log('No JWT found');
+    }
   } catch (error) {
     console.error('Error initializing session handling:', error);
   }
 };
 
 /**
- * Clear the stored session
+ * Clear the stored JWT
  */
 export const clearSession = (): void => {
-  localStorage.removeItem(SESSION_KEY);
-  reconnectClient();
+  localStorage.removeItem(JWT_KEY);
+  client.setJWT(''); // Clear the JWT from the client
 };
