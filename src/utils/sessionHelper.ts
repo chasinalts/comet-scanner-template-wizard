@@ -1,7 +1,7 @@
-// Helper functions for managing Appwrite sessions
+// Helper functions for managing Appwrite sessions in environments with third-party cookie restrictions
 
 import { Models } from 'appwrite';
-import { account, reconnectClient } from '../appwriteConfig';
+import { account, client, reconnectClient } from '../appwriteConfig';
 
 /**
  * Ensures that the Appwrite session is properly stored in localStorage
@@ -131,5 +131,39 @@ export const hasValidSessionInLocalStorage = (): boolean => {
   } catch (error) {
     console.error('Error checking for valid session in localStorage:', error);
     return false;
+  }
+};
+
+/**
+ * Initialize the Appwrite session handling to work with third-party cookie restrictions
+ * This should be called early in the application lifecycle
+ */
+export const initializeAppwriteSession = (): void => {
+  try {
+    // Explicitly enable cookie fallback
+    client.setCookieFallback(true);
+
+    // Check if we have a session in localStorage
+    if (hasValidSessionInLocalStorage()) {
+      console.log('Found valid session in localStorage, ensuring client is using it');
+
+      // Force reconnect to ensure the client is using the localStorage session
+      reconnectClient();
+    } else {
+      console.log('No valid session found in localStorage');
+    }
+
+    // Add event listener for storage changes to handle session updates
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'cookieFallback') {
+        console.log('cookieFallback changed in localStorage, reconnecting client');
+        reconnectClient();
+      }
+    });
+
+    // Log warning about third-party cookies
+    console.log('Appwrite session initialized with localStorage fallback for third-party cookie restrictions');
+  } catch (error) {
+    console.error('Error initializing Appwrite session:', error);
   }
 };

@@ -1,8 +1,8 @@
 // Hook that manages content creation, updating, and deletion, including image uploads and size adjustments
 import { useState, useEffect, useCallback } from '../utils/react-imports';
 import type { ContentItem } from './useAdminContent';
-import { handleAppwriteImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
-import { BucketType } from '../utils/appwriteStorage';
+import { handleImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
+import { BucketType } from '../utils/supabaseImageStorage';
 import { useAuth } from '../contexts/AuthContext';
 
 export interface ContentManagerHook {
@@ -89,13 +89,13 @@ export const useContentManager = (): ContentManagerHook => {
         // Get the current user ID for the upload
         const userId = currentUser?.id || 'system';
 
-        // Use Appwrite Storage for image uploads
-        handleAppwriteImageUpload(
+        // Use Supabase Storage for image uploads
+        handleImageUpload(
           file,
           type,
           (imageUrl: string, _imagePreview: string) => {
             try {
-              console.log(`Adding ${type} content with Appwrite Storage URL`);
+              console.log(`Adding ${type} content with Supabase Storage URL`);
               const id = addContent({
                 type,
                 title,
@@ -111,8 +111,8 @@ export const useContentManager = (): ContentManagerHook => {
             }
           },
           (error: any) => {
-            console.error(`Error uploading ${type} image to Appwrite Storage:`, error);
-            reject(new Error(`Failed to upload to Appwrite Storage: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            console.error(`Error uploading ${type} image to Supabase Storage:`, error);
+            reject(new Error(`Failed to upload to Supabase Storage: ${error instanceof Error ? error.message : 'Unknown error'}`));
           },
           userId // Pass the user ID to the upload function
         );

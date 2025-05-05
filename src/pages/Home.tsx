@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabaseClient, BANNER_BUCKET } from '../supabaseConfig';
 import LazyImage from '../components/ui/LazyImage';
 import Button from '../components/ui/Button';
+import { listFiles } from '../utils/supabaseImageStorage';
 
 // Default COMET Scanner description and explanation
 const DEFAULT_COMET_EXPLANATION = `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
@@ -65,9 +66,6 @@ const Home: React.FC = () => {
       // Fetch banner images from Supabase
       console.log('Fetching banner images from Supabase...');
       try {
-        // Import the listFiles function from supabaseImageStorage
-        const { listFiles } = await import('../utils/supabaseImageStorage');
-
         // Get banner images filtered by image_type
         const bannerFiles = await listFiles('banner');
         console.log('Banner data from Supabase (filtered):', bannerFiles);
@@ -92,9 +90,6 @@ const Home: React.FC = () => {
       // Fetch gallery images from Supabase
       console.log('Fetching gallery images from Supabase...');
       try {
-        // Import the listFiles function from supabaseImageStorage
-        const { listFiles } = await import('../utils/supabaseImageStorage');
-
         // Get gallery images filtered by image_type
         const galleryFiles = await listFiles('gallery');
         console.log('Gallery data from Supabase (filtered):', galleryFiles);

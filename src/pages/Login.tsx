@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import HolographicText from '../components/ui/HolographicText';
+import CookieWarning from '../components/ui/CookieWarning';
 import { account } from '../appwriteConfig';
 
 const containerVariants = {
@@ -174,6 +175,9 @@ const Login = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        {/* Cookie warning for third-party cookie restrictions */}
+        <CookieWarning className="mb-4" />
+
         <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10 futuristic-container holo-glow">
           {error && (
             <motion.div

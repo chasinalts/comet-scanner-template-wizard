@@ -4,7 +4,18 @@ import { Client, Account, Databases, Storage, Functions, Avatars } from 'appwrit
 // Initialize Appwrite client
 export const client = new Client()
     .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
-    .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID || '');
+    .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID || '')
+    .setSelfSigned(true) // Enable self-signed certificates
+    .setLocale('en-US'); // Set locale
+
+// Configure the client to use localStorage for cookies
+// This helps with third-party cookie restrictions in modern browsers
+try {
+    client.setCookieFallback(true);
+    console.log('Appwrite cookie fallback enabled');
+} catch (error) {
+    console.error('Failed to set cookie fallback:', error);
+}
 
 // Initialize Appwrite services
 export const account = new Account(client);

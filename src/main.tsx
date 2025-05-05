@@ -9,6 +9,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import analytics from './utils/analytics';
 import { initializeStorage } from './appwriteConfig.ts';
 import loggingService from './utils/loggingService';
+import { initializeAppwriteSession } from './utils/sessionHelper';
 
 // Appwrite handles authentication now
 
@@ -35,6 +36,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 
 // Initialize performance analytics only in browser environment
 if (typeof window !== 'undefined') {
+  // Initialize Appwrite session handling for third-party cookie restrictions
+  // This needs to be done before any other Appwrite operations
+  initializeAppwriteSession();
+  console.log('Appwrite session handler initialized');
+
+  // Initialize analytics
   analytics.init();
 
   // Initialize logging service

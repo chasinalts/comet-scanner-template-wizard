@@ -170,7 +170,7 @@ export default function AdminDashboard() {
       // Process the image in a non-blocking way
       (async () => {
         try {
-          // Upload to Appwrite Storage
+          // Upload to Supabase Storage
           const result = await uploadImage(file, 'gallery', 'Option Image');
           const imageUrl = result;
 
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
           setUploadingImage(null);
         } catch (error) {
           console.error('Failed to upload option image:', error);
-          showToast('error', 'Failed to upload image to Appwrite Storage.');
+          showToast('error', 'Failed to upload image to Supabase Storage.');
           setUploadingImage(null);
 
           // Clean up the preview URL
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
           setUploadingImage(null);
         })
         .catch(error => {
-          showToast('error', `Failed to upload ${title.toLowerCase()} to Appwrite Storage.`);
+          showToast('error', `Failed to upload ${title.toLowerCase()} to Supabase Storage.`);
           console.error(`Error uploading ${title.toLowerCase()}:`, error);
           setUploadingImage(null);
         });

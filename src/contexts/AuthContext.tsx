@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
 import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig.ts';
 import { ID, Models, Query } from 'appwrite';
-import { ensureSessionInLocalStorage } from '../utils/sessionHelper';
+import { ensureSessionInLocalStorage, hasValidSessionInLocalStorage } from '../utils/sessionHelper';
 
 // User profile data structure
 export interface UserProfile {
@@ -53,7 +53,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check for an existing session
     const checkSession = async () => {
       try {
-        const currentSession = await account.getSession('current');
+        // First, ensure we're using the localStorage cookie fallback
+        client.setCookieFallback(true);
+
+        let currentSession;
+        try {
+          // Try to get the current session
+          currentSession = await account.getSession('current');
+          console.log('Successfully retrieved session from Appwrite');
+        } catch (sessionError) {
+          console.log('Failed to get session directly, checking localStorage:', sessionError);
+          // If we can't get the session directly, check localStorage
+          if (hasValidSessionInLocalStorage()) {
+            console.log('Found valid session in localStorage, reconnecting client');
+            reconnectClient();
+            // Try again after reconnecting
+            try {
+              currentSession = await account.getSession('current');
+              console.log('Successfully retrieved session after reconnect');
+            } catch (retryError) {
+              console.error('Still failed to get session after reconnect:', retryError);
+              throw retryError;
+            }
+          } else {
+            console.log('No valid session found in localStorage');
+            throw sessionError;
+          }
+        }
 
         // Ensure the session is properly stored in localStorage
         const sessionStored = await ensureSessionInLocalStorage(currentSession);
