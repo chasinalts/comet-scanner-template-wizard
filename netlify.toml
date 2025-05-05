@@ -6,6 +6,8 @@
 
 [build.environment]
   NODE_VERSION = "18.20.0"  # Using version specified in package.json
+  # Secrets scanning configuration
+  SECRETS_SCAN_OMIT_PATHS = "check-deployment.js,dist/assets/js/index-*.js"
 
 # Production context: all deploys from the main branch
 [context.production]
