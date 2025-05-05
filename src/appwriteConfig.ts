@@ -6,9 +6,9 @@ export const client = new Client()
     .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
     .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID || '');
 
-// Configure the client to use localStorage for cookies
-// This helps with third-party cookie restrictions in modern browsers
-// Removed call to setCookieFallback as it caused errors with Appwrite SDK v17.0.2
+// Note: Configuration for cookie fallback (like setCookieFallback) was removed
+// due to errors with Appwrite SDK v17.0.2 and potential browser compatibility issues.
+// Relying on default SDK behavior or localStorage if applicable.
 
 // Initialize Appwrite services
 export const account = new Account(client);
