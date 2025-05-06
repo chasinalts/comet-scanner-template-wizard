@@ -57,11 +57,11 @@ export const uploadFile = async (
       quality: 0.85,
       maxSizeInMB: 1
     });
-    
+
     const bucketId = getBucketId(bucketType);
     const filePath = generateFilePath(file.name, bucketType);
     const id = fileId || ID.unique();
-    
+
     // Upload the file to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabaseClient
       .storage
@@ -70,15 +70,15 @@ export const uploadFile = async (
         cacheControl: '3600',
         upsert: false
       });
-    
+
     if (uploadError) throw uploadError;
-    
+
     // Get the public URL
     const { data: { publicUrl } } = supabaseClient
       .storage
       .from(bucketId)
       .getPublicUrl(filePath);
-    
+
     // Store metadata in the images table
     const imageData = {
       id,
@@ -95,9 +95,9 @@ export const uploadFile = async (
         compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%'
       }
     };
-    
+
     await databaseService.create(IMAGES_TABLE, imageData, id);
-    
+
     return {
       $id: id,
       bucketId,
@@ -119,13 +119,23 @@ export const uploadFile = async (
  * @returns The public URL of the file
  */
 export const getFileUrl = (filePath: string, bucketType: BucketType): string => {
-  const bucketId = getBucketId(bucketType);
-  const { data: { publicUrl } } = supabaseClient
-    .storage
-    .from(bucketId)
-    .getPublicUrl(filePath);
-  
-  return publicUrl;
+  try {
+    if (!filePath) {
+      console.warn('Empty file path provided to getFileUrl');
+      return '';
+    }
+
+    const bucketId = getBucketId(bucketType);
+    const { data: { publicUrl } } = supabaseClient
+      .storage
+      .from(bucketId)
+      .getPublicUrl(filePath);
+
+    return publicUrl || '';
+  } catch (error) {
+    console.error(`Error getting file URL for ${filePath} in ${bucketType} bucket:`, error);
+    return '';
+  }
 };
 
 /**
@@ -141,7 +151,7 @@ export const getFilePreview = async (fileId: string, bucketType: BucketType): Pr
     if (!fileMetadata) {
       throw new Error(`File with ID ${fileId} not found`);
     }
-    
+
     // Get the public URL using the file path
     return getFileUrl(fileMetadata.file_path, bucketType);
   } catch (error) {
@@ -172,13 +182,18 @@ export const getFileMetadata = async (fileId: string): Promise<any> => {
 export const listFiles = async (bucketType: BucketType): Promise<any[]> => {
   try {
     const bucketId = getBucketId(bucketType);
-    
+
     // Get metadata from the images table
     const files = await databaseService.list(IMAGES_TABLE, [
       { key: 'image_type', value: bucketType }
     ]);
-    
+
     // Add public URLs to the files
+    if (!files || !Array.isArray(files)) {
+      console.warn(`No files found in ${bucketType} bucket or invalid response`);
+      return [];
+    }
+
     return files.map(file => ({
       ...file,
       $id: file.id, // Add $id for compatibility with Appwrite
@@ -199,25 +214,25 @@ export const deleteFile = async (fileId: string): Promise<boolean> => {
   try {
     // Get file metadata
     const fileMetadata = await databaseService.get(IMAGES_TABLE, fileId);
-    
+
     if (!fileMetadata) {
       throw new Error(`File with ID ${fileId} not found`);
     }
-    
+
     const bucketId = fileMetadata.bucket_id;
     const filePath = fileMetadata.file_path;
-    
+
     // Delete the file from storage
     const { error: deleteError } = await supabaseClient
       .storage
       .from(bucketId)
       .remove([filePath]);
-    
+
     if (deleteError) throw deleteError;
-    
+
     // Delete the metadata
     await databaseService.delete(IMAGES_TABLE, fileId);
-    
+
     return true;
   } catch (error) {
     console.error('Error deleting file:', error);
