@@ -119,6 +119,20 @@ const mockUserProfiles = [
 
 // Define handlers
 export const handlers = [
+  // Appwrite API handlers
+  http.get('https://cloud.appwrite.io/v1/databases/*/collections/*/documents', () => {
+    return HttpResponse.json({
+      documents: [],
+      total: 0
+    });
+  }),
+
+  http.get('https://cloud.appwrite.io/v1/storage/buckets/*/files', () => {
+    return HttpResponse.json({
+      files: [],
+      total: 0
+    });
+  }),
   // Handler for listing images by type
   http.get('/api/images', ({ request }) => {
     const url = new URL(request.url);

@@ -2,8 +2,16 @@ import { vi } from 'vitest';
 import React from 'react';
 
 // Mock URL methods
-global.URL.createObjectURL = vi.fn().mockReturnValue('blob:test-url');
-global.URL.revokeObjectURL = vi.fn();
+if (!global.URL.createObjectURL) {
+  Object.defineProperty(global.URL, 'createObjectURL', {
+    value: vi.fn().mockReturnValue('blob:test-url')
+  });
+}
+if (!global.URL.revokeObjectURL) {
+  Object.defineProperty(global.URL, 'revokeObjectURL', {
+    value: vi.fn()
+  });
+}
 
 // Mock canvas and context
 const mockContext = {
@@ -315,15 +323,15 @@ vi.mock('./components/ui/HolographicText', () => ({
 vi.mock('./components/ui/LazyImage', () => ({
   default: ({ src, alt, className, onClick, scale, gallerySize }) => {
     const containerProps = { 'data-testid': 'lazy-image-container' };
-    const imgProps = { 
-      'data-testid': 'lazy-image', 
-      src, 
-      alt, 
-      className, 
-      onClick, 
+    const imgProps = {
+      'data-testid': 'lazy-image',
+      src,
+      alt,
+      className,
+      onClick,
       style: { transform: scale ? `scale(${scale})` : undefined }
     };
-    
+
     return React.createElement('div', containerProps, [
       React.createElement('img', imgProps),
       gallerySize && React.createElement('div', { 'data-testid': 'gallery-controls' })
@@ -333,6 +341,6 @@ vi.mock('./components/ui/LazyImage', () => ({
 
 // Mock Button component
 vi.mock('./components/ui/Button', () => ({
-  default: ({ children, onClick, disabled }) => 
+  default: ({ children, onClick, disabled }) =>
     React.createElement('button', { 'data-testid': 'button', onClick, disabled }, children),
 }));
