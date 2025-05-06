@@ -1,46 +1,19 @@
 // Setup file for Vitest tests
+import { vi, beforeAll, afterEach, afterAll } from 'vitest';
+import { server } from './mocks/server';
+import '@testing-library/jest-dom';
+
+// Establish API mocking before all tests
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+
+// Reset any request handlers that we may add during the tests,
+// so they don't affect other tests
+afterEach(() => server.resetHandlers());
+
+// Clean up after the tests are finished
+afterAll(() => server.close());
 
 // Mock the import.meta.env values
-import { vi } from 'vitest';
-
-// Mock modules
-vi.mock('@supabase/supabase-js');
-vi.mock('src/supabaseConfig.ts');
-vi.mock('src/appwriteConfig.ts');
-vi.mock('framer-motion');
-
-// Mock database and storage services
-const mockDatabaseService = {
-  createDocument: vi.fn().mockResolvedValue({ id: 'test-id' }),
-  updateDocument: vi.fn().mockResolvedValue({ id: 'test-id' }),
-  deleteDocument: vi.fn().mockResolvedValue(true),
-  getDocument: vi.fn().mockResolvedValue({ id: 'test-id' }),
-  list: vi.fn().mockResolvedValue([{ id: 'test-id' }]),
-  query: vi.fn().mockResolvedValue([{ id: 'test-id' }]),
-};
-
-const mockSupabaseImageStorage = {
-  uploadImage: vi.fn().mockResolvedValue({ id: 'test-id', url: 'https://example.com/test.jpg' }),
-  getImageUrl: vi.fn().mockReturnValue('https://example.com/test.jpg'),
-  listFiles: vi.fn().mockResolvedValue([{ id: 'test-id', url: 'https://example.com/test.jpg' }]),
-  deleteImage: vi.fn().mockResolvedValue(true),
-  IMAGES_BUCKET_ID: 'banner',
-  BANNER_BUCKET_ID: 'banner',
-};
-
-const mockAppwriteStorage = {
-  uploadFile: vi.fn().mockResolvedValue({ $id: 'test-id' }),
-  getFilePreview: vi.fn().mockReturnValue('https://example.com/test.jpg'),
-  getFileDownload: vi.fn().mockReturnValue('https://example.com/test.jpg'),
-  listFiles: vi.fn().mockResolvedValue({ files: [{ $id: 'test-id' }], total: 1 }),
-  deleteFile: vi.fn().mockResolvedValue(true),
-};
-
-vi.mock('src/utils/databaseService.ts', () => mockDatabaseService);
-vi.mock('src/utils/supabaseImageStorage.ts', () => mockSupabaseImageStorage);
-vi.mock('src/utils/appwriteStorage.ts', () => mockAppwriteStorage);
-
-// Mock environment variables
 vi.stubGlobal('import.meta', {
   env: {
     VITE_APPWRITE_ENDPOINT: 'https://cloud.appwrite.io/v1',
@@ -50,54 +23,12 @@ vi.stubGlobal('import.meta', {
     VITE_SUPABASE_ANON_KEY: 'test-anon-key',
     VITE_APPWRITE_IMAGES_BUCKET_ID: 'banner',
     VITE_APPWRITE_BANNER_BUCKET_ID: 'banner',
-    VITE_APPWRITE_GALLERY_BUCKET_ID: 'banner',
-    VITE_APPWRITE_SCANNER_BUCKET_ID: 'banner',
+    VITE_APPWRITE_GALLERY_BUCKET_ID: 'gallery',
+    VITE_APPWRITE_SCANNER_BUCKET_ID: 'scanner',
+    VITE_SUPABASE_BANNER_BUCKET: 'banner',
+    VITE_SUPABASE_GALLERY_BUCKET: 'gallery',
+    VITE_SUPABASE_SCANNER_BUCKET: 'scanner',
     MODE: 'test',
     DEV: true,
   },
-});
-
-// Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
-
-// Mock IntersectionObserver
-class MockIntersectionObserver {
-  constructor(callback) {
-    this.callback = callback;
-  }
-  observe = vi.fn();
-  unobserve = vi.fn();
-  disconnect = vi.fn();
-}
-
-Object.defineProperty(window, 'IntersectionObserver', {
-  writable: true,
-  value: MockIntersectionObserver,
-});
-
-// Mock ResizeObserver
-class MockResizeObserver {
-  constructor(callback) {
-    this.callback = callback;
-  }
-  observe = vi.fn();
-  unobserve = vi.fn();
-  disconnect = vi.fn();
-}
-
-Object.defineProperty(window, 'ResizeObserver', {
-  writable: true,
-  value: MockResizeObserver,
 });
