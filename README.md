@@ -21,8 +21,9 @@ A comprehensive setup wizard for scanner configuration built with React, TypeScr
 
 ## 📋 Prerequisites
 
-- Node.js (v22+)
+- Node.js (v22+ for development, v18.x for Netlify deployment)
 - npm (v10+)
+- Netlify CLI (for deployment)
 
 ## 🔧 Installation
 
@@ -63,19 +64,25 @@ The application is configured for easy deployment to Netlify. When changes are p
 
 #### Manual Netlify Deployment
 
-1. Build the application:
+1. Use the simplified deployment script (recommended):
    ```bash
+   npm run deploy
+   ```
+   This script automatically:
+   - Switches to Node.js v18 (required by Netlify)
+   - Runs deployment checks
+   - Deploys to Netlify
+
+2. Alternatively, you can deploy manually:
+   ```bash
+   # Build the application
    npm run build
-   ```
 
-2. Test the Netlify deployment locally:
-   ```bash
-   npm run test:netlify
-   ```
+   # Check deployment readiness
+   npm run netlify:check
 
-3. Deploy to Netlify using the Netlify CLI:
-   ```bash
-   npx netlify deploy --prod
+   # Deploy to Netlify
+   npm run netlify:deploy
    ```
 
 ### GitHub Pages Deployment
@@ -234,16 +241,30 @@ If you encounter TypeScript errors during the build process, you can:
 
 If you encounter issues with Netlify deployment:
 
-1. Check the Netlify build logs for errors
-2. Ensure the base directory is correctly set in netlify.toml
-3. Run the local Netlify deployment test:
+1. **Node.js Version**: Ensure you're using Node.js v18.x for deployment (Netlify requirement)
    ```bash
-   npm run test:netlify
+   # Use the automated deployment script which handles Node.js version
+   npm run deploy
    ```
-4. Try using the direct Vite build script:
+
+2. **Check Deployment Readiness**:
    ```bash
-   npm run vite:build
+   npm run netlify:check
    ```
+   This will verify that all requirements for deployment are met.
+
+3. **Environment Variables**: Ensure all required environment variables are set in Netlify
+   ```bash
+   # Set up environment variables from your .env file
+   npm run netlify:setup-env
+   ```
+
+4. **Build Issues**: Check the Netlify build logs for errors
+   - Ensure the base directory is correctly set in netlify.toml
+   - Try using the clean build script:
+     ```bash
+     npm run netlify:clean-build
+     ```
 
 ## 📝 License
 
