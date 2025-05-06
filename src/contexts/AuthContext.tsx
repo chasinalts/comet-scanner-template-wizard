@@ -1,11 +1,11 @@
 // Authentication context that manages user authentication state, login/logout functionality, and user profiles
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
-import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID } from '../appwriteConfig.ts';
-import { ID, Models, Query } from 'appwrite';
+import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID, ID, type Models } from '../appwriteConfig.ts';
 import { storeSession, hasValidSession } from '../utils/sessionHelper';
+import { UserProfile as DbUserProfile } from '../utils/appwriteDatabase';
 
-// User profile data structure
-export interface UserProfile {
+// Extended user profile with additional UI-specific fields
+export interface UserProfile extends Omit<DbUserProfile, 'permissions'> {
   id: string;
   email: string;
   username?: string;
@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         if (hasValidSession()) {
           console.log('Found valid JWT in localStorage');
-          
+
           try {
             // Verify session and get user data
             const userData = await account.get();
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             // Get user profile from database
             try {
-              const profile = await databases.getDocument(
+              const profile = await databases.getDocument<DbUserProfile>(
                 DATABASE_ID,
                 USER_PROFILES_COLLECTION_ID,
                 userData.$id
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               }
 
               // Set the role based on permissions
-              const profileWithRole = {
+              const profileWithRole: UserProfile = {
                 ...profile,
                 id: profile.$id,
                 permissions,
@@ -88,36 +88,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setCurrentUser(profileWithRole);
             } catch (profileError) {
               console.error('Error getting user profile:', profileError);
-              
+
               // If profile doesn't exist, create a default one
               const isOwnerFromMetadata = userData.prefs?.is_owner === true ||
                                         userData.prefs?.is_owner === 'true';
 
-              const newProfile = {
+              const defaultPermissions = isOwnerFromMetadata ? {
+                content_management: true,
+                user_management: true,
+                system_configuration: true,
+                media_uploads: true,
+                security_settings: true,
+                site_customization: true,
+              } : {
+                content_management: false,
+                user_management: false,
+                system_configuration: false,
+                media_uploads: false,
+                security_settings: false,
+                site_customization: false,
+              };
+
+              const newProfile: UserProfile = {
                 id: userData.$id,
+                $id: userData.$id,
+                $createdAt: userData.$createdAt,
+                $updatedAt: userData.$updatedAt,
                 email: userData.email,
                 is_owner: isOwnerFromMetadata || false,
                 created_at: new Date().toISOString(),
-                permissions: isOwnerFromMetadata ? {
-                  content_management: true,
-                  user_management: true,
-                  system_configuration: true,
-                  media_uploads: true,
-                  security_settings: true,
-                  site_customization: true,
-                } : {
-                  content_management: false,
-                  user_management: false,
-                  system_configuration: false,
-                  media_uploads: false,
-                  security_settings: false,
-                  site_customization: false,
-                }
+                permissions: defaultPermissions
               };
 
               // Create the profile in the database
               try {
-                const createdProfile = await databases.createDocument(
+                await databases.createDocument<DbUserProfile>(
                   DATABASE_ID,
                   USER_PROFILES_COLLECTION_ID,
                   userData.$id,
@@ -125,14 +130,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     email: newProfile.email,
                     is_owner: newProfile.is_owner,
                     created_at: newProfile.created_at,
-                    permissions: JSON.stringify(newProfile.permissions)
+                    permissions: JSON.stringify(defaultPermissions)
                   }
                 );
 
-                const profileWithRole = {
+                const profileWithRole: UserProfile = {
                   ...newProfile,
                   role: newProfile.is_owner ? 'owner' :
-                        (newProfile.permissions?.user_management ? 'admin' : 'user')
+                        (defaultPermissions?.user_management ? 'admin' : 'user')
                 };
 
                 setCurrentUser(profileWithRole);
@@ -145,9 +150,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(null);
             setCurrentUser(null);
           }
+        } else {
+          console.log('No valid JWT found in localStorage');
+          setSession(null);
+          setCurrentUser(null);
         }
       } catch (error) {
-        console.log('No active session found');
+        console.error('Error checking session:', error);
         setSession(null);
         setCurrentUser(null);
       } finally {
@@ -158,11 +167,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     checkSession();
 
-    // Set up event listener for account changes
+    // Set up event listener for account changes using the latest Appwrite SDK
     const unsubscribe = client.subscribe('account', (response) => {
-      if (response.events.includes('user.update') ||
-          response.events.includes('session.create') ||
-          response.events.includes('session.delete')) {
+      if (response.events.includes('users.update') ||
+          response.events.includes('sessions.create') ||
+          response.events.includes('sessions.delete')) {
         checkSession();
       }
     });
@@ -192,14 +201,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Get user profile from database
       try {
-        const profile = await databases.getDocument(
+        const profile = await databases.getDocument<DbUserProfile>(
           DATABASE_ID,
           USER_PROFILES_COLLECTION_ID,
           userData.$id
         );
 
         // Parse permissions from string to object
-        let permissions;
+        let permissions: UserProfile['permissions'] | null = null;
         try {
           permissions = profile.permissions ? JSON.parse(profile.permissions) : null;
         } catch (e) {
@@ -208,7 +217,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         // Set the role based on permissions
-        const profileWithRole = {
+        const profileWithRole: UserProfile = {
           ...profile,
           id: profile.$id,
           permissions,
@@ -225,31 +234,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const isOwnerFromMetadata = userData.prefs?.is_owner === true ||
                                   userData.prefs?.is_owner === 'true';
 
-        const newProfile = {
+        const defaultPermissions: UserProfile['permissions'] = isOwnerFromMetadata ? {
+          content_management: true,
+          user_management: true,
+          system_configuration: true,
+          media_uploads: true,
+          security_settings: true,
+          site_customization: true,
+        } : {
+          content_management: false,
+          user_management: false,
+          system_configuration: false,
+          media_uploads: false,
+          security_settings: false,
+          site_customization: false,
+        };
+
+        const newProfile: UserProfile = {
           id: userData.$id,
+          $id: userData.$id,
+          $createdAt: userData.$createdAt,
+          $updatedAt: userData.$updatedAt,
           email: userData.email,
           is_owner: isOwnerFromMetadata || false,
           created_at: new Date().toISOString(),
-          permissions: isOwnerFromMetadata ? {
-            content_management: true,
-            user_management: true,
-            system_configuration: true,
-            media_uploads: true,
-            security_settings: true,
-            site_customization: true,
-          } : {
-            content_management: false,
-            user_management: false,
-            system_configuration: false,
-            media_uploads: false,
-            security_settings: false,
-            site_customization: false,
-          }
+          permissions: defaultPermissions
         };
 
         // Create the profile in the database
         try {
-          await databases.createDocument(
+          await databases.createDocument<DbUserProfile>(
             DATABASE_ID,
             USER_PROFILES_COLLECTION_ID,
             userData.$id,
@@ -257,14 +271,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               email: newProfile.email,
               is_owner: newProfile.is_owner,
               created_at: newProfile.created_at,
-              permissions: JSON.stringify(newProfile.permissions)
+              permissions: JSON.stringify(defaultPermissions)
             }
           );
 
-          const profileWithRole = {
+          const profileWithRole: UserProfile = {
             ...newProfile,
             role: newProfile.is_owner ? 'owner' :
-                  (newProfile.permissions?.user_management ? 'admin' : 'user')
+                  (defaultPermissions?.user_management ? 'admin' : 'user')
           };
 
           setCurrentUser(profileWithRole);
@@ -296,31 +310,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email
       );
 
+      // Define default permissions based on user role
+      const defaultPermissions: UserProfile['permissions'] = isOwner ? {
+        content_management: true,
+        user_management: true,
+        system_configuration: true,
+        media_uploads: true,
+        security_settings: true,
+        site_customization: true,
+      } : {
+        content_management: false,
+        user_management: false,
+        system_configuration: false,
+        media_uploads: false,
+        security_settings: false,
+        site_customization: false,
+      };
+
       // Set user preferences
       await account.updatePrefs({
         is_owner: isOwner,
-        permissions: isOwner ? {
-          content_management: true,
-          user_management: true,
-          system_configuration: true,
-          media_uploads: true,
-          security_settings: true,
-          site_customization: true,
-        } : {
-          content_management: false,
-          user_management: false,
-          system_configuration: false,
-          media_uploads: false,
-          security_settings: false,
-          site_customization: false,
-        }
+        permissions: defaultPermissions
       });
 
       // Sign in the user
-      await account.createEmailPasswordSession(email, password);
+      const session = await account.createEmailPasswordSession(email, password);
+
+      // Store the JWT in localStorage
+      await storeSession(session);
+
+      // Update the session state
+      setSession(session);
 
       // Create user profile in database
-      await databases.createDocument(
+      await databases.createDocument<DbUserProfile>(
         DATABASE_ID,
         USER_PROFILES_COLLECTION_ID,
         userData.$id,
@@ -328,44 +351,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: email,
           is_owner: isOwner,
           created_at: new Date().toISOString(),
-          permissions: JSON.stringify(isOwner ? {
-            content_management: true,
-            user_management: true,
-            system_configuration: true,
-            media_uploads: true,
-            security_settings: true,
-            site_customization: true,
-          } : {
-            content_management: false,
-            user_management: false,
-            system_configuration: false,
-            media_uploads: false,
-            security_settings: false,
-            site_customization: false,
-          })
+          permissions: JSON.stringify(defaultPermissions)
         }
       );
+
+      // Set the current user
+      const newProfile: UserProfile = {
+        id: userData.$id,
+        $id: userData.$id,
+        $createdAt: userData.$createdAt,
+        $updatedAt: userData.$updatedAt,
+        email: userData.email,
+        is_owner: isOwner,
+        created_at: new Date().toISOString(),
+        permissions: defaultPermissions,
+        role: isOwner ? 'owner' :
+              (defaultPermissions.user_management ? 'admin' : 'user')
+      };
+
+      setCurrentUser(newProfile);
     } catch (error) {
       console.error('Error signing up:', error);
       throw error;
     }
   };
 
+  /**
+   * Log out the current user
+   * Deletes the current session and clears the user state
+   */
   const logout = async (): Promise<void> => {
     try {
+      // Delete the current session
       await account.deleteSession('current');
+
+      // Clear the session from localStorage
+      localStorage.removeItem('appwrite_session');
+
+      // Clear the user state
+      setSession(null);
+      setCurrentUser(null);
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
     }
   };
 
+  /**
+   * Send a password reset email
+   * @param email The email address to send the reset link to
+   */
   const sendPasswordResetEmail = async (email: string): Promise<void> => {
     try {
+      // Get the reset password URL from environment variables or use the current origin
       const resetPasswordUrl = import.meta.env.VITE_RESET_PASSWORD_URL ||
                              `${import.meta.env.VITE_APP_URL || window.location.origin}/reset-password`;
 
       console.log('Using reset password URL:', resetPasswordUrl);
+
+      // Create a recovery token and send the email
       await account.createRecovery(email, resetPasswordUrl);
     } catch (error) {
       console.error('Error sending password reset:', error);
