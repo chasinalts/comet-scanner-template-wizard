@@ -10,7 +10,13 @@ export const handleLocalImageUpload = (
   file: File,
   onSuccess: (imageUrl: string, imagePreview: string) => void
 ) => {
-  const imagePreview = URL.createObjectURL(file);
+  let imagePreview = '';
+  try {
+    imagePreview = URL.createObjectURL(file);
+  } catch (urlError) {
+    console.warn('Failed to create object URL, using fallback:', urlError);
+    imagePreview = 'data:image/jpeg;base64,placeholder';
+  }
   const reader = new FileReader();
 
   reader.onloadend = () => {
@@ -39,7 +45,13 @@ export const handleSupabaseImageUpload = (
 ) => {
   try {
     // Create a temporary preview URL for immediate display
-    const imagePreview = URL.createObjectURL(file);
+    let imagePreview = '';
+    try {
+      imagePreview = URL.createObjectURL(file);
+    } catch (urlError) {
+      console.warn('Failed to create object URL, using fallback:', urlError);
+      imagePreview = 'data:image/jpeg;base64,placeholder';
+    }
 
     // Process the image in a non-blocking way
     (async () => {
@@ -120,7 +132,13 @@ export const handleAppwriteImageUpload = (
 ) => {
   try {
     // Create a temporary preview URL for immediate display
-    const imagePreview = URL.createObjectURL(file);
+    let imagePreview = '';
+    try {
+      imagePreview = URL.createObjectURL(file);
+    } catch (urlError) {
+      console.warn('Failed to create object URL, using fallback:', urlError);
+      imagePreview = 'data:image/jpeg;base64,placeholder';
+    }
 
     // Process the image in a non-blocking way
     (async () => {
@@ -228,7 +246,11 @@ export const cleanupImageUrl = async (
   provider: 'appwrite' | 'supabase' = 'appwrite'
 ) => {
   if (url.startsWith('blob:')) {
-    URL.revokeObjectURL(url);
+    try {
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.warn('Failed to revoke object URL:', error);
+    }
   } else if (isCloudUrl && bucketType) {
     try {
       if (provider === 'appwrite') {
@@ -256,7 +278,13 @@ export const resizeImage = (
 ): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.src = URL.createObjectURL(file);
+    try {
+      image.src = URL.createObjectURL(file);
+    } catch (urlError) {
+      console.warn('Failed to create object URL for resizing, returning original file:', urlError);
+      resolve(file);
+      return;
+    }
 
     image.onload = () => {
       let width = image.width;

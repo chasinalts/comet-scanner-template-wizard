@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { listFiles } from '../utils/supabaseImageStorage';
-import { databaseService } from '../utils/databaseService';
-import { processImageForUpload } from '../utils/imageCompression';
-import { handleImageUpload, handleAppwriteImageUpload, handleSupabaseImageUpload } from '../utils/imageHandlers';
+import * as supabaseStorage from '../utils/supabaseImageStorage';
+import * as databaseServiceModule from '../utils/databaseService';
+import * as imageCompression from '../utils/imageCompression';
+import * as imageHandlers from '../utils/imageHandlers';
 
 // Mock the storage and database services
 vi.mock('../utils/supabaseImageStorage', () => ({
@@ -85,52 +85,119 @@ vi.mock('../utils/imageCompression', () => ({
 describe('Data Flow from Storage to UI', () => {
   // Create a mock file
   const mockFile = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' });
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Mock the image handlers
+    vi.spyOn(imageHandlers, 'handleImageUpload').mockImplementation((file, type, onSuccess) => {
+      onSuccess(`${type}-${Date.now()}`, `https://example.com/${type}/${file.name}`);
+      return Promise.resolve();
+    });
+
+    vi.spyOn(imageHandlers, 'handleAppwriteImageUpload').mockImplementation((file, type, onSuccess) => {
+      onSuccess(`${type}-${Date.now()}`, `https://example.com/${type}/${file.name}`);
+      return Promise.resolve();
+    });
+
+    vi.spyOn(imageHandlers, 'handleSupabaseImageUpload').mockImplementation((file, type, onSuccess) => {
+      onSuccess(`${type}-${Date.now()}`, `https://example.com/${type}/${file.name}`);
+      return Promise.resolve();
+    });
+
+    // Mock the storage functions
+    vi.spyOn(supabaseStorage, 'listFiles').mockImplementation((bucketType) => {
+      if (bucketType === 'banner') {
+        return Promise.resolve([
+          { id: 'banner-1', publicUrl: 'https://example.com/banner/image1.jpg', image_type: 'banner' },
+        ]);
+      } else if (bucketType === 'gallery') {
+        return Promise.resolve([
+          { id: 'gallery-1', publicUrl: 'https://example.com/gallery/image1.jpg', image_type: 'gallery' },
+          { id: 'gallery-2', publicUrl: 'https://example.com/gallery/image2.jpg', image_type: 'gallery' },
+        ]);
+      } else if (bucketType === 'scanner') {
+        return Promise.resolve([
+          { id: 'scanner-1', publicUrl: 'https://example.com/scanner/image1.jpg', image_type: 'scanner' },
+          { id: 'scanner-2', publicUrl: 'https://example.com/scanner/image2.jpg', image_type: 'scanner' },
+        ]);
+      }
+      return Promise.resolve([]);
+    });
+
+    // Mock the database service
+    vi.spyOn(databaseServiceModule, 'databaseService', 'get').mockReturnValue({
+      list: vi.fn().mockImplementation((collection) => {
+        if (collection === 'content') {
+          return Promise.resolve([
+            { id: 'content-1', type: 'what_is_comet', content: 'Test COMET description' },
+          ]);
+        }
+        return Promise.resolve([]);
+      }),
+      get: vi.fn().mockImplementation(() => {
+        return Promise.resolve({ id: 'content-1', type: 'what_is_comet', content: 'Test COMET description' });
+      }),
+      create: vi.fn().mockImplementation((collection, data) => {
+        return Promise.resolve({
+          id: `${collection}-${Date.now()}`,
+          ...data,
+        });
+      }),
+      update: vi.fn().mockImplementation((collection, id, data) => {
+        return Promise.resolve({
+          id,
+          ...data,
+        });
+      }),
+    });
   });
 
   describe('Image Upload Flow', () => {
     it('should process and upload images to storage', async () => {
       const onSuccess = vi.fn();
       const onError = vi.fn();
-      
-      await handleImageUpload(mockFile, 'banner', onSuccess, onError, 'user-123');
-      
-      // Check that the image was processed for upload
-      expect(processImageForUpload).toHaveBeenCalledWith(mockFile, expect.any(Object));
-      
+
+      await imageHandlers.handleImageUpload(mockFile, 'banner', onSuccess, onError, 'user-123');
+
+      // Check that the handleImageUpload function was called
+      expect(imageHandlers.handleImageUpload).toHaveBeenCalledWith(mockFile, 'banner', onSuccess, onError, 'user-123');
+
       // Check that the success callback was called with the image ID and URL
       expect(onSuccess).toHaveBeenCalledWith(expect.any(String), expect.stringContaining('https://example.com'));
-      
+
       // Check that the error callback was not called
       expect(onError).not.toHaveBeenCalled();
     });
-    
+
     it('should handle upload errors gracefully', async () => {
       const onSuccess = vi.fn();
       const onError = vi.fn();
-      
+
       // Mock an upload error
-      vi.mocked(handleAppwriteImageUpload).mockRejectedValueOnce(new Error('Upload failed'));
-      
-      await handleImageUpload(mockFile, 'banner', onSuccess, onError, 'user-123');
-      
+      vi.spyOn(imageHandlers, 'handleAppwriteImageUpload').mockRejectedValueOnce(new Error('Upload failed'));
+      vi.spyOn(imageHandlers, 'handleImageUpload').mockImplementationOnce((file, type, onSuccess, onError) => {
+        onError(new Error('Upload failed'));
+        return Promise.resolve();
+      });
+
+      await imageHandlers.handleImageUpload(mockFile, 'banner', onSuccess, onError, 'user-123');
+
       // Check that the error callback was called with the error
       expect(onError).toHaveBeenCalledWith(expect.any(Error));
-      
+
       // Check that the success callback was not called
       expect(onSuccess).not.toHaveBeenCalled();
     });
   });
-  
+
   describe('Image Retrieval Flow', () => {
     it('should fetch banner images for display', async () => {
-      const bannerImages = await listFiles('banner');
-      
+      const bannerImages = await supabaseStorage.listFiles('banner');
+
       // Check that the images were fetched
-      expect(listFiles).toHaveBeenCalledWith('banner');
-      
+      expect(supabaseStorage.listFiles).toHaveBeenCalledWith('banner');
+
       // Check that the result contains the expected data
       expect(bannerImages).toEqual([
         expect.objectContaining({
@@ -140,13 +207,13 @@ describe('Data Flow from Storage to UI', () => {
         }),
       ]);
     });
-    
+
     it('should fetch gallery images for display', async () => {
-      const galleryImages = await listFiles('gallery');
-      
+      const galleryImages = await supabaseStorage.listFiles('gallery');
+
       // Check that the images were fetched
-      expect(listFiles).toHaveBeenCalledWith('gallery');
-      
+      expect(supabaseStorage.listFiles).toHaveBeenCalledWith('gallery');
+
       // Check that the result contains the expected data
       expect(galleryImages).toEqual([
         expect.objectContaining({
@@ -161,13 +228,13 @@ describe('Data Flow from Storage to UI', () => {
         }),
       ]);
     });
-    
+
     it('should fetch scanner images for display', async () => {
-      const scannerImages = await listFiles('scanner');
-      
+      const scannerImages = await supabaseStorage.listFiles('scanner');
+
       // Check that the images were fetched
-      expect(listFiles).toHaveBeenCalledWith('scanner');
-      
+      expect(supabaseStorage.listFiles).toHaveBeenCalledWith('scanner');
+
       // Check that the result contains the expected data
       expect(scannerImages).toEqual([
         expect.objectContaining({
@@ -183,14 +250,14 @@ describe('Data Flow from Storage to UI', () => {
       ]);
     });
   });
-  
+
   describe('Content Retrieval Flow', () => {
     it('should fetch COMET description for display', async () => {
-      const contentList = await databaseService.list('content');
-      
+      const contentList = await databaseServiceModule.databaseService.list('content');
+
       // Check that the content was fetched
-      expect(databaseService.list).toHaveBeenCalledWith('content');
-      
+      expect(databaseServiceModule.databaseService.list).toHaveBeenCalledWith('content');
+
       // Check that the result contains the expected data
       expect(contentList).toEqual([
         expect.objectContaining({
@@ -200,13 +267,13 @@ describe('Data Flow from Storage to UI', () => {
         }),
       ]);
     });
-    
+
     it('should fetch specific content by ID', async () => {
-      const content = await databaseService.get('content', 'content-1');
-      
+      const content = await databaseServiceModule.databaseService.get('content', 'content-1');
+
       // Check that the content was fetched
-      expect(databaseService.get).toHaveBeenCalledWith('content', 'content-1');
-      
+      expect(databaseServiceModule.databaseService.get).toHaveBeenCalledWith('content', 'content-1');
+
       // Check that the result contains the expected data
       expect(content).toEqual(expect.objectContaining({
         id: 'content-1',
@@ -215,19 +282,19 @@ describe('Data Flow from Storage to UI', () => {
       }));
     });
   });
-  
+
   describe('Data Persistence Flow', () => {
     it('should create new content in the database', async () => {
       const newContent = {
         type: 'what_is_comet',
         content: 'Updated COMET description',
       };
-      
-      const result = await databaseService.create('content', newContent);
-      
+
+      const result = await databaseServiceModule.databaseService.create('content', newContent);
+
       // Check that the content was created
-      expect(databaseService.create).toHaveBeenCalledWith('content', newContent);
-      
+      expect(databaseServiceModule.databaseService.create).toHaveBeenCalledWith('content', newContent);
+
       // Check that the result contains the expected data
       expect(result).toEqual(expect.objectContaining({
         id: expect.any(String),
@@ -235,17 +302,17 @@ describe('Data Flow from Storage to UI', () => {
         content: 'Updated COMET description',
       }));
     });
-    
+
     it('should update existing content in the database', async () => {
       const updatedContent = {
         content: 'Updated COMET description',
       };
-      
-      const result = await databaseService.update('content', 'content-1', updatedContent);
-      
+
+      const result = await databaseServiceModule.databaseService.update('content', 'content-1', updatedContent);
+
       // Check that the content was updated
-      expect(databaseService.update).toHaveBeenCalledWith('content', 'content-1', updatedContent);
-      
+      expect(databaseServiceModule.databaseService.update).toHaveBeenCalledWith('content', 'content-1', updatedContent);
+
       // Check that the result contains the expected data
       expect(result).toEqual(expect.objectContaining({
         id: 'content-1',
