@@ -1,6 +1,33 @@
-// Utility functions for interacting with Appwrite database
-import { databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID, CONTENT_COLLECTION_ID, IMAGES_COLLECTION_ID } from '../appwriteConfig.ts';
-import { ID, Query } from 'appwrite';
+// Utility functions for interacting with Appwrite database using the latest SDK
+import { databases, DATABASE_ID, USER_PROFILES_COLLECTION_ID, CONTENT_COLLECTION_ID, IMAGES_COLLECTION_ID, ID, Query, type Models } from '../appwriteConfig.ts';
+
+// Define common document types
+export interface UserProfile extends Models.Document {
+  email: string;
+  is_owner: boolean;
+  created_at: string;
+  permissions: string;
+  role?: string;
+}
+
+export interface ContentItem extends Models.Document {
+  type: string;
+  title: string;
+  content: string;
+  imageUrl?: string;
+  scale?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ImageMetadata extends Models.Document {
+  name: string;
+  file_id: string;
+  bucket_id: string;
+  uploaded_by: string;
+  uploaded_at: string;
+  image_type: string;
+}
 
 /**
  * Create a document in a collection
@@ -9,14 +36,14 @@ import { ID, Query } from 'appwrite';
  * @param documentId Optional document ID (will generate a unique ID if not provided)
  * @returns The created document
  */
-export const createDocument = async (
+export const createDocument = async <T extends Models.Document>(
   collectionId: string,
-  data: any,
+  data: Omit<T, keyof Models.Document>,
   documentId?: string
-): Promise<any> => {
+): Promise<T> => {
   try {
     const id = documentId || ID.unique();
-    return await databases.createDocument(
+    return await databases.createDocument<T>(
       DATABASE_ID,
       collectionId,
       id,
@@ -34,12 +61,12 @@ export const createDocument = async (
  * @param documentId The ID of the document
  * @returns The document data
  */
-export const getDocument = async (
+export const getDocument = async <T extends Models.Document>(
   collectionId: string,
   documentId: string
-): Promise<any> => {
+): Promise<T> => {
   try {
-    return await databases.getDocument(
+    return await databases.getDocument<T>(
       DATABASE_ID,
       collectionId,
       documentId
@@ -57,13 +84,13 @@ export const getDocument = async (
  * @param data The updated document data
  * @returns The updated document
  */
-export const updateDocument = async (
+export const updateDocument = async <T extends Models.Document>(
   collectionId: string,
   documentId: string,
-  data: any
-): Promise<any> => {
+  data: Partial<Omit<T, keyof Models.Document>>
+): Promise<T> => {
   try {
-    return await databases.updateDocument(
+    return await databases.updateDocument<T>(
       DATABASE_ID,
       collectionId,
       documentId,
@@ -103,12 +130,12 @@ export const deleteDocument = async (
  * @param queries Optional query parameters
  * @returns A list of documents
  */
-export const listDocuments = async (
+export const listDocuments = async <T extends Models.Document>(
   collectionId: string,
   queries: string[] = []
-): Promise<any[]> => {
+): Promise<T[]> => {
   try {
-    const result = await databases.listDocuments(
+    const result = await databases.listDocuments<T>(
       DATABASE_ID,
       collectionId,
       queries
@@ -125,9 +152,9 @@ export const listDocuments = async (
  * @param userId The ID of the user
  * @returns The user profile
  */
-export const getUserProfile = async (userId: string): Promise<any> => {
+export const getUserProfile = async (userId: string): Promise<UserProfile> => {
   try {
-    return await getDocument(USER_PROFILES_COLLECTION_ID, userId);
+    return await getDocument<UserProfile>(USER_PROFILES_COLLECTION_ID, userId);
   } catch (error) {
     console.error('Error getting user profile:', error);
     throw error;
@@ -140,9 +167,12 @@ export const getUserProfile = async (userId: string): Promise<any> => {
  * @param data The updated profile data
  * @returns The updated profile
  */
-export const updateUserProfile = async (userId: string, data: any): Promise<any> => {
+export const updateUserProfile = async (
+  userId: string,
+  data: Partial<Omit<UserProfile, keyof Models.Document>>
+): Promise<UserProfile> => {
   try {
-    return await updateDocument(USER_PROFILES_COLLECTION_ID, userId, data);
+    return await updateDocument<UserProfile>(USER_PROFILES_COLLECTION_ID, userId, data);
   } catch (error) {
     console.error('Error updating user profile:', error);
     throw error;
@@ -154,9 +184,9 @@ export const updateUserProfile = async (userId: string, data: any): Promise<any>
  * @param contentId The ID of the content
  * @returns The content data
  */
-export const getContent = async (contentId: string): Promise<any> => {
+export const getContent = async (contentId: string): Promise<ContentItem> => {
   try {
-    return await getDocument(CONTENT_COLLECTION_ID, contentId);
+    return await getDocument<ContentItem>(CONTENT_COLLECTION_ID, contentId);
   } catch (error) {
     console.error('Error getting content:', error);
     throw error;
@@ -169,9 +199,12 @@ export const getContent = async (contentId: string): Promise<any> => {
  * @param data The updated content data
  * @returns The updated content
  */
-export const updateContent = async (contentId: string, data: any): Promise<any> => {
+export const updateContent = async (
+  contentId: string,
+  data: Partial<Omit<ContentItem, keyof Models.Document>>
+): Promise<ContentItem> => {
   try {
-    return await updateDocument(CONTENT_COLLECTION_ID, contentId, data);
+    return await updateDocument<ContentItem>(CONTENT_COLLECTION_ID, contentId, data);
   } catch (error) {
     console.error('Error updating content:', error);
     throw error;
@@ -179,28 +212,28 @@ export const updateContent = async (contentId: string, data: any): Promise<any> 
 };
 
 /**
- * Get image by ID
- * @param imageId The ID of the image
- * @returns The image data
+ * Get image metadata by ID
+ * @param imageId The ID of the image metadata
+ * @returns The image metadata
  */
-export const getImage = async (imageId: string): Promise<any> => {
+export const getImage = async (imageId: string): Promise<ImageMetadata> => {
   try {
-    return await getDocument(IMAGES_COLLECTION_ID, imageId);
+    return await getDocument<ImageMetadata>(IMAGES_COLLECTION_ID, imageId);
   } catch (error) {
-    console.error('Error getting image:', error);
+    console.error('Error getting image metadata:', error);
     throw error;
   }
 };
 
 /**
- * List all images
- * @returns A list of all images
+ * List all images metadata
+ * @returns A list of all image metadata
  */
-export const listImages = async (): Promise<any[]> => {
+export const listImages = async (): Promise<ImageMetadata[]> => {
   try {
-    return await listDocuments(IMAGES_COLLECTION_ID);
+    return await listDocuments<ImageMetadata>(IMAGES_COLLECTION_ID);
   } catch (error) {
-    console.error('Error listing images:', error);
+    console.error('Error listing image metadata:', error);
     throw error;
   }
 };

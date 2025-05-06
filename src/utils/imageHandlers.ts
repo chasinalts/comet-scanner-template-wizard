@@ -1,5 +1,6 @@
 import { processImageForUpload } from './imageCompression';
-import { uploadFile, deleteFile, BucketType } from './supabaseImageStorage';
+import { uploadFile as uploadFileToSupabase, deleteFile as deleteFileFromSupabase, BucketType as SupabaseBucketType } from './supabaseImageStorage';
+import { uploadFile as uploadFileToAppwrite, deleteFile as deleteFileFromAppwrite, BucketType as AppwriteBucketType } from './appwriteStorage';
 
 /**
  * Handles image upload using local storage (base64 encoding)
@@ -104,43 +105,139 @@ export const handleSupabaseImageUpload = (
 
 /**
  * Handles image upload using Appwrite Storage with compression
- * @deprecated Use handleSupabaseImageUpload instead
- */
-export const handleAppwriteImageUpload = handleSupabaseImageUpload;
-
-/**
- * Handles image upload using Supabase Storage with compression
  * @param file The file to upload
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  * @param onError Optional callback function to be called when upload fails
  * @param userId The ID of the user uploading the file
  */
-export const handleImageUpload = (
+export const handleAppwriteImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void,
   onError?: (error: any) => void,
   userId?: string
 ) => {
-  // Use Supabase Storage for all image uploads
-  return handleSupabaseImageUpload(file, type, onSuccess, onError, userId);
+  try {
+    // Create a temporary preview URL for immediate display
+    const imagePreview = URL.createObjectURL(file);
+
+    // Process the image in a non-blocking way
+    (async () => {
+      try {
+        // Process and compress the image if needed
+        const processedFile = await processImageForUpload(file, {
+          maxWidth: 1920,
+          maxHeight: 1080,
+          quality: 0.85,
+          maxSizeInMB: 1
+        });
+
+        // Upload to Appwrite Storage
+        // Map scanner type to gallery folder since they are the same
+        const bucketType = type === 'scanner' ? 'gallery' : type as AppwriteBucketType;
+        console.log(`Uploading ${type} image to ${bucketType} bucket in Appwrite`);
+
+        // If userId is not provided, use a default value
+        const userIdToUse = userId || 'system';
+
+        // Upload the file to Appwrite
+        const result = await uploadFileToAppwrite(processedFile, bucketType, userIdToUse);
+
+        // Get the file ID and preview URL
+        const imageUrl = result.file.$id;
+        const filePreview = result.file.url;
+
+        console.log('Image uploaded to Appwrite:', {
+          originalSize: file.size,
+          processedSize: processedFile.size,
+          compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
+          imageUrl,
+          filePreview
+        });
+
+        // Call the success callback with the image ID and preview URL
+        onSuccess(imageUrl, filePreview || imagePreview);
+
+        // Clean up the preview URL after a delay to ensure it's used
+        setTimeout(() => {
+          URL.revokeObjectURL(imagePreview);
+        }, 5000);
+      } catch (error) {
+        console.error('Error in image processing or upload:', error);
+
+        // Clean up the preview URL
+        URL.revokeObjectURL(imagePreview);
+
+        // Call the error callback if provided
+        if (onError) {
+          onError(error);
+        } else {
+          throw error;
+        }
+      }
+    })();
+  } catch (error) {
+    console.error('Error in handleAppwriteImageUpload:', error);
+    if (onError) {
+      onError(error);
+    } else {
+      throw error;
+    }
+  }
+};
+
+/**
+ * Handles image upload using the preferred storage provider (Appwrite or Supabase)
+ * @param file The file to upload
+ * @param type The type of image (banner, scanner, etc.)
+ * @param onSuccess Callback function to be called when upload is successful
+ * @param onError Optional callback function to be called when upload fails
+ * @param userId The ID of the user uploading the file
+ * @param preferredProvider Optional preferred provider ('appwrite' or 'supabase')
+ */
+export const handleImageUpload = (
+  file: File,
+  type: string,
+  onSuccess: (imageUrl: string, imagePreview: string) => void,
+  onError?: (error: any) => void,
+  userId?: string,
+  preferredProvider: 'appwrite' | 'supabase' = 'appwrite'
+) => {
+  // Use the preferred storage provider
+  if (preferredProvider === 'appwrite') {
+    console.log('Using Appwrite for image upload');
+    return handleAppwriteImageUpload(file, type, onSuccess, onError, userId);
+  } else {
+    console.log('Using Supabase for image upload');
+    return handleSupabaseImageUpload(file, type, onSuccess, onError, userId);
+  }
 };
 
 /**
  * Cleans up a URL, revoking object URLs if necessary
  * @param url The URL to clean up
  * @param isCloudUrl Whether the URL is from a cloud storage provider
- * @param bucketType Optional bucket type for Supabase storage
+ * @param bucketType Optional bucket type for storage
+ * @param provider Optional storage provider ('appwrite' or 'supabase')
  */
-export const cleanupImageUrl = async (url: string, isCloudUrl = false, bucketType?: BucketType) => {
+export const cleanupImageUrl = async (
+  url: string,
+  isCloudUrl = false,
+  bucketType?: AppwriteBucketType | SupabaseBucketType,
+  provider: 'appwrite' | 'supabase' = 'appwrite'
+) => {
   if (url.startsWith('blob:')) {
     URL.revokeObjectURL(url);
   } else if (isCloudUrl && bucketType) {
     try {
-      await deleteFile(url);
+      if (provider === 'appwrite') {
+        await deleteFileFromAppwrite(url, bucketType as AppwriteBucketType);
+      } else {
+        await deleteFileFromSupabase(url);
+      }
     } catch (error) {
-      console.error(`Error deleting file from Supabase Storage (${bucketType}):`, error);
+      console.error(`Error deleting file from ${provider} Storage (${bucketType}):`, error);
     }
   }
 };

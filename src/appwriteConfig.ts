@@ -1,14 +1,10 @@
-// Appwrite configuration file that initializes the client and services
-import { Client, Account, Databases, Storage, Functions, Avatars } from 'appwrite';
+// Appwrite configuration file that initializes the client and services using the latest SDK
+import { Client, Account, Databases, Storage, Functions, Avatars, ID, Query, Models } from 'appwrite';
 
 // Initialize Appwrite client
 export const client = new Client()
     .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
     .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID || '');
-
-// Note: Configuration for cookie fallback (like setCookieFallback) was removed
-// due to errors with Appwrite SDK v17.0.2 and potential browser compatibility issues.
-// Relying on default SDK behavior or localStorage if applicable.
 
 // Initialize Appwrite services
 export const account = new Account(client);
@@ -17,22 +13,19 @@ export const storage = new Storage(client);
 export const functions = new Functions(client);
 export const avatars = new Avatars(client);
 
-// Helper function to reconnect the client
-export const reconnectClient = async () => {
+// Export utility classes for easier access
+export { ID, Query };
+export type { Models };
+
+/**
+ * Helper function to reconnect the client and verify session
+ * @returns Promise<boolean> True if reconnection was successful
+ */
+export const reconnectClient = async (): Promise<boolean> => {
     try {
         // Store the current configuration
         const endpoint = client.config.endpoint;
         const projectId = client.config.project;
-
-        // Get stored session if available
-        const storedSession = localStorage.getItem('appwrite_session');
-        if (storedSession) {
-            const { data: session } = JSON.parse(storedSession);
-            if (session?.jwt) {
-                // Set the JWT token if available
-                client.setJWT(session.jwt);
-            }
-        }
 
         // Reinitialize the client with the same endpoint and project ID
         client.setEndpoint(endpoint);
@@ -40,12 +33,12 @@ export const reconnectClient = async () => {
 
         // Verify session is still valid
         try {
+            // Try to get the current account - this will throw if no valid session exists
             await account.get();
             console.log('Reconnected Appwrite client with valid session');
             return true;
         } catch (sessionError) {
-            console.log('Session invalid or expired, clearing stored session');
-            localStorage.removeItem('appwrite_session');
+            console.log('Session invalid or expired');
             return false;
         }
     } catch (error) {
@@ -74,27 +67,33 @@ console.log('Appwrite bucket configuration:', {
   SCANNER_BUCKET_ID
 });
 
-// Helper function to get user ID
-export const getUserId = async () => {
+/**
+ * Helper function to get the current user ID
+ * @returns Promise<string|null> User ID or null if not authenticated
+ */
+export const getUserId = async (): Promise<string | null> => {
     try {
-        const session = await account.getSession('current');
-        return session.$id;
+        // Get the current account
+        const user = await account.get();
+        return user.$id;
     } catch (error) {
         console.error('Error getting user ID:', error);
         return null;
     }
 };
 
-// Initialize storage buckets
-export const initializeStorage = async () => {
+/**
+ * Initialize and verify storage buckets
+ * @returns Promise<boolean> True if initialization was successful
+ */
+export const initializeStorage = async (): Promise<boolean> => {
     try {
         console.log('Initializing Appwrite storage...');
 
         // Check if the single bucket exists
         try {
             // Try to list files in the bucket to see if it exists
-            // Pass null for search parameter to avoid "Invalid search param" error
-            await storage.listFiles(IMAGES_BUCKET_ID, [], null);
+            await storage.listFiles(IMAGES_BUCKET_ID);
             console.log(`Bucket '${IMAGES_BUCKET_ID}' exists`);
         } catch (error) {
             console.log(`Bucket '${IMAGES_BUCKET_ID}' doesn't exist, will need to be created in Appwrite console`);

@@ -2,7 +2,8 @@
 import { useState, useEffect, useCallback } from '../utils/react-imports';
 import type { ContentItem } from './useAdminContent';
 import { handleImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
-import { BucketType } from '../utils/supabaseImageStorage';
+import { BucketType as AppwriteBucketType } from '../utils/appwriteStorage';
+import { BucketType as SupabaseBucketType } from '../utils/supabaseImageStorage';
 import { useAuth } from '../contexts/AuthContext';
 
 export interface ContentManagerHook {
@@ -74,34 +75,56 @@ export const useContentManager = (): ContentManagerHook => {
 
       // Cleanup image URL if it exists
       if (contentToDelete?.imageUrl) {
-        const isCloudUrl = contentToDelete.imageUrl.includes('appwrite.io');
-        cleanupImageUrl(contentToDelete.imageUrl, isCloudUrl);
+        const isCloudUrl = contentToDelete.imageUrl.includes('appwrite.io') ||
+                          contentToDelete.imageUrl.includes('supabase');
+
+        // Determine the storage provider and bucket type
+        const provider = contentToDelete.storageProvider ||
+                        (contentToDelete.imageUrl.includes('appwrite.io') ? 'appwrite' : 'supabase');
+
+        const bucketType = contentToDelete.type as AppwriteBucketType | SupabaseBucketType;
+
+        // Clean up the image URL
+        cleanupImageUrl(contentToDelete.imageUrl, isCloudUrl, bucketType, provider as 'appwrite' | 'supabase');
       }
 
       return prev.filter((item: ContentItem) => item.id !== id);
     });
   }, []);
 
-  const uploadImage = useCallback((file: File, type: 'banner' | 'scanner' | 'gallery', title = 'Uploaded Image'): Promise<string> => {
-    console.log(`Starting upload of ${type} image:`, { fileName: file.name, fileSize: file.size, fileType: file.type });
+  const uploadImage = useCallback((
+    file: File,
+    type: 'banner' | 'scanner' | 'gallery',
+    title = 'Uploaded Image',
+    storageProvider: 'appwrite' | 'supabase' = 'appwrite'
+  ): Promise<string> => {
+    console.log(`Starting upload of ${type} image:`, {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      storageProvider
+    });
+
     return new Promise((resolve, reject) => {
       try {
         // Get the current user ID for the upload
         const userId = currentUser?.id || 'system';
 
-        // Use Supabase Storage for image uploads
+        // Use the specified storage provider for image uploads
         handleImageUpload(
           file,
           type,
-          (imageUrl: string, _imagePreview: string) => {
+          (imageUrl: string, imagePreview: string) => {
             try {
-              console.log(`Adding ${type} content with Supabase Storage URL`);
+              console.log(`Adding ${type} content with ${storageProvider} Storage URL`);
               const id = addContent({
                 type,
                 title,
                 content: '',
                 imageUrl,
-                scale: 1
+                imagePreview,
+                scale: 1,
+                storageProvider // Store which provider was used
               });
               console.log(`${type} image added with ID:`, id);
               resolve(id);
@@ -111,10 +134,11 @@ export const useContentManager = (): ContentManagerHook => {
             }
           },
           (error: any) => {
-            console.error(`Error uploading ${type} image to Supabase Storage:`, error);
-            reject(new Error(`Failed to upload to Supabase Storage: ${error instanceof Error ? error.message : 'Unknown error'}`));
+            console.error(`Error uploading ${type} image to ${storageProvider} Storage:`, error);
+            reject(new Error(`Failed to upload to ${storageProvider} Storage: ${error instanceof Error ? error.message : 'Unknown error'}`));
           },
-          userId // Pass the user ID to the upload function
+          userId, // Pass the user ID to the upload function
+          storageProvider // Pass the storage provider to the upload function
         );
       } catch (error: any) {
         console.error(`Error setting up ${type} image upload:`, error);

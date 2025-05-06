@@ -8,6 +8,7 @@ export interface ContentItem {
   title: string;
   content: string;
   imageUrl?: string;
+  imagePreview?: string; // URL for preview image
   scale?: number;
   displayText?: string;
   isFullTemplate?: boolean;
@@ -18,11 +19,14 @@ export interface ContentItem {
   height?: number;
   aspectRatio?: string; // e.g., '16/9', '4/3', '1/1'
   displaySize?: 'small' | 'medium' | 'large' | 'custom';
+  // Storage provider information
+  storageProvider?: 'appwrite' | 'supabase';
 }
 
 export interface ImageContent {
   id: string;
   src: string;
+  preview?: string; // URL for preview image
   alt: string;
   scale?: number;
   displayText?: string;
@@ -31,6 +35,8 @@ export interface ImageContent {
   height?: number;
   aspectRatio?: string; // e.g., '16/9', '4/3', '1/1'
   displaySize?: 'small' | 'medium' | 'large' | 'custom';
+  // Storage provider information
+  storageProvider?: 'appwrite' | 'supabase';
 }
 
 export interface AdminContentHook {
@@ -92,6 +98,7 @@ export const useAdminContent = (): AdminContentHook => {
     return {
       id: banner.id,
       src: banner.imageUrl || '',
+      preview: banner.imagePreview,
       alt: banner.title,
       scale: banner.scale,
       displayText: banner.displayText,
@@ -99,7 +106,9 @@ export const useAdminContent = (): AdminContentHook => {
       width: banner.width,
       height: banner.height,
       aspectRatio: banner.aspectRatio,
-      displaySize: banner.displaySize
+      displaySize: banner.displaySize,
+      // Include storage provider
+      storageProvider: banner.storageProvider
     };
   }, [contents, filterBanners]);
 
@@ -126,6 +135,7 @@ export const useAdminContent = (): AdminContentHook => {
       items.map(item => ({
         id: item.id,
         src: item.imageUrl || '',
+        preview: item.imagePreview,
         alt: item.title,
         scale: item.scale,
         displayText: item.displayText,
@@ -133,7 +143,9 @@ export const useAdminContent = (): AdminContentHook => {
         width: item.width,
         height: item.height,
         aspectRatio: item.aspectRatio,
-        displaySize: item.displaySize
+        displaySize: item.displaySize,
+        // Include storage provider
+        storageProvider: item.storageProvider
       }))
     ),
     []
