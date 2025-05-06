@@ -149,14 +149,15 @@ export const getFilePreview = async (fileId: string, bucketType: BucketType): Pr
     // Get file metadata to find the file path
     const fileMetadata = await getFileMetadata(fileId);
     if (!fileMetadata) {
-      throw new Error(`File with ID ${fileId} not found`);
+      console.warn(`File with ID ${fileId} not found`);
+      return '';
     }
 
     // Get the public URL using the file path
     return getFileUrl(fileMetadata.file_path, bucketType);
   } catch (error) {
     console.error(`Error getting file preview from ${bucketType} bucket:`, error);
-    throw error;
+    return ''; // Return empty string instead of throwing
   }
 };
 
@@ -167,10 +168,21 @@ export const getFilePreview = async (fileId: string, bucketType: BucketType): Pr
  */
 export const getFileMetadata = async (fileId: string): Promise<any> => {
   try {
-    return await databaseService.get(IMAGES_TABLE, fileId);
+    if (!fileId) {
+      console.warn('No file ID provided to getFileMetadata');
+      return null;
+    }
+
+    const metadata = await databaseService.get(IMAGES_TABLE, fileId);
+    if (!metadata) {
+      console.warn(`No metadata found for file ID ${fileId}`);
+      return null;
+    }
+
+    return metadata;
   } catch (error) {
     console.error('Error getting file metadata:', error);
-    throw error;
+    return null; // Return null instead of throwing
   }
 };
 
@@ -212,15 +224,28 @@ export const listFiles = async (bucketType: BucketType): Promise<any[]> => {
  */
 export const deleteFile = async (fileId: string): Promise<boolean> => {
   try {
+    if (!fileId) {
+      console.warn('No file ID provided to deleteFile');
+      return false;
+    }
+
     // Get file metadata
     const fileMetadata = await databaseService.get(IMAGES_TABLE, fileId);
 
     if (!fileMetadata) {
-      throw new Error(`File with ID ${fileId} not found`);
+      console.warn(`File with ID ${fileId} not found`);
+      return false;
     }
 
-    const bucketId = fileMetadata.bucket_id;
+    const bucketId = fileMetadata.bucket_id || getBucketId(fileMetadata.image_type);
     const filePath = fileMetadata.file_path;
+
+    if (!filePath) {
+      console.warn(`No file path found for file ID ${fileId}`);
+      // Still delete the metadata
+      await databaseService.delete(IMAGES_TABLE, fileId);
+      return true;
+    }
 
     // Delete the file from storage
     const { error: deleteError } = await supabaseClient
@@ -228,7 +253,10 @@ export const deleteFile = async (fileId: string): Promise<boolean> => {
       .from(bucketId)
       .remove([filePath]);
 
-    if (deleteError) throw deleteError;
+    if (deleteError) {
+      console.error(`Error deleting file from storage: ${deleteError.message}`);
+      // Still try to delete the metadata
+    }
 
     // Delete the metadata
     await databaseService.delete(IMAGES_TABLE, fileId);
@@ -236,7 +264,7 @@ export const deleteFile = async (fileId: string): Promise<boolean> => {
     return true;
   } catch (error) {
     console.error('Error deleting file:', error);
-    throw error;
+    return false; // Return false instead of throwing
   }
 };
 
@@ -248,9 +276,26 @@ export const deleteFile = async (fileId: string): Promise<boolean> => {
  */
 export const updateFileMetadata = async (fileId: string, metadata: any): Promise<any> => {
   try {
+    if (!fileId) {
+      console.warn('No file ID provided to updateFileMetadata');
+      return null;
+    }
+
+    if (!metadata) {
+      console.warn('No metadata provided to updateFileMetadata');
+      return null;
+    }
+
+    // Check if the file exists
+    const existingFile = await databaseService.get(IMAGES_TABLE, fileId);
+    if (!existingFile) {
+      console.warn(`File with ID ${fileId} not found for metadata update`);
+      return null;
+    }
+
     return await databaseService.update(IMAGES_TABLE, fileId, metadata);
   } catch (error) {
     console.error('Error updating file metadata:', error);
-    throw error;
+    return null; // Return null instead of throwing
   }
 };

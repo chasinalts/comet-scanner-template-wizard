@@ -8,6 +8,11 @@ import { AuthContext } from '../contexts/AuthContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { ToastProvider } from '../components/ui/Toast';
 import Home from '../pages/Home';
+import { mockSupabaseClient } from './mocks/supabaseMock';
+import { mockAppwriteClient, mockAppwriteStorage, mockAppwriteDatabases } from './mocks/appwriteMock';
+
+// Import the mocks from setupTests.ts
+import '../setupTests';
 
 // Mock components that might cause issues in tests
 vi.mock('../components/ui/LazyImage', () => ({
@@ -37,23 +42,42 @@ vi.mock('../components/ui/Button', () => ({
 // Mock the API calls
 vi.mock('../utils/supabaseImageStorage', () => ({
   listFiles: vi.fn().mockImplementation(async (bucketType) => {
-    const response = await fetch(`/api/images?type=${bucketType}`);
-    return response.json();
+    if (bucketType === 'banner') {
+      return mockSupabaseClient.from('images').select().filter('image_type', 'eq', 'banner').data;
+    } else if (bucketType === 'gallery') {
+      return mockSupabaseClient.from('images').select().filter('image_type', 'eq', 'gallery').data;
+    } else if (bucketType === 'scanner') {
+      return mockSupabaseClient.from('images').select().filter('image_type', 'eq', 'scanner').data;
+    }
+    return [];
+  }),
+  getFileUrl: vi.fn().mockImplementation((filePath, bucketType) => {
+    return `https://example.com/${filePath}`;
+  }),
+  getFilePreview: vi.fn().mockImplementation(async (fileId, bucketType) => {
+    return `https://example.com/preview/${fileId}.jpg`;
   }),
 }));
 
 vi.mock('../utils/databaseService', () => ({
   databaseService: {
     list: vi.fn().mockImplementation(async (collection, filters) => {
-      if (collection === 'content') {
-        const response = await fetch('/api/content');
-        return response.json();
+      if (collection === 'images') {
+        const filterType = filters?.find(f => f.key === 'image_type')?.value;
+        return mockSupabaseClient.from('images').select().filter('image_type', 'eq', filterType).data;
+      } else if (collection === 'content') {
+        return mockSupabaseClient.from('content').select().data;
       }
       return [];
     }),
     get: vi.fn().mockImplementation(async (collection, id) => {
-      const response = await fetch(`/api/${collection}/${id}`);
-      return response.json();
+      if (collection === 'content' && id === 'what_is_comet') {
+        return {
+          id: 'what_is_comet',
+          content: 'COMET = Co-integrated Observational Market Evaluation Tool'
+        };
+      }
+      return null;
     }),
   },
 }));

@@ -2,9 +2,18 @@
 import { vi, beforeAll, afterEach, afterAll } from 'vitest';
 import { server } from './mocks/server';
 import '@testing-library/jest-dom';
+import { setupSupabaseMock } from './__tests__/mocks/supabaseMock';
+import { setupAppwriteMock } from './__tests__/mocks/appwriteMock';
 
 // Establish API mocking before all tests
-beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
+beforeAll(() => {
+  // Setup MSW server
+  server.listen({ onUnhandledRequest: 'warn' });
+
+  // Setup Supabase and Appwrite mocks
+  setupSupabaseMock();
+  setupAppwriteMock();
+});
 
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests
