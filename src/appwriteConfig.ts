@@ -54,10 +54,10 @@ export const CONTENT_COLLECTION_ID = 'content';
 export const IMAGES_COLLECTION_ID = 'images';
 
 // Storage bucket IDs - Using a single bucket for all images due to free tier limitations
-export const IMAGES_BUCKET_ID = 'banner'; // Using a single bucket for all images
-export const BANNER_BUCKET_ID = 'banner'; // Explicitly set to 'banner' for compatibility
-export const GALLERY_BUCKET_ID = 'banner'; // Explicitly set to 'banner' for compatibility
-export const SCANNER_BUCKET_ID = 'banner'; // Explicitly set to 'banner' for compatibility
+export const IMAGES_BUCKET_ID = 'images'; // Using a single bucket for all images
+export const BANNER_BUCKET_ID = 'images'; // Using 'images' bucket for banner images
+export const GALLERY_BUCKET_ID = 'images'; // Using 'images' bucket for gallery images
+export const SCANNER_BUCKET_ID = 'images'; // Using 'images' bucket for scanner images
 
 // Log bucket configuration on initialization
 console.log('Appwrite bucket configuration:', {

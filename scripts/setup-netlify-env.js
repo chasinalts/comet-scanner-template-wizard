@@ -2,7 +2,7 @@
 
 /**
  * Script to set up Netlify environment variables
- * 
+ *
  * This script sets up the necessary environment variables for Netlify deployment
  */
 import { execSync } from 'child_process';
@@ -39,7 +39,7 @@ async function setupNetlifyEnv() {
   try {
     console.log('🚀 Setting up Netlify environment variables');
     console.log('------------------------------------------');
-    
+
     // Check if netlify CLI is installed
     try {
       execSync('netlify --version', { stdio: 'ignore' });
@@ -49,7 +49,7 @@ async function setupNetlifyEnv() {
       execSync('npm install -g netlify-cli', { stdio: 'inherit' });
       console.log('✅ Netlify CLI installed successfully');
     }
-    
+
     // Check if user is logged in to Netlify
     try {
       const statusOutput = execSync('netlify status', { encoding: 'utf8' });
@@ -63,7 +63,7 @@ async function setupNetlifyEnv() {
       console.log('⚠️ Error checking Netlify status. Please log in:');
       execSync('netlify login', { stdio: 'inherit' });
     }
-    
+
     // Check if site is linked
     let siteId = '';
     try {
@@ -75,7 +75,7 @@ async function setupNetlifyEnv() {
       } else {
         console.log('⚠️ Site is not linked. Linking now...');
         execSync('netlify link', { stdio: 'inherit' });
-        
+
         // Get the site ID after linking
         const newStatusOutput = execSync('netlify status', { encoding: 'utf8' });
         const newSiteIdMatch = newStatusOutput.match(/Site ID:\s+([a-zA-Z0-9-]+)/);
@@ -87,14 +87,16 @@ async function setupNetlifyEnv() {
       console.log('⚠️ Error checking site link status. Linking now...');
       execSync('netlify link', { stdio: 'inherit' });
     }
-    
+
     // Get environment variables from .env file or prompt user
     const envVars = {
       'VITE_APPWRITE_ENDPOINT': process.env.VITE_APPWRITE_ENDPOINT || await prompt('Enter your Appwrite endpoint (e.g., https://cloud.appwrite.io/v1): '),
       'VITE_APPWRITE_PROJECT_ID': process.env.VITE_APPWRITE_PROJECT_ID || await prompt('Enter your Appwrite project ID: '),
-      'VITE_APPWRITE_DATABASE_ID': process.env.VITE_APPWRITE_DATABASE_ID || await prompt('Enter your Appwrite database ID: ')
+      'VITE_APPWRITE_DATABASE_ID': process.env.VITE_APPWRITE_DATABASE_ID || await prompt('Enter your Appwrite database ID: '),
+      'VITE_SUPABASE_URL': process.env.VITE_SUPABASE_URL || 'https://hpbfipnhqakrhlnhluze.supabase.co',
+      'VITE_SUPABASE_ANON_KEY': process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwYmZpcG5ocWFrcmhsbmhsdXplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ4Mjc0NDgsImV4cCI6MjA2MDQwMzQ0OH0.kPZLOf0rKMn-FjEFgLG_cefIaRaLDdIILSjHzYK-b1w'
     };
-    
+
     // Set environment variables in Netlify
     console.log('\n📝 Setting environment variables in Netlify...');
     for (const [key, value] of Object.entries(envVars)) {
@@ -109,7 +111,7 @@ async function setupNetlifyEnv() {
         console.log(`⚠️ Skipping ${key} (no value provided)`);
       }
     }
-    
+
     // Ask if user wants to deploy now
     const shouldDeploy = await prompt('\nDo you want to deploy to Netlify now? (y/n): ');
     if (shouldDeploy.toLowerCase() === 'y') {
@@ -119,7 +121,7 @@ async function setupNetlifyEnv() {
       console.log('\nSkipping deployment. You can deploy later with:');
       console.log('netlify deploy --prod');
     }
-    
+
     console.log('\n✅ Netlify environment setup complete!');
     rl.close();
   } catch (error) {

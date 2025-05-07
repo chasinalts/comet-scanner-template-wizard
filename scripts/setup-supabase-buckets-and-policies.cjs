@@ -15,7 +15,7 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
 const BUCKETS = ['banner', 'gallery', 'scanner'];
 
 async function createBucket(bucket) {
-  const url = `${SUPABASE_URL}/storage/v1/buckets`;
+  const url = `${SUPABASE_URL}/rest/v1/storage/buckets`;
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -41,7 +41,7 @@ async function createBucket(bucket) {
 }
 
 async function setBucketPublic(bucket) {
-  const url = `${SUPABASE_URL}/storage/v1/buckets/${bucket}`;
+  const url = `${SUPABASE_URL}/rest/v1/storage/buckets/${bucket}`;
   const res = await fetch(url, {
     method: 'PUT',
     headers: {

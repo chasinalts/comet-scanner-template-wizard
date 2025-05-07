@@ -126,12 +126,24 @@ export const getFileUrl = (filePath: string, bucketType: BucketType): string => 
     }
 
     const bucketId = getBucketId(bucketType);
-    const { data: { publicUrl } } = supabaseClient
-      .storage
-      .from(bucketId)
-      .getPublicUrl(filePath);
 
-    return publicUrl || '';
+    // Try to get the public URL from Supabase
+    try {
+      const { data: { publicUrl } } = supabaseClient
+        .storage
+        .from(bucketId)
+        .getPublicUrl(filePath);
+
+      if (publicUrl) {
+        return publicUrl;
+      }
+    } catch (supabaseError) {
+      console.warn(`Error getting Supabase public URL: ${supabaseError}`);
+    }
+
+    // Fallback: construct the URL manually with the correct Supabase URL
+    const supabaseUrl = 'https://hpbfipnhqakrhlnhluze.supabase.co';
+    return `${supabaseUrl}/storage/v1/object/public/${bucketId}/${filePath}`;
   } catch (error) {
     console.error(`Error getting file URL for ${filePath} in ${bucketType} bucket:`, error);
     return '';
@@ -195,10 +207,38 @@ export const listFiles = async (bucketType: BucketType): Promise<any[]> => {
   try {
     const bucketId = getBucketId(bucketType);
 
-    // Get metadata from the images table
-    const files = await databaseService.list(IMAGES_TABLE, [
-      { key: 'image_type', value: bucketType }
-    ]);
+    // Try to use the Netlify CORS proxy function if we're in production
+    const isProduction = window.location.hostname !== 'localhost';
+
+    let files;
+
+    if (isProduction) {
+      try {
+        // Use the Netlify function to proxy the request with the correct Supabase URL
+        const supabaseUrl = 'https://hpbfipnhqakrhlnhluze.supabase.co';
+        const proxyUrl = `/.netlify/functions/cors-proxy?url=${encodeURIComponent(
+          `${supabaseUrl}/rest/v1/${IMAGES_TABLE}?select=*&image_type=eq.${bucketType}`
+        )}`;
+
+        const response = await fetch(proxyUrl);
+        if (!response.ok) {
+          throw new Error(`Proxy request failed with status ${response.status}`);
+        }
+
+        files = await response.json();
+      } catch (proxyError) {
+        console.error('Error using CORS proxy:', proxyError);
+        // Fall back to the database service
+        files = await databaseService.list(IMAGES_TABLE, [
+          { key: 'image_type', value: bucketType }
+        ]);
+      }
+    } else {
+      // In development, use the database service directly
+      files = await databaseService.list(IMAGES_TABLE, [
+        { key: 'image_type', value: bucketType }
+      ]);
+    }
 
     // Add public URLs to the files
     if (!files || !Array.isArray(files)) {

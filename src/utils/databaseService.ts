@@ -23,12 +23,12 @@ const collectionProviderMap: Record<string, DatabaseProvider> = {
   // Appwrite collections
   [USER_PROFILES_COLLECTION_ID]: DatabaseProvider.APPWRITE,
   [CONTENT_COLLECTION_ID]: DatabaseProvider.APPWRITE,
-  
+
   // Supabase tables
   [EXTENDED_CONTENT_TABLE]: DatabaseProvider.SUPABASE,
   [IMAGES_TABLE]: DatabaseProvider.SUPABASE,
   [LOGS_TABLE]: DatabaseProvider.SUPABASE,
-  
+
   // Default mapping for images collection (for backward compatibility)
   [IMAGES_COLLECTION_ID]: DatabaseProvider.SUPABASE
 };
@@ -48,7 +48,7 @@ const appwriteOperations: DatabaseOperations = {
       throw error;
     }
   },
-  
+
   get: async (collection, id) => {
     try {
       return await databases.getDocument(
@@ -61,7 +61,7 @@ const appwriteOperations: DatabaseOperations = {
       throw error;
     }
   },
-  
+
   list: async (collection, queries = []) => {
     try {
       const result = await databases.listDocuments(
@@ -75,7 +75,7 @@ const appwriteOperations: DatabaseOperations = {
       throw error;
     }
   },
-  
+
   update: async (collection, id, data) => {
     try {
       return await databases.updateDocument(
@@ -89,7 +89,7 @@ const appwriteOperations: DatabaseOperations = {
       throw error;
     }
   },
-  
+
   delete: async (collection, id) => {
     try {
       return await databases.deleteDocument(
@@ -113,7 +113,7 @@ const supabaseOperations: DatabaseOperations = {
         .insert({ ...data, id: id || undefined })
         .select()
         .single();
-      
+
       if (error) throw error;
       return result;
     } catch (error) {
@@ -121,7 +121,7 @@ const supabaseOperations: DatabaseOperations = {
       throw error;
     }
   },
-  
+
   get: async (table, id) => {
     try {
       const { data: result, error } = await supabaseClient
@@ -129,7 +129,7 @@ const supabaseOperations: DatabaseOperations = {
         .select('*')
         .eq('id', id)
         .single();
-      
+
       if (error) throw error;
       return result;
     } catch (error) {
@@ -137,14 +137,47 @@ const supabaseOperations: DatabaseOperations = {
       throw error;
     }
   },
-  
+
   list: async (table, queries = []) => {
     try {
+      // Try to use the Netlify CORS proxy function if we're in production
+      const isProduction = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+
+      if (isProduction) {
+        try {
+          // Build the query string for the Supabase REST API
+          let queryString = `select=*`;
+          if (queries && queries.length > 0) {
+            for (const q of queries) {
+              if (q.key && q.value) {
+                queryString += `&${q.key}=eq.${encodeURIComponent(q.value)}`;
+              }
+            }
+          }
+
+          // Use the Netlify function to proxy the request with the correct Supabase URL
+          const supabaseUrl = 'https://hpbfipnhqakrhlnhluze.supabase.co';
+          const proxyUrl = `/.netlify/functions/cors-proxy?url=${encodeURIComponent(
+            `${supabaseUrl}/rest/v1/${table}?${queryString}`
+          )}`;
+
+          const response = await fetch(proxyUrl);
+          if (!response.ok) {
+            throw new Error(`Proxy request failed with status ${response.status}`);
+          }
+
+          const result = await response.json();
+          return result || [];
+        } catch (proxyError) {
+          console.error('Error using CORS proxy:', proxyError);
+          // Fall back to the direct Supabase client
+        }
+      }
+
+      // If not in production or proxy failed, use the Supabase client directly
       let query = supabaseClient.from(table).select('*');
-      
+
       // Apply filters if provided
-      // This is a simplified implementation - in a real app, you'd need to translate
-      // Appwrite queries to Supabase format more comprehensively
       if (queries && queries.length > 0) {
         for (const q of queries) {
           if (q.key && q.value) {
@@ -152,9 +185,9 @@ const supabaseOperations: DatabaseOperations = {
           }
         }
       }
-      
+
       const { data: result, error } = await query;
-      
+
       if (error) throw error;
       return result || [];
     } catch (error) {
@@ -162,7 +195,7 @@ const supabaseOperations: DatabaseOperations = {
       throw error;
     }
   },
-  
+
   update: async (table, id, data) => {
     try {
       const { data: result, error } = await supabaseClient
@@ -171,7 +204,7 @@ const supabaseOperations: DatabaseOperations = {
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return result;
     } catch (error) {
@@ -179,7 +212,7 @@ const supabaseOperations: DatabaseOperations = {
       throw error;
     }
   },
-  
+
   delete: async (table, id) => {
     try {
       const { data: result, error } = await supabaseClient
@@ -188,7 +221,7 @@ const supabaseOperations: DatabaseOperations = {
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return result;
     } catch (error) {
@@ -217,7 +250,7 @@ export const databaseService = {
     const operations = getOperationsForCollection(collectionOrTable);
     return operations.create(collectionOrTable, data, id);
   },
-  
+
   /**
    * Get a document/record by ID
    * @param collectionOrTable The collection or table name
@@ -228,7 +261,7 @@ export const databaseService = {
     const operations = getOperationsForCollection(collectionOrTable);
     return operations.get(collectionOrTable, id);
   },
-  
+
   /**
    * List documents/records with optional queries
    * @param collectionOrTable The collection or table name
@@ -239,7 +272,7 @@ export const databaseService = {
     const operations = getOperationsForCollection(collectionOrTable);
     return operations.list(collectionOrTable, queries);
   },
-  
+
   /**
    * Update a document/record
    * @param collectionOrTable The collection or table name
@@ -251,7 +284,7 @@ export const databaseService = {
     const operations = getOperationsForCollection(collectionOrTable);
     return operations.update(collectionOrTable, id, data);
   },
-  
+
   /**
    * Delete a document/record
    * @param collectionOrTable The collection or table name
