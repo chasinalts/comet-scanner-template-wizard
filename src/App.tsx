@@ -4,16 +4,16 @@ import React from 'react';
 import { useEffect } from './utils/react-imports';
 const { lazy, Suspense } = React;
 // ErrorBoundary removed to fix TypeScript errors
-import { AuthProvider } from './contexts/AuthContext';
+import { Auth0Provider } from '@auth0/auth0-react';
+import { Auth0Provider as CustomAuth0Provider } from './contexts/Auth0Context';
 import { WizardProvider } from './contexts/WizardContext';
 import { ToastProvider } from './components/ui/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import SuspenseFallback from './components/ui/SuspenseFallback';
-
-import { initializeStorage } from './appwriteConfig.ts';
-import { useAuth } from './contexts/AuthContext';
+import { auth0Config } from './auth0Config';
+import { useAuth } from './contexts/Auth0Context';
 
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
@@ -166,15 +166,27 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <WizardProvider>
-        <ThemeProvider>
-          <ToastProvider>
-            <AuthProvider>
-              <AppContent />
-            </AuthProvider>
-          </ToastProvider>
-        </ThemeProvider>
-      </WizardProvider>
+      <Auth0Provider
+        domain={import.meta.env.VITE_AUTH0_DOMAIN}
+        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+        authorizationParams={{
+          redirect_uri: window.location.origin,
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          scope: 'openid profile email'
+        }}
+        cacheLocation="localstorage"
+        useRefreshTokens={true}
+      >
+        <WizardProvider>
+          <ThemeProvider>
+            <ToastProvider>
+              <CustomAuth0Provider>
+                <AppContent />
+              </CustomAuth0Provider>
+            </ToastProvider>
+          </ThemeProvider>
+        </WizardProvider>
+      </Auth0Provider>
     </Router>
   );
 }

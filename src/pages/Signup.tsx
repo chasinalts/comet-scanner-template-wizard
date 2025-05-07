@@ -1,7 +1,7 @@
 import { useState } from '../utils/react-imports';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/Auth0Context';
 // Import HolographicText component for UI
 import HolographicText from '../components/ui/HolographicText';
 
@@ -12,73 +12,25 @@ const containerVariants = {
 };
 
 const Signup = () => {
-  // Firebase Auth uses email
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  // Owner option removed - all regular signups are non-owners // Keep this for your application logic
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!email.trim() || !password.trim()) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    // Firebase enforces minimum password length (usually 6 characters) automatically,
-    // but client-side check is still good UX.
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
+  const handleSignup = () => {
     try {
       setError('');
       setIsLoading(true);
-      // Call the updated signup function from AuthContext
-      // Always sign up as non-owner
-      await signup(email, password, false);
-      // Navigate to the scanner page after successful signup
-      // The AuthProvider's onAuthStateChanged listener will handle additional redirection logic if needed
-      navigate('/');
+      console.log('Redirecting to Auth0 signup page');
+      signup();
     } catch (error: any) {
-      console.error("Signup failed:", error);
-      let errorMessage = 'Failed to create account. Please try again.';
-      // Provide more specific feedback for common authentication errors
-      if (error.message) {
-        if (error.message.includes('already registered')) {
-          errorMessage = 'This email address is already registered.';
-        } else if (error.message.includes('valid email')) {
-          errorMessage = 'Please enter a valid email address.';
-        } else if (error.message.includes('owner account already exists')) {
-          errorMessage = 'An owner account already exists.';
-        } else if (error.message.includes('weak password')) {
-          errorMessage = 'Password is too weak. Please choose a stronger password.';
-        } else {
-        // Use the error message directly if we don't have a specific handler
-        errorMessage = error.message;
-      }
+      console.error("Signup redirect failed:", error);
+      let errorMessage = 'Failed to redirect to signup page. Please try again.';
+      setError(errorMessage);
+      setIsLoading(false);
     }
-    // Show the error in an alert for debugging
-    if (errorMessage) {
-      alert(`Signup Error: ${errorMessage}`);
-    }
-    setError(errorMessage);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
     <motion.div
@@ -138,77 +90,24 @@ const Signup = () => {
             </motion.div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
+          <div className="space-y-6">
+            <div className="text-center mb-6">
               <HolographicText
-                text="Email address"
-                as="label"
-                className="block text-sm font-medium text-cyan-300"
-                htmlFor="email"
+                text="Sign up with Auth0"
+                as="p"
+                className="text-lg font-medium text-cyan-300 mb-4"
               />
-              <div className="mt-1">
-                <input
-                  id="email" // Change id to email
-                  name="email" // Change name to email
-                  type="email" // Change type to email
-                  autoComplete="email"
-                  required
-                  value={email} // Bind value to email state
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} // Update email state
-                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
-                />
-              </div>
+              <p className="text-sm text-gray-400 mb-4">
+                You will be redirected to Auth0 to complete the registration process.
+              </p>
             </div>
-
-            <div>
-              <HolographicText
-                text="Password"
-                as="label"
-                className="block text-sm font-medium text-cyan-300"
-                htmlFor="password"
-              />
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password" // Use new-password for signup
-                  required
-                  value={password}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
-                />
-              </div>
-            </div>
-
-            <div>
-              <HolographicText
-                text="Confirm Password"
-                as="label"
-                className="block text-sm font-medium text-cyan-300"
-                htmlFor="confirmPassword"
-              />
-              <div className="mt-1">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password" // Use new-password for signup
-                  required
-                  value={confirmPassword}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
-                />
-              </div>
-            </div>
-
-            {/* Owner option removed */}
 
             <div>
               <button
-                type="submit"
+                type="button"
+                onClick={handleSignup}
                 disabled={isLoading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button ${
+                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button ${
                   isLoading ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
@@ -233,10 +132,10 @@ const Signup = () => {
                     />
                   </svg>
                 ) : null}
-                {isLoading ? 'Creating account...' : 'Create account'}
+                {isLoading ? 'Redirecting...' : 'Continue to Sign Up'}
               </button>
             </div>
-          </form>
+          </div>
 
           <div className="mt-6">
             <div className="relative">

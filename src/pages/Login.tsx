@@ -1,11 +1,10 @@
 // Login page component that handles user authentication and redirects based on user role
-import { useState, useRef, type FormEvent, useEffect } from '../utils/react-imports';
+import { useState, useRef, useEffect } from '../utils/react-imports';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/Auth0Context';
 import HolographicText from '../components/ui/HolographicText';
 import CookieWarning from '../components/ui/CookieWarning';
-import { account } from '../appwriteConfig';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -14,22 +13,19 @@ const containerVariants = {
 };
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetEmailSent, setResetEmailSent] = useState(false);
 
-  const { login, sendPasswordResetEmail, currentUser, isLoading: authLoading } = useAuth();
+  const { login, sendPasswordResetEmail, currentUser, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const modalRef = useRef<HTMLDivElement>(null);
 
   // If user is already logged in, redirect to the appropriate page
   useEffect(() => {
-    if (currentUser && !authLoading) {
+    if (currentUser && !isLoading) {
       // Redirect owners and admins to the dashboard, others to home
       const isOwner = currentUser.is_owner === true || currentUser.is_owner === 'true';
       const isAdmin = currentUser.role === 'admin';
@@ -40,18 +36,17 @@ const Login = () => {
         navigate('/home');
       }
     }
-  }, [currentUser, authLoading, navigate]);
+  }, [currentUser, isLoading, navigate]);
 
   // Set a timeout to detect if auth is taking too long
   useEffect(() => {
     let authCheckTimeout: NodeJS.Timeout | null = null;
 
-    if (authLoading) {
+    if (isLoading) {
       console.log('Login: Auth is loading, setting timeout');
       authCheckTimeout = setTimeout(() => {
         console.log('Login: Auth check timed out after 5 seconds');
         // Force auth state to be considered complete
-        setIsLoading(false);
       }, 5000);
     }
 
@@ -61,69 +56,17 @@ const Login = () => {
         clearTimeout(authCheckTimeout);
       }
     };
-  }, [authLoading]);
+  }, [isLoading]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!email.trim() || !password.trim()) {
-      setError('Please enter both email and password');
-      return;
-    }
-
+  const handleLogin = () => {
     try {
       setError('');
-      setIsLoading(true);
-      console.log('Attempting to login with email:', email);
-
-      // Call the login function from AuthContext
-      const result = await login(email, password);
-      console.log('Login successful, session:', result?.session);
-
-      // Wait a moment for the session to be properly set in the context
-      setTimeout(() => {
-        // Check if we have a session now
-        if (result?.session) {
-          console.log('Session is available, redirecting...');
-
-          // Force a check for the current user
-          account.get().then(user => {
-            console.log('User after login:', user);
-
-            // Determine where to navigate based on user preferences
-            const isOwner = user.prefs?.is_owner === true || user.prefs?.is_owner === 'true';
-
-            if (isOwner) {
-              console.log('User is owner, navigating to dashboard');
-              navigate('/dashboard');
-            } else {
-              console.log('User is not owner, navigating to home');
-              navigate('/home');
-            }
-          }).catch(err => {
-            console.error('Error getting user after login:', err);
-            navigate('/home'); // Fallback to home
-          }).finally(() => {
-            setIsLoading(false);
-          });
-        } else {
-          console.log('No session available after login, navigating to home as fallback');
-          navigate('/home');
-          setIsLoading(false);
-        }
-      }, 1000); // Wait 1 second for session to be properly set
+      console.log('Redirecting to Auth0 login page');
+      login();
     } catch (error: any) {
       console.error('Login error details:', error);
-      let errorMessage = 'Failed to sign in. Please check your credentials.';
-
-      // Provide more specific feedback for common authentication errors
-      if (error.message) {
-        if (error.message === 'Invalid login credentials' || error.message === 'Email not confirmed') {
-          errorMessage = 'Invalid email or password.';
-        }
-      }
+      let errorMessage = 'Failed to sign in. Please try again.';
       setError(errorMessage);
-      setIsLoading(false);
     }
   };
 
@@ -208,54 +151,24 @@ const Login = () => {
             </motion.div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
+          <div className="space-y-6">
+            <div className="text-center mb-6">
               <HolographicText
-                text="Email address"
-                as="label"
-                className="block text-sm font-medium text-cyan-300"
-                htmlFor="email"
+                text="Sign in with Auth0"
+                as="p"
+                className="text-lg font-medium text-cyan-300 mb-4"
               />
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
-                />
-              </div>
-            </div>
-
-            <div>
-              <HolographicText
-                text="Password"
-                as="label"
-                className="block text-sm font-medium text-cyan-300"
-                htmlFor="password"
-              />
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none futuristic-input"
-                />
-              </div>
+              <p className="text-sm text-gray-400 mb-4">
+                You will be redirected to Auth0 to complete the authentication process.
+              </p>
             </div>
 
             <div>
               <button
-                type="submit"
+                type="button"
+                onClick={handleLogin}
                 disabled={isLoading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button ${
+                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button ${
                   isLoading ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
@@ -280,10 +193,10 @@ const Login = () => {
                     />
                   </svg>
                 ) : null}
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? 'Redirecting...' : 'Continue to Sign In'}
               </button>
             </div>
-          </form>
+          </div>
 
           <div className="mt-2">
             <button

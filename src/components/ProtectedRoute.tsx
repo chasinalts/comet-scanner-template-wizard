@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { account } from '../appwriteConfig';
+import { useAuth } from '../contexts/Auth0Context';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -10,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }: ProtectedRouteProps) => {
-  const { currentUser, isLoading, session } = useAuth();
+  const { currentUser, isLoading } = useAuth();
   const location = useLocation();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -20,38 +19,11 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
     const authCheckTimeout = setTimeout(() => {
       console.log('ProtectedRoute: Auth check timed out after 5 seconds, forcing completion');
       setIsCheckingAuth(false);
-
-      // If we have a session but no access determination, grant access
-      // This is a fallback to prevent users from getting stuck
-      if (session && !hasAccess) {
-        console.log('ProtectedRoute: Fallback - granting access due to timeout with valid session');
-        setHasAccess(true);
-      }
     }, 5000);
-
-    // Function to manually check for a session in localStorage
-    const checkLocalStorageSession = () => {
-      try {
-        // Check for Appwrite session in localStorage
-        const cookieFallback = localStorage.getItem('cookieFallback');
-        console.log('ProtectedRoute: cookieFallback in localStorage:', cookieFallback ? 'Present' : 'Not found');
-
-        if (cookieFallback && cookieFallback !== '[]') {
-          console.log('ProtectedRoute: Found session data in localStorage');
-          return true;
-        }
-
-        return false;
-      } catch (error) {
-        console.error('ProtectedRoute: Error checking localStorage:', error);
-        return false;
-      }
-    };
 
     const checkAuth = async () => {
       try {
         console.log('ProtectedRoute: Checking authentication');
-        console.log('Current session:', session);
         console.log('Current user:', currentUser);
 
         // If we're still loading auth state, wait
@@ -60,70 +32,16 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
           return;
         }
 
-        // First, check if we have a valid session
-        let hasValidSession = false;
-
-        // Check if we have a session in the context
-        if (session) {
-          console.log('ProtectedRoute: Session found in context');
-          hasValidSession = true;
-        } else {
-          // If no session in context, check localStorage
-          const hasLocalStorageSession = checkLocalStorageSession();
-
-          if (hasLocalStorageSession) {
-            console.log('ProtectedRoute: Session found in localStorage, checking with Appwrite');
-
-            // Double-check with Appwrite
-            try {
-              const currentSession = await account.getSession('current');
-              console.log('ProtectedRoute: Appwrite session check result:', currentSession ? 'Valid session' : 'No valid session');
-
-              if (currentSession) {
-                hasValidSession = true;
-              }
-            } catch (error) {
-              console.log('ProtectedRoute: Error checking session with Appwrite:', error);
-            }
-          }
-        }
-
-        // If we have a valid session but no user profile
-        if (hasValidSession && !currentUser) {
-          console.log('ProtectedRoute: Have valid session but no user profile, trying to get user');
-
-          try {
-            // Try to get the user directly from Appwrite
-            const user = await account.get();
-            console.log('ProtectedRoute: Got user from Appwrite:', user);
-
-            // We have a user, grant access and let the AuthContext handle the rest
-            console.log('ProtectedRoute: User found, granting access');
-            setHasAccess(true);
-            setIsCheckingAuth(false);
-            return;
-          } catch (userError) {
-            console.error('ProtectedRoute: Error getting user from Appwrite:', userError);
-          }
-
-          // We have a valid session but couldn't get the user, wait a bit longer
-          console.log('ProtectedRoute: Valid session but no user profile yet, waiting...');
-          setTimeout(() => {
-            setIsCheckingAuth(false);
-          }, 2000); // Give it 2 seconds to load the profile
-          return;
-        }
-
-        // No valid session, definitely no access
-        if (!hasValidSession) {
-          console.log('ProtectedRoute: No valid session, no access');
+        // No user, definitely no access
+        if (!currentUser) {
+          console.log('ProtectedRoute: No user, no access');
           setHasAccess(false);
           setIsCheckingAuth(false);
           return;
         }
 
         // We have a user, check if they meet the owner requirement
-        if (requireOwner && currentUser && !currentUser.is_owner) {
+        if (requireOwner && !currentUser.is_owner) {
           console.log('ProtectedRoute: Owner required but user is not owner');
           setHasAccess(false);
           setIsCheckingAuth(false);
@@ -131,7 +49,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
         }
 
         // Check if they meet the admin requirement
-        if (requireAdmin && currentUser && !currentUser.is_owner && currentUser.role !== 'admin') {
+        if (requireAdmin && !currentUser.is_owner && currentUser.role !== 'admin') {
           console.log('ProtectedRoute: Admin required but user is not admin or owner');
           setHasAccess(false);
           setIsCheckingAuth(false);
@@ -155,7 +73,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
     return () => {
       clearTimeout(authCheckTimeout);
     };
-  }, [currentUser, isLoading, requireOwner, requireAdmin, session, hasAccess]);
+  }, [currentUser, isLoading, requireOwner, requireAdmin]);
 
   // Show loading state while checking auth
   if (isLoading || isCheckingAuth) {
@@ -190,14 +108,14 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
 
   // No access, redirect appropriately
   if (!hasAccess) {
-    if (!session) {
-      // No session, redirect to login
+    if (!currentUser) {
+      // No user, redirect to login
       console.log('ProtectedRoute: Redirecting to login');
       return <Navigate to="/login" state={{ from: location.pathname }} replace />;
     }
 
     // Check if this is a dashboard route and user is not owner/admin
-    if (location.pathname === '/dashboard' && currentUser &&
+    if (location.pathname === '/dashboard' &&
         !currentUser.is_owner && currentUser.role !== 'admin') {
       // User is not an owner or admin, redirect to home
       console.log('ProtectedRoute: Redirecting to home (not owner/admin)');
@@ -210,7 +128,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
       );
     }
 
-    if (requireOwner && currentUser && !currentUser.is_owner) {
+    if (requireOwner && !currentUser.is_owner) {
       // User is not an owner, redirect to home
       console.log('ProtectedRoute: Redirecting to home (not owner)');
       return (
@@ -222,7 +140,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
       );
     }
 
-    if (requireAdmin && currentUser && !currentUser.is_owner && currentUser.role !== 'admin') {
+    if (requireAdmin && !currentUser.is_owner && currentUser.role !== 'admin') {
       // User is not an admin or owner, redirect to home
       console.log('ProtectedRoute: Redirecting to home (not admin)');
       return (
