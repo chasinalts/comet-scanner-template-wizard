@@ -101,7 +101,11 @@ export const useAdminContent = (): AdminContentHook => {
     return {
       id: banner.id,
       src: (banner.storageProvider === 'appwrite' && banner.fileId && banner.bucketId)
-        ? appwriteSDKStorage.getFilePreview(banner.bucketId, banner.fileId) // Removed .href
+        ? (() => {
+            const url = appwriteSDKStorage.getFilePreview(banner.bucketId, banner.fileId);
+            console.log(`[useAdminContent] Generated Banner URL for ${banner.fileId}:`, url);
+            return url;
+          })()
         : banner.fileId || '', // Fallback to fileId if not Appwrite or missing ids
       preview: banner.imagePreview,
       alt: banner.title,
@@ -140,7 +144,11 @@ export const useAdminContent = (): AdminContentHook => {
       items.map(item => ({
         id: item.id,
         src: (item.storageProvider === 'appwrite' && item.fileId && item.bucketId)
-          ? appwriteSDKStorage.getFilePreview(item.bucketId, item.fileId) // Removed .href
+          ? (() => {
+              const url = appwriteSDKStorage.getFilePreview(item.bucketId, item.fileId);
+              console.log(`[useAdminContent] Generated Scanner/Gallery URL for ${item.fileId}:`, url);
+              return url;
+            })()
           : item.fileId || '', // Fallback to fileId if not Appwrite or missing ids
         preview: item.imagePreview,
         alt: item.title,
