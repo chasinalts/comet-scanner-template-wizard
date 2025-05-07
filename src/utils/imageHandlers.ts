@@ -66,13 +66,13 @@ export const handleSupabaseImageUpload = (
 
         // Upload to Supabase Storage
         // Map scanner type to gallery folder since they are the same
-        const bucketType = type === 'scanner' ? 'gallery' : type as BucketType;
+        const bucketType = type === 'scanner' ? 'gallery' : type as SupabaseBucketType;
         console.log(`Uploading ${type} image to ${bucketType} bucket in Supabase`);
 
         // If userId is not provided, use a default value
         const userIdToUse = userId || 'system';
 
-        const result = await uploadFile(processedFile, bucketType, userIdToUse);
+        const result = await uploadFileToSupabase(processedFile, bucketType, userIdToUse);
         const imageUrl = result.$id ? result.$id : '';
 
         console.log('Image uploaded to Supabase:', {

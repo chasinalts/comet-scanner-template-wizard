@@ -1,14 +1,17 @@
 // Hook that provides access to admin-managed content like banner images, scanner variations, and templates
 import { useState, useEffect, useMemo, useCallback } from '../utils/react-imports';
 import { memoize } from '../utils/memoization';
+import { storage as appwriteSDKStorage } from '../appwriteConfig'; // Import Appwrite SDK storage
+import { BucketType as AppwriteBucketType } from '../utils/appwriteStorage'; // Assuming BucketType is here
 
 export interface ContentItem {
   id: string;
   type: 'banner' | 'scanner' | 'gallery' | 'template' | 'question';
   title: string;
   content: string;
-  imageUrl?: string;
-  imagePreview?: string; // URL for preview image
+  fileId?: string; // Stores Appwrite File ID or Supabase public URL path
+  bucketId?: string; // Stores Appwrite Bucket ID
+  imagePreview?: string; // URL for local preview image during/after upload
   scale?: number;
   displayText?: string;
   isFullTemplate?: boolean;
@@ -97,7 +100,9 @@ export const useAdminContent = (): AdminContentHook => {
     const banner = banners[banners.length - 1];
     return {
       id: banner.id,
-      src: banner.imageUrl || '',
+      src: (banner.storageProvider === 'appwrite' && banner.fileId && banner.bucketId)
+        ? appwriteSDKStorage.getFilePreview(banner.bucketId, banner.fileId) // Removed .href
+        : banner.fileId || '', // Fallback to fileId if not Appwrite or missing ids
       preview: banner.imagePreview,
       alt: banner.title,
       scale: banner.scale,
@@ -134,7 +139,9 @@ export const useAdminContent = (): AdminContentHook => {
     memoize((items: ContentItem[]): ImageContent[] =>
       items.map(item => ({
         id: item.id,
-        src: item.imageUrl || '',
+        src: (item.storageProvider === 'appwrite' && item.fileId && item.bucketId)
+          ? appwriteSDKStorage.getFilePreview(item.bucketId, item.fileId) // Removed .href
+          : item.fileId || '', // Fallback to fileId if not Appwrite or missing ids
         preview: item.imagePreview,
         alt: item.title,
         scale: item.scale,

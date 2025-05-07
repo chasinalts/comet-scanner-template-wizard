@@ -43,9 +43,9 @@ describe('Image Compression Coverage', () => {
       return img;
     });
 
-    // Mock URL methods
-    global.URL.createObjectURL = vi.fn().mockReturnValue('blob:test-url');
-    global.URL.revokeObjectURL = vi.fn();
+    // Mock URL methods using vi.spyOn
+    vi.spyOn(URL, 'createObjectURL').mockImplementation(() => 'blob:test-url');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
   });
 
   it('should compress a JPEG image with default options', async () => {

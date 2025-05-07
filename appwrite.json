@@ -52,8 +52,170 @@
             "name": "user_profiles",
             "enabled": true,
             "documentSecurity": false,
-            "attributes": [],
-            "indexes": []
+            "attributes": [
+                {
+                    "$id": "email",
+                    "type": "string",
+                    "size": 255,
+                    "required": true,
+                    "default": null,
+                    "array": false,
+                    "encrypt": false
+                },
+                {
+                    "$id": "is_owner",
+                    "type": "boolean",
+                    "size": 0,
+                    "required": true,
+                    "default": false,
+                    "array": false,
+                    "encrypt": false
+                },
+                {
+                    "$id": "created_at",
+                    "type": "datetime",
+                    "size": 0,
+                    "required": true,
+                    "default": null,
+                    "array": false,
+                    "encrypt": false
+                },
+                {
+                    "$id": "permissions",
+                    "type": "string",
+                    "size": 10000,
+                    "required": false,
+                    "default": null,
+                    "array": false,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "$id": "idx_email",
+                    "type": "key",
+                    "attributes": [
+                        "email"
+                    ],
+                    "lengths": [
+                        255
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "$id": "idx_is_owner",
+                    "type": "key",
+                    "attributes": [
+                        "is_owner"
+                    ],
+                    "lengths": [],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "images",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"users\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "databaseId": "db1",
+            "name": "images",
+            "enabled": true,
+            "documentSecurity": true,
+            "attributes": [
+                {
+                    "$id": "name",
+                    "type": "string",
+                    "size": 255,
+                    "required": true,
+                    "array": false
+                },
+                {
+                    "$id": "file_id",
+                    "type": "string",
+                    "size": 255,
+                    "required": true,
+                    "array": false
+                },
+                {
+                    "$id": "bucket_id",
+                    "type": "string",
+                    "size": 255,
+                    "required": true,
+                    "array": false
+                },
+                {
+                    "$id": "uploaded_by",
+                    "type": "string",
+                    "size": 255,
+                    "required": true,
+                    "array": false
+                },
+                {
+                    "$id": "uploaded_at",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false
+                },
+                {
+                    "$id": "image_type",
+                    "type": "string",
+                    "size": 50,
+                    "required": true,
+                    "array": false
+                }
+            ],
+            "indexes": [
+                {
+                    "$id": "idx_file_id",
+                    "type": "key",
+                    "attributes": ["file_id"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "$id": "idx_uploaded_by",
+                    "type": "key",
+                    "attributes": ["uploaded_by"],
+                    "orders": ["ASC"]
+                },
+                {
+                    "$id": "idx_image_type",
+                    "type": "key",
+                    "attributes": ["image_type"],
+                    "orders": ["ASC"]
+                }
+            ]
+        }
+    ],
+    "buckets": [
+        {
+            "$id": "banner",
+            "name": "banner",
+            "$permissions": [
+                "read(\"any\")",
+                "create(\"users\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
+            "enabled": true,
+            "maximumFileSize": 5000000,
+            "allowedFileExtensions": [
+                "jpg",
+                "jpeg",
+                "png",
+                "gif",
+                "webp"
+            ],
+            "compression": "zstd",
+            "encryption": true,
+            "antivirus": true
         }
     ]
 }

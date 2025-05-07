@@ -180,9 +180,9 @@ const renderWithProviders = (ui, { currentUser = mockUser, initialRoute = '/' } 
 describe('End-to-End Image Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock URL.createObjectURL and URL.revokeObjectURL
-    global.URL.createObjectURL = vi.fn().mockReturnValue('blob:test-url');
-    global.URL.revokeObjectURL = vi.fn();
+    // Mock URL.createObjectURL and URL.revokeObjectURL using vi.spyOn
+    vi.spyOn(URL, 'createObjectURL').mockImplementation(() => 'blob:test-url');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
   });
 
   it('displays images on the home page that were uploaded from the admin dashboard', async () => {

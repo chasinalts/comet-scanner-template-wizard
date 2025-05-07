@@ -36,9 +36,18 @@ export const useContentManager = (): ContentManagerHook => {
   useEffect(() => {
     return () => {
       contents.forEach((content: ContentItem) => {
-        if (content.imageUrl) {
-          const isFirebaseUrl = content.imageUrl.includes('firebasestorage.googleapis.com');
-          cleanupImageUrl(content.imageUrl, isFirebaseUrl);
+        if (content.fileId && content.storageProvider === 'appwrite') { // Only cleanup if it's an Appwrite fileId
+          // For Appwrite, fileId is not a direct URL, so isFirebaseUrl check is not directly applicable here.
+          // cleanupImageUrl will need to handle Appwrite's fileId and bucketId for deletion.
+          // We'll assume cleanupImageUrl is adapted or will be adapted for this.
+          // The isCloudUrl parameter for cleanupImageUrl might need to be true for Appwrite.
+          cleanupImageUrl(content.fileId, true, content.type as AppwriteBucketType | SupabaseBucketType, content.storageProvider);
+        } else if (content.fileId && content.storageProvider === 'supabase') { // Example for Supabase if it stores full URLs
+            const isCloudUrl = content.fileId.includes('supabase'); // or some other check
+            cleanupImageUrl(content.fileId, isCloudUrl, content.type as AppwriteBucketType | SupabaseBucketType, content.storageProvider);
+        } else if (content.imagePreview && content.imagePreview.startsWith('blob:')) {
+            // Cleanup local blob previews if they weren't cleaned up elsewhere
+            cleanupImageUrl(content.imagePreview, false);
         }
       });
     };
@@ -74,18 +83,16 @@ export const useContentManager = (): ContentManagerHook => {
       const contentToDelete = prev.find((item: ContentItem) => item.id === id);
 
       // Cleanup image URL if it exists
-      if (contentToDelete?.imageUrl) {
-        const isCloudUrl = contentToDelete.imageUrl.includes('appwrite.io') ||
-                          contentToDelete.imageUrl.includes('supabase');
-
-        // Determine the storage provider and bucket type
-        const provider = contentToDelete.storageProvider ||
-                        (contentToDelete.imageUrl.includes('appwrite.io') ? 'appwrite' : 'supabase');
-
+      if (contentToDelete?.fileId && contentToDelete.storageProvider) {
+        const isCloudUrl = contentToDelete.storageProvider === 'appwrite' || contentToDelete.storageProvider === 'supabase';
         const bucketType = contentToDelete.type as AppwriteBucketType | SupabaseBucketType;
 
-        // Clean up the image URL
-        cleanupImageUrl(contentToDelete.imageUrl, isCloudUrl, bucketType, provider as 'appwrite' | 'supabase');
+        // Clean up the image file from storage
+        cleanupImageUrl(contentToDelete.fileId, isCloudUrl, bucketType, contentToDelete.storageProvider);
+      }
+      // Also cleanup local blob preview if it exists and wasn't cleaned up
+      if (contentToDelete?.imagePreview && contentToDelete.imagePreview.startsWith('blob:')) {
+        cleanupImageUrl(contentToDelete.imagePreview, false);
       }
 
       return prev.filter((item: ContentItem) => item.id !== id);
@@ -121,10 +128,11 @@ export const useContentManager = (): ContentManagerHook => {
                 type,
                 title,
                 content: '',
-                imageUrl,
-                imagePreview,
+                fileId: imageUrl, // imageUrl from callback is the Appwrite File ID
+                bucketId: storageProvider === 'appwrite' ? (type === 'scanner' ? 'gallery' : type) : undefined, // Store bucketId for Appwrite
+                imagePreview, // This is the local blob or result.file.url
                 scale: 1,
-                storageProvider // Store which provider was used
+                storageProvider
               });
               console.log(`${type} image added with ID:`, id);
               resolve(id);
