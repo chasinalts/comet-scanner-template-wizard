@@ -59,6 +59,7 @@
     "github:commit-push-noninteractive": "node scripts/commit-and-push-noninteractive.js",
     "netlify:deploy-script": "node scripts/deploy-to-netlify.js",
     "netlify:setup-env": "node scripts/setup-netlify-env.js",
+    "netlify:update-supabase-env": "node scripts/update-netlify-env-for-supabase.js",
     "netlify:deploy": "netlify deploy --prod",
     "netlify:check": "node scripts/check-deployment.js",
     "deploy": "bash scripts/deploy-with-node18.sh"

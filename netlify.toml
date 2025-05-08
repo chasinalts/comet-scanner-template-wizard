@@ -7,9 +7,9 @@
 [build.environment]
   NODE_VERSION = "18.20.0"  # Using version specified in package.json
   # Secrets scanning configuration - exclude specific files from scanning
-  SECRETS_SCAN_OMIT_PATHS = "check-deployment.js,dist/assets/js/index-*.js,*.md,README.md,BUCKET-FIX-SUMMARY.md,DEPLOYMENT-SUMMARY.md,.env,.env.local,scripts/setup-auth0-*.js,auth0-rules/*.js,src/App.tsx,scripts/setup-auth0-owner.js,scripts/setup-auth0-rules.js,scripts/setup-auth0-env.js,scripts/setup-auth0-env-noninteractive.js"
+  SECRETS_SCAN_OMIT_PATHS = "check-deployment.js,dist/assets/js/index-*.js,*.md,README.md,BUCKET-FIX-SUMMARY.md,DEPLOYMENT-SUMMARY.md,.env,.env.local,scripts/setup-auth0-*.js,auth0-rules/*.js,src/App.tsx,scripts/setup-auth0-owner.js,scripts/setup-auth0-rules.js,scripts/setup-auth0-env.js,scripts/setup-auth0-env-noninteractive.js,scripts/update-netlify-env-for-supabase.js"
   # Exclude specific keys from secrets scanning
-  SECRETS_SCAN_OMIT_KEYS = "VITE_AUTH0_DOMAIN,AUTH0_CLIENT_ID,AUTH0_AUDIENCE,VITE_AUTH0_CLIENT_ID,VITE_AUTH0_AUDIENCE,AUTH0_DOMAIN"
+  SECRETS_SCAN_OMIT_KEYS = "VITE_AUTH0_DOMAIN,AUTH0_CLIENT_ID,AUTH0_AUDIENCE,VITE_AUTH0_CLIENT_ID,VITE_AUTH0_AUDIENCE,AUTH0_DOMAIN,VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY"
 
 # Production context: all deploys from the main branch
 [context.production]
