@@ -28,16 +28,40 @@ export const BANNER_BUCKET = 'images';
 export const GALLERY_BUCKET = 'images';
 export const SCANNER_BUCKET = 'images';
 
-// Import from appwriteConfig directly
-import { account } from './appwriteConfig';
-
-// Helper function to get user ID from Appwrite session
-export const getUserIdFromAppwrite = async () => {
+// Helper function to get user ID from Auth0
+export const getUserId = async () => {
   try {
-    const session = await account.getSession('current');
-    return session.$id;
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    return user?.id || null;
   } catch (error) {
-    console.error('Error getting Appwrite session:', error);
+    console.error('Error getting user ID:', error);
+    return null;
+  }
+};
+
+// Helper function to get user profile from Supabase
+export const getUserProfile = async () => {
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+      return null;
+    }
+
+    const { data, error } = await supabaseClient
+      .from('user_profiles')
+      .select('*')
+      .eq('auth0_id', user.id)
+      .single();
+
+    if (error) {
+      console.error('Error getting user profile:', error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error getting user profile:', error);
     return null;
   }
 };
