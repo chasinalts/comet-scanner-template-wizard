@@ -14,7 +14,7 @@ const __dirname = dirname(__filename);
 
 // Sample Auth0 values - these would be replaced with real values in production
 const auth0Values = {
-  domain: 'cometscanner.us.auth0.com',
+  domain: 'dev-mytcazei5krtbkqw.us.auth0.com',
   clientId: 'sample123456789clientId',
   clientSecret: 'sample123456789clientSecret',
   audience: 'https://cometscanner.netlify.app/api'
