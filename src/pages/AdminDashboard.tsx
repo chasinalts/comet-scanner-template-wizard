@@ -2,7 +2,7 @@
 import { useState, ChangeEvent, useEffect } from '../utils/react-imports';
 
 import { motion, Reorder, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/Auth0Context';
 import { useToast } from '../components/ui/Toast';
 import Button from '../components/ui/Button';
 import DragDropUpload from '../components/ui/DragDropUpload';
@@ -23,7 +23,6 @@ import { isOwner } from '../utils/permissionChecks';
 import LogViewer from '../components/admin/LogViewer';
 import UserManagement from '../components/admin/UserManagement';
 import loggingService from '../utils/loggingService';
-import { initializeStorage } from '../appwriteConfig.ts';
 
 interface UploadingState {
   questionId?: string;
@@ -358,16 +357,15 @@ export default function AdminDashboard() {
                  currentUser?.is_owner === true ||
                  currentUser?.is_owner === 'true';
 
-  // Initialize storage if user is an owner
+  // Initialize Supabase storage buckets if needed
   useEffect(() => {
     const initStorage = async () => {
       if (currentUser?.is_owner === true || currentUser?.is_owner === 'true') {
         try {
-          console.log('Owner accessing dashboard, initializing storage...');
-          const result = await initializeStorage();
-          console.log('Storage initialization result:', result);
+          console.log('Owner accessing dashboard, storage already initialized by Supabase');
+          // Supabase buckets are created through the setup scripts
         } catch (error) {
-          console.error('Error initializing storage:', error);
+          console.error('Error with storage:', error);
         }
       }
     };
