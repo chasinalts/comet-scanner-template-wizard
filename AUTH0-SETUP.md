@@ -58,7 +58,8 @@ The application uses Auth0 for:
 1. Go to "Applications" > "APIs"
 2. Click "Create API"
 3. Name it "COMET Scanner API"
-4. Set the Identifier to your Auth0 domain with `/api/v2/` appended (e.g., `https://your-tenant.auth0.com/api/v2/`)
+4. Set the Identifier to a unique URI that represents your API, such as `https://cometscanner.netlify.app/api` or `urn:comet-scanner:api`
+   (Do NOT use your Auth0 domain with `/api/v2/` as that is reserved for Auth0's Management API)
 5. Select "RS256" as the signing algorithm
 6. Click "Create"
 
@@ -76,15 +77,15 @@ function addUserRoles(user, context, callback) {
   const namespace = 'https://cometscanner.netlify.app';
   const assignedRoles = (user.app_metadata && user.app_metadata.roles) || ['user'];
   const isOwner = (user.app_metadata && user.app_metadata.is_owner) || false;
-  
+
   // Add roles to the user's ID token
   context.idToken[`${namespace}/roles`] = assignedRoles;
   context.idToken[`${namespace}/is_owner`] = isOwner;
-  
+
   // Add roles to the user's access token
   context.accessToken[`${namespace}/roles`] = assignedRoles;
   context.accessToken[`${namespace}/is_owner`] = isOwner;
-  
+
   callback(null, user, context);
 }
 ```

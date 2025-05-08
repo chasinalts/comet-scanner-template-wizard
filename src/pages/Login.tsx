@@ -168,8 +168,8 @@ const Login = () => {
                 type="button"
                 onClick={handleLogin}
                 disabled={isLoading}
-                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button ${
-                  isLoading ? 'opacity-70 cursor-not-allowed' : ''
+                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white futuristic-button ${
+                  isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-700 hover:shadow-lg transition-all duration-300'
                 }`}
               >
                 {isLoading ? (
@@ -193,7 +193,7 @@ const Login = () => {
                     />
                   </svg>
                 ) : null}
-                {isLoading ? 'Redirecting...' : 'Continue to Sign In'}
+                {isLoading ? 'Redirecting...' : 'Sign In with Auth0'}
               </button>
             </div>
           </div>

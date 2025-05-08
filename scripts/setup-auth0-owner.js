@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Script to set up an owner account in Auth0
- * 
+ *
  * Note: This script requires Auth0 Management API access.
  * You need to set up the following environment variables:
  * - AUTH0_DOMAIN
@@ -35,7 +35,7 @@ async function setupOwnerAccount() {
       body: JSON.stringify({
         client_id: AUTH0_CLIENT_ID,
         client_secret: AUTH0_CLIENT_SECRET,
-        audience: `https://${AUTH0_DOMAIN}/api/v2/`,
+        audience: 'https://cometscanner.netlify.app/api',
         grant_type: 'client_credentials'
       })
     });
@@ -106,27 +106,27 @@ async function setupOwnerAccount() {
 
     // Create a corresponding record in the Supabase user_profiles table
     console.log('🔄 Creating owner record in Supabase user_profiles table...');
-    
+
     // Import the Supabase client
     const { createClient } = await import('@supabase/supabase-js');
-    
+
     // Supabase credentials
     const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hpbfipnhqakrhlnhluze.supabase.co';
     const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwYmZpcG5ocWFrcmhsbmhsdXplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ4Mjc0NDgsImV4cCI6MjA2MDQwMzQ0OH0.kPZLOf0rKMn-FjEFgLG_cefIaRaLDdIILSjHzYK-b1w';
-    
+
     // Create Supabase client
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
+
     // Check if the user already exists in the user_profiles table
     const { data: existingUser, error: existingError } = await supabase
       .from('user_profiles')
       .select('id')
       .eq('auth0_id', user.user_id)
       .single();
-    
+
     if (!existingError) {
       console.log('✅ User already exists in user_profiles table');
-      
+
       // Update the user's role and is_owner flag
       const { error: updateError } = await supabase
         .from('user_profiles')
@@ -143,7 +143,7 @@ async function setupOwnerAccount() {
           }
         })
         .eq('auth0_id', user.user_id);
-      
+
       if (updateError) {
         console.error('❌ Error updating user in user_profiles table:', updateError);
       } else {
@@ -169,14 +169,14 @@ async function setupOwnerAccount() {
             }
           }
         ]);
-      
+
       if (insertError) {
         console.error('❌ Error creating user in user_profiles table:', insertError);
       } else {
         console.log('✅ User created in user_profiles table');
       }
     }
-    
+
     console.log('✅ Owner account setup complete');
   } catch (error) {
     console.error('❌ Error setting up owner account:', error);

@@ -20,6 +20,7 @@ const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
 const ScannerWizard = lazy(() => import('./pages/ScannerWizard'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Callback = lazy(() => import('./pages/Callback'));
 
 import Home from './pages/Home';
 
@@ -127,6 +128,14 @@ function AppContent() {
           </Layout>
         }
       />
+      <Route
+        path="/callback"
+        element={
+          <Suspense fallback={<SuspenseFallback message="Processing authentication..." />}>
+            <Callback />
+          </Suspense>
+        }
+      />
       {/* Owner setup route removed - owner account already created */}
 
       {/* Protected Routes */}
@@ -167,11 +176,11 @@ function App() {
   return (
     <Router>
       <Auth0Provider
-        domain={import.meta.env.VITE_AUTH0_DOMAIN}
-        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+        domain={import.meta.env.VITE_AUTH0_DOMAIN || 'cometscanner.us.auth0.com'}
+        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || 'your-client-id'}
         authorizationParams={{
-          redirect_uri: window.location.origin,
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          redirect_uri: `${window.location.origin}/callback`,
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://cometscanner.netlify.app/api',
           scope: 'openid profile email'
         }}
         cacheLocation="localstorage"

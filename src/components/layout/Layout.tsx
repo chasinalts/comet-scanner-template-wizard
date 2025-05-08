@@ -1,8 +1,9 @@
 import { ReactNode, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/Auth0Context';
 import { useTheme } from '../../contexts/ThemeContext';
+import LogoutButton from '../ui/LogoutButton';
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,14 +15,7 @@ const Layout = ({ children }: LayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Failed to log out:', error);
-    }
-  };
+  // Logout is now handled by the LogoutButton component
 
   const isActive = (path: string) => {
     return location.pathname.startsWith(path);
@@ -71,12 +65,11 @@ const Layout = ({ children }: LayoutProps) => {
                       )}
                       <span>{currentUser.email}</span>
                     </div>
-                    <button
-                      onClick={handleLogout}
+                    <LogoutButton
+                      variant="text"
+                      size="sm"
                       className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium transition-colors"
-                    >
-                      Logout
-                    </button>
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>

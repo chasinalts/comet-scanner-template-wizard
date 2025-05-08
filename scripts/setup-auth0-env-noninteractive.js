@@ -17,7 +17,7 @@ const auth0Values = {
   domain: 'cometscanner.us.auth0.com',
   clientId: 'sample123456789clientId',
   clientSecret: 'sample123456789clientSecret',
-  audience: 'https://cometscanner.us.auth0.com/api/v2/'
+  audience: 'https://cometscanner.netlify.app/api'
 };
 
 async function setupAuth0Env() {
@@ -121,7 +121,7 @@ VITE_RESET_PASSWORD_URL=https://cometscanner.netlify.app/reset-password
     // Try to set Netlify environment variables if netlify CLI is available
     try {
       console.log('\n📝 Setting Auth0 environment variables in Netlify...');
-      
+
       const envVars = {
         'VITE_AUTH0_DOMAIN': auth0Values.domain,
         'VITE_AUTH0_CLIENT_ID': auth0Values.clientId,
@@ -135,7 +135,7 @@ VITE_RESET_PASSWORD_URL=https://cometscanner.netlify.app/reset-password
       try {
         execSync('netlify status', { stdio: 'ignore' });
         console.log('✅ Site is linked to Netlify');
-        
+
         // Set environment variables in Netlify
         for (const [key, value] of Object.entries(envVars)) {
           try {

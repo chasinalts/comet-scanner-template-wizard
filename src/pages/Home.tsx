@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from '../utils/react-imports';
 
 import HolographicText from '../components/ui/HolographicText';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/Auth0Context';
+import UserProfile from '../components/ui/UserProfile';
 import { useNavigate } from 'react-router-dom';
 import { supabaseClient, BANNER_BUCKET } from '../supabaseConfig';
 import LazyImage from '../components/ui/LazyImage';
@@ -149,6 +150,11 @@ const Home: React.FC = () => {
         variant="title"
         className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center drop-shadow-lg"
       />
+
+      {/* User Profile Section */}
+      <div className="w-full max-w-5xl mb-6">
+        <UserProfile className="mb-4" />
+      </div>
 
       {/* Banner Section */}
       <div className="w-full max-w-5xl mb-10 flex flex-col items-center">
