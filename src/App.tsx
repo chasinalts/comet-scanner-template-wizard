@@ -175,8 +175,8 @@ function App() {
   return (
     <Router>
       <Auth0Provider
-        domain={import.meta.env.VITE_AUTH0_DOMAIN || 'cometscanner.us.auth0.com'}
-        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || 'your-client-id'}
+        domain={import.meta.env.VITE_AUTH0_DOMAIN || 'dev-mytcazei5krtbkqw.us.auth0.com'}
+        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || 'Mp0HS9ZAmmgPVbpDU3lCbe8vr4cQgT6L'}
         authorizationParams={{
           redirect_uri: `${window.location.origin}/callback`,
           audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://cometscanner.netlify.app/api',
