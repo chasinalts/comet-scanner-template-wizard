@@ -23,10 +23,10 @@ export const EXTENDED_CONTENT_TABLE = 'extended_content';
 export const IMAGES_TABLE = 'images';
 export const LOGS_TABLE = 'logs';
 
-// Storage bucket names - using 'images' bucket for all types since that's what exists in Supabase
-export const BANNER_BUCKET = 'images';
-export const GALLERY_BUCKET = 'images';
-export const SCANNER_BUCKET = 'images';
+// Storage bucket names
+export const BANNER_BUCKET = 'banner';
+export const GALLERY_BUCKET = 'gallery';
+export const SCANNER_BUCKET = 'scanner';
 
 // Helper function to get user ID from Auth0
 export const getUserId = async () => {

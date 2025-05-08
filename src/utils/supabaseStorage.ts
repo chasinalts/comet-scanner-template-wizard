@@ -13,7 +13,7 @@ const getBucketForType = (imageType: string): string => {
     case 'gallery':
       return GALLERY_BUCKET;
     case 'scanner':
-      return GALLERY_BUCKET; // Using gallery bucket for scanner images
+      return SCANNER_BUCKET;
     default:
       return GALLERY_BUCKET;
   }
@@ -168,14 +168,31 @@ export const listFiles = async (imageType: string): Promise<any[]> => {
 
 /**
  * Get a public URL for a file
- * @param bucketId The bucket ID
- * @param filePath The file path
+ * @param fileId The file ID or path
+ * @param bucketType The bucket type (banner, gallery, scanner)
  * @returns The public URL
  */
-export const getPublicUrl = (bucketId: string, filePath: string): string => {
-  const { data: { publicUrl } } = supabaseClient.storage
-    .from(bucketId)
-    .getPublicUrl(filePath);
+export const getPublicUrl = (fileId: string, bucketType: BucketType): string => {
+  try {
+    // If fileId is already a URL, return it
+    if (fileId.startsWith('http')) {
+      return fileId;
+    }
 
-  return publicUrl;
+    // Get the appropriate bucket
+    const bucketId = getBucketForType(bucketType);
+
+    // If fileId contains a path, use it directly
+    const filePath = fileId.includes('/') ? fileId : `${bucketType}/${fileId}`;
+
+    // Get the public URL
+    const { data: { publicUrl } } = supabaseClient.storage
+      .from(bucketId)
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  } catch (error) {
+    console.error(`Error getting public URL for ${fileId} in ${bucketType}:`, error);
+    return fileId; // Return the original fileId as fallback
+  }
 };

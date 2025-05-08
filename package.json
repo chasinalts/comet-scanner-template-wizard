@@ -33,7 +33,7 @@
     "github:commit-push": "node scripts/commit-and-push.js",
     "fix-cors": "npm run supabase:setup-cors-sql && npm run netlify:setup-env && npm run github:commit-push",
     "ensure-node18": "node scripts/ensure-node18.js",
-    "supabase:setup": "node scripts/ensure-node18.js && node scripts/setup-supabase.js",
+    "supabase:setup": "node scripts/ensure-node18.js && node setup-supabase.js",
     "supabase:update-env": "node scripts/ensure-node18.js && node scripts/update-env-with-supabase.js",
     "supabase:get-credentials": "node scripts/ensure-node18.js && node scripts/get-supabase-credentials.js",
     "supabase:setup-only": "node scripts/ensure-node18.js && node scripts/setup-supabase-only.js",
