@@ -3,7 +3,7 @@ import React from 'react';
 import { useState, useEffect, useCallback } from '../../utils/react-imports';
 import { useLazyLoading } from '../../hooks/useLazyLoading';
 import { resizeImage } from '../../utils/imageHandlers';
-import { getFilePreview } from '../../utils/supabaseImageStorage';
+import { getPublicUrl as getFilePreview } from '../../utils/supabaseStorage';
 
 interface LazyImageProps {
   src: string;
@@ -98,8 +98,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
   // Check if this is a Firebase Storage URL
   const isFirebaseUrl = src.includes('firebasestorage.googleapis.com');
 
-  // Check if this is an Appwrite Storage URL
-  const isAppwriteUrl = src.includes('appwrite.io') || src.includes('cloud.appwrite.io');
+  // Check if this is a legacy Appwrite Storage URL (for backward compatibility)
+  const isLegacyUrl = src.includes('appwrite.io') || src.includes('cloud.appwrite.io');
 
   // Check if this is a Supabase Storage URL
   const isSupabaseUrl = src.includes('supabase.co') || src.includes('supabase.in');
@@ -138,10 +138,10 @@ const LazyImage: React.FC<LazyImageProps> = ({
           }
         }
 
-        // For Appwrite Storage URLs, handle them specially (legacy support)
-        else if (isAppwriteUrl) {
+        // For legacy URLs, handle them specially (backward compatibility)
+        else if (isLegacyUrl) {
           try {
-            console.log('Processing Appwrite URL (legacy):', src);
+            console.log('Processing legacy URL:', src);
 
             // Check if it's already a preview URL
             if (src.includes('preview')) {
@@ -194,7 +194,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
               }
             }
           } catch (error) {
-            console.error('Error processing Appwrite URL:', error);
+            console.error('Error processing legacy URL:', error);
             if (isMounted) {
               // Add a cache-busting parameter to the URL
               const cacheBuster = `?t=${Date.now()}`;
@@ -255,7 +255,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [isVisible, src, gallerySize, isFirebaseUrl, isAppwriteUrl, isSupabaseUrl, dimensions]);
+  }, [isVisible, src, gallerySize, isFirebaseUrl, isLegacyUrl, isSupabaseUrl, dimensions]);
 
   // Handle image load event
   const handleImageLoad = () => {
@@ -278,8 +278,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
       if (isSupabaseUrl) {
         setSrcSet(`${src} 1x, ${src} 2x`);
       }
-      // For Appwrite images, handle them specially (legacy support)
-      else if (isAppwriteUrl) {
+      // For legacy images, handle them specially (backward compatibility)
+      else if (isLegacyUrl) {
         (async () => {
           try {
             // If it's already a preview URL, use it directly
@@ -320,7 +320,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
     } else {
       setSrcSet(undefined);
     }
-  }, [src, isAppwriteUrl, isSupabaseUrl]);
+  }, [src, isLegacyUrl, isSupabaseUrl]);
 
   // Calculate aspect ratio placeholder using the dimensions
   const aspectRatioPercent = dimensions.width && dimensions.height

@@ -133,71 +133,79 @@ npm run test:netlify
 
 ### Storage Configuration
 
-#### Appwrite Storage (Recommended)
+#### Supabase Storage (Recommended)
 
-This project uses Appwrite Storage for image uploads. To configure Appwrite Storage:
+This project uses Supabase Storage for image uploads. To configure Supabase Storage:
 
-1. Create an Appwrite account at https://appwrite.io
+1. Create a Supabase account at https://supabase.com
 2. Create a new project
-3. Go to the project settings and copy the endpoint and project ID
+3. Go to the project settings and copy the URL and anon key
 4. Create a `.env` file in the root of the project with the following content:
 
 ```
-VITE_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
-VITE_APPWRITE_PROJECT_ID=your-project-id
-VITE_APPWRITE_DATABASE_ID=your-database-id
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-5. Create storage buckets named `banner`, `gallery`, and `scanner` in the Appwrite dashboard
+5. Create storage buckets named `banner`, `gallery`, and `scanner` in the Supabase dashboard
 
-#### Firebase Storage CORS Configuration
+#### Auth0 Authentication
 
-If you encounter CORS errors when uploading images to Firebase Storage, you need to configure CORS for your Firebase Storage bucket:
+This project uses Auth0 for authentication. To configure Auth0:
 
-1. **Using Firebase Console (Recommended)**:
-   - Go to the Firebase Console: https://console.firebase.google.com/
+1. Create an Auth0 account at https://auth0.com
+2. Create a new application (Single Page Application)
+3. Configure the application:
+   - Allowed Callback URLs: `http://localhost:3000/callback, https://your-domain.com/callback`
+   - Allowed Logout URLs: `http://localhost:3000, https://your-domain.com`
+   - Allowed Web Origins: `http://localhost:3000, https://your-domain.com`
+4. Add the Auth0 configuration to your `.env` file:
+
+```
+VITE_AUTH0_DOMAIN=your-auth0-domain
+VITE_AUTH0_CLIENT_ID=your-auth0-client-id
+VITE_AUTH0_AUDIENCE=your-auth0-audience
+```
+
+#### Supabase CORS Configuration
+
+If you encounter CORS errors when uploading images to Supabase Storage, you need to configure CORS for your Supabase project:
+
+1. **Using Supabase Dashboard**:
+   - Go to the Supabase Dashboard: https://app.supabase.com/
    - Select your project
    - Go to "Storage" in the left sidebar
-   - Click on the "Rules" tab
-   - Update your rules to include CORS configuration:
+   - Click on the "Policies" tab
+   - Update your CORS configuration:
 
    ```
-   service firebase.storage {
-     match /b/{bucket}/o {
-       match /{allPaths=**} {
-         allow read, write: if request.auth != null;
-
-         // CORS configuration
-         options {
-           cors {
-             origin: ["https://cometscanners.netlify.app", "http://localhost:3000"];
-             method: ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"];
-             maxAgeSeconds: 3600;
-             responseHeader: ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition"];
-           }
-         }
-       }
-     }
+   {
+     "origins": ["https://cometscanner.netlify.app", "http://localhost:3000"],
+     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     "headers": ["Content-Type", "Content-Length", "Content-Disposition", "Authorization"],
+     "maxAgeSeconds": 3600
    }
    ```
 
-2. **Using Firebase CLI**:
+2. **Using Supabase CLI**:
+   - Install the Supabase CLI:
+   ```bash
+   npm install -g supabase
+   ```
    - Create a `cors.json` file with the following content:
    ```json
-   [
-     {
-       "origin": ["https://cometscanners.netlify.app", "http://localhost:3000"],
-       "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
-       "maxAgeSeconds": 3600,
-       "responseHeader": ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition"]
-     }
-   ]
+   {
+     "origins": ["https://cometscanner.netlify.app", "http://localhost:3000"],
+     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     "headers": ["Content-Type", "Content-Length", "Content-Disposition", "Authorization"],
+     "maxAgeSeconds": 3600
+   }
    ```
    - Run the following commands:
    ```bash
-   firebase login
-   firebase use your-project-id
-   firebase storage:cors update cors.json
+   supabase login
+   supabase link --project-ref your-project-ref
+   supabase storage cors update --config cors.json
    ```
 
 ### Resetting User Data
@@ -216,11 +224,12 @@ Resetting user data requires administrator credentials. Only administrators can 
    ```
    This will prompt for administrator credentials before providing instructions.
 
-3. For Firebase data (administrator access required):
-   - Go to the Firebase Console (https://console.firebase.google.com/)
+3. For Supabase data (administrator access required):
+   - Go to the Supabase Dashboard (https://app.supabase.com/)
    - Select your project
    - Go to Authentication > Users and delete any users
-   - Go to Firestore Database and delete any user-related documents
+   - Go to Database > Tables and delete any user-related data
+   - Go to Storage and delete any user-uploaded files
 
 ### TypeScript Errors
 
