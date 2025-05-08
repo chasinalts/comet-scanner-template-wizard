@@ -62,7 +62,9 @@
     "netlify:update-supabase-env": "node scripts/update-netlify-env-for-supabase.js",
     "netlify:deploy": "netlify deploy --prod",
     "netlify:check": "node scripts/check-deployment.js",
-    "deploy": "bash scripts/deploy-with-node18.sh"
+    "deploy": "bash scripts/deploy-with-node18.sh",
+    "context7:setup": "node setup-context7.js",
+    "context7:start": "node start-context7.js"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",

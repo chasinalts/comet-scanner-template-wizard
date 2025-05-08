@@ -22,6 +22,7 @@ import HolographicText from '../components/ui/HolographicText';
 import { isOwner } from '../utils/permissionChecks';
 import LogViewer from '../components/admin/LogViewer';
 import UserManagement from '../components/admin/UserManagement';
+import Context7Documentation from '../components/admin/Context7Documentation';
 import loggingService from '../utils/loggingService';
 
 interface UploadingState {
@@ -826,6 +827,17 @@ The COMET Scanner Template Wizard helps you create a customized scanner template
           className="text-2xl font-semibold"
         />
         <LogViewer />
+      </section>
+
+      {/* Context7 Documentation Section */}
+      <section className="space-y-8">
+        <HolographicText
+          text="API Documentation"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-semibold"
+        />
+        <Context7Documentation />
       </section>
 
       {/* Questions Section */}
