@@ -1,141 +1,123 @@
-// Helper functions for managing Appwrite sessions using JWT-based authentication
-import { type Models } from 'appwrite';
-import { account, client } from '../appwriteConfig';
+// Helper functions for managing Auth0 sessions
+import { Auth0Client } from '@auth0/auth0-spa-js';
 
-// Key for storing the JWT in localStorage
+// Key for storing the Auth0 session in localStorage
+const AUTH0_SESSION_KEY = 'auth0_session';
+// For backward compatibility
 const JWT_KEY = 'appwriteSession';
 
-interface SessionWithJWT extends Models.Session {
-  jwt?: string;
-}
-
 /**
- * Store JWT in localStorage from session
- * @param session The Appwrite session object
+ * Store Auth0 session in localStorage
+ * @param session The Auth0 session object
  * @returns Promise<boolean> True if the session was stored successfully
  */
-export const storeSession = async (session?: SessionWithJWT): Promise<boolean> => {
+export const storeSession = async (session: any): Promise<boolean> => {
   try {
-    if (!session || !session.jwt) {
-      console.log('No valid session or JWT available to store');
+    if (!session) {
+      console.log('No valid session available to store');
       return false;
     }
 
     // Store the session data in localStorage
     const sessionData = {
-      jwt: session.jwt,
-      userId: session.userId,
-      expires: session.$createdAt ? new Date(new Date(session.$createdAt).getTime() + (Number(session.expire) * 1000)).toISOString() : null
+      accessToken: session.accessToken,
+      idToken: session.idToken,
+      expiresAt: session.expiresAt,
+      user: session.user
     };
 
-    localStorage.setItem(JWT_KEY, JSON.stringify(sessionData));
-    console.log('Session stored in localStorage');
-
-    // Set the JWT on the client
-    client.setJWT(session.jwt);
+    localStorage.setItem(AUTH0_SESSION_KEY, JSON.stringify(sessionData));
+    console.log('Auth0 session stored in localStorage');
     return true;
   } catch (error) {
-    console.error('Error storing session:', error);
+    console.error('Error storing Auth0 session:', error);
     return false;
   }
 };
 
 /**
- * Check if there is a valid JWT stored
- * @returns boolean True if a valid JWT is stored
+ * Check if there is a valid Auth0 session stored
+ * @returns boolean True if a valid session is stored
  */
 export const hasValidSession = (): boolean => {
   try {
-    const sessionData = localStorage.getItem(JWT_KEY);
+    const sessionData = localStorage.getItem(AUTH0_SESSION_KEY);
     if (!sessionData) {
       return false;
     }
 
     try {
-      // For backward compatibility, check if the stored value is a plain JWT string
-      if (sessionData.startsWith('eyJ')) {
-        return true;
-      }
-
-      // Otherwise, try to parse it as JSON
       const parsed = JSON.parse(sessionData);
 
-      // Check if the JWT exists
-      if (!parsed.jwt) {
-        return false;
-      }
-
       // Check if the session has expired
-      if (parsed.expires && new Date(parsed.expires) < new Date()) {
-        console.log('Session has expired');
+      if (parsed.expiresAt && new Date(parsed.expiresAt) < new Date()) {
+        console.log('Auth0 session has expired');
         clearSession();
         return false;
       }
 
       return true;
     } catch (parseError) {
-      // If it's not valid JSON but still a string, it might be a JWT from an older version
-      return sessionData.length > 0;
+      console.error('Error parsing Auth0 session data:', parseError);
+      return false;
     }
   } catch (error) {
-    console.error('Error checking session validity:', error);
+    console.error('Error checking Auth0 session validity:', error);
     return false;
   }
 };
 
 /**
- * Initialize Appwrite session handling
+ * Initialize Auth0 session handling
+ * @param auth0Client The Auth0 client instance
  * @returns Promise<void>
  */
-export const initializeAppwriteSession = async (): Promise<void> => {
+export const initializeAuth0Session = async (auth0Client: Auth0Client): Promise<void> => {
   try {
-    const sessionData = localStorage.getItem(JWT_KEY);
-    if (sessionData) {
-      let jwt: string | null = null;
+    const isAuthenticated = await auth0Client.isAuthenticated();
 
-      // For backward compatibility, check if the stored value is a plain JWT string
-      if (sessionData.startsWith('eyJ')) {
-        jwt = sessionData;
-      } else {
-        // Try to parse it as JSON
-        try {
-          const parsed = JSON.parse(sessionData);
-          jwt = parsed.jwt || null;
-        } catch (parseError) {
-          console.error('Error parsing session data:', parseError);
-        }
-      }
+    if (isAuthenticated) {
+      console.log('User is authenticated with Auth0');
 
-      if (jwt) {
-        console.log('Found JWT in localStorage');
-        client.setJWT(jwt);
+      // Get the tokens
+      const token = await auth0Client.getTokenSilently();
+      const idToken = await auth0Client.getIdTokenClaims();
+      const user = await auth0Client.getUser();
 
-        // Verify the session is still valid
-        try {
-          await account.get();
-          console.log('JWT is valid');
-        } catch (error) {
-          console.log('JWT is invalid, clearing session');
-          clearSession();
-        }
-      } else {
-        console.log('No valid JWT found in session data');
-        clearSession();
-      }
+      // Store the session
+      const session = {
+        accessToken: token,
+        idToken: idToken.__raw,
+        expiresAt: new Date(idToken.exp * 1000).toISOString(),
+        user
+      };
+
+      await storeSession(session);
     } else {
-      console.log('No session data found');
+      console.log('User is not authenticated with Auth0');
+      clearSession();
     }
   } catch (error) {
-    console.error('Error initializing session handling:', error);
+    console.error('Error initializing Auth0 session handling:', error);
+    clearSession();
   }
 };
 
 /**
- * Clear the stored session
- * Removes the session from localStorage and clears the JWT from the client
+ * Initialize Appwrite session handling (for backward compatibility)
+ * @returns Promise<void>
+ */
+export const initializeAppwriteSession = async (): Promise<void> => {
+  console.log('Appwrite session initialization skipped - using Auth0 instead');
+};
+
+/**
+ * Clear the stored Auth0 session
+ * Removes the session from localStorage
  */
 export const clearSession = (): void => {
+  localStorage.removeItem(AUTH0_SESSION_KEY);
+  // For backward compatibility
   localStorage.removeItem(JWT_KEY);
-  client.setJWT(''); // Clear the JWT from the client
-  console.log('Session cleared');
+  console.log('Auth0 session cleared');
 };

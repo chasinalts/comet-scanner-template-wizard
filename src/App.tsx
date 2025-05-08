@@ -29,7 +29,7 @@ import Home from './pages/Home';
 function AppContent() {
   const { currentUser, isLoading } = useAuth();
 
-  // Initialize Appwrite storage only when the user is authenticated and is an owner
+  // Initialize storage only when the user is authenticated and is an owner
   useEffect(() => {
     const init = async () => {
       // Only proceed if authentication is complete and we have a user
@@ -40,11 +40,10 @@ function AppContent() {
 
       if (isOwner) {
         try {
-          console.log('User is owner, initializing Appwrite storage...');
-          const result = await initializeStorage();
-          console.log('Appwrite storage initialization result:', result);
+          console.log('User is owner, storage already initialized by Supabase');
+          // Supabase buckets are created through the setup scripts
         } catch (error) {
-          console.error('Error initializing Appwrite storage:', error);
+          console.error('Error with storage:', error);
         }
       } else {
         console.log('User is not an owner, skipping storage initialization');
