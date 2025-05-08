@@ -2,6 +2,9 @@
 import { supabaseClient, BANNER_BUCKET, GALLERY_BUCKET, SCANNER_BUCKET } from '../supabaseConfig';
 import { v4 as uuidv4 } from 'uuid';
 
+// Define bucket types
+export type BucketType = 'banner' | 'gallery' | 'scanner';
+
 // Map image type to bucket
 const getBucketForType = (imageType: string): string => {
   switch (imageType) {
@@ -96,7 +99,7 @@ export const deleteImage = async (
     const pathParts = url.pathname.split('/');
     const fileName = pathParts[pathParts.length - 1];
     const bucketId = getBucketForType(imageType);
-    
+
     // Delete the file from Supabase Storage
     const { error } = await supabaseClient.storage
       .from(bucketId)
@@ -133,7 +136,7 @@ export const deleteImage = async (
 export const listFiles = async (imageType: string): Promise<any[]> => {
   try {
     const bucketId = getBucketForType(imageType);
-    
+
     // Get files from the images table
     const { data, error } = await supabaseClient
       .from('images')
@@ -151,7 +154,7 @@ export const listFiles = async (imageType: string): Promise<any[]> => {
       const { data: { publicUrl } } = supabaseClient.storage
         .from(file.bucket_id)
         .getPublicUrl(`${imageType}/${file.file_name}`);
-      
+
       return {
         ...file,
         publicUrl,
@@ -173,6 +176,6 @@ export const getPublicUrl = (bucketId: string, filePath: string): string => {
   const { data: { publicUrl } } = supabaseClient.storage
     .from(bucketId)
     .getPublicUrl(filePath);
-  
+
   return publicUrl;
 };

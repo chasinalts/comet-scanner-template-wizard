@@ -1,8 +1,7 @@
 // Hook that provides access to admin-managed content like banner images, scanner variations, and templates
 import { useState, useEffect, useMemo, useCallback } from '../utils/react-imports';
 import { memoize } from '../utils/memoization';
-import { storage as appwriteSDKStorage } from '../appwriteConfig'; // Import Appwrite SDK storage
-import { BucketType as AppwriteBucketType } from '../utils/appwriteStorage'; // Assuming BucketType is here
+import { getPublicUrl } from '../utils/supabaseStorage'; // Import Supabase storage utility
 
 export interface ContentItem {
   id: string;
@@ -102,11 +101,11 @@ export const useAdminContent = (): AdminContentHook => {
       id: banner.id,
       src: (banner.storageProvider === 'appwrite' && banner.fileId && banner.bucketId)
         ? (() => {
-            const url = appwriteSDKStorage.getFilePreview(banner.bucketId, banner.fileId);
-            console.log(`[useAdminContent] Generated Banner URL for ${banner.fileId}:`, url);
-            return url;
+            // For backward compatibility with Appwrite URLs
+            console.log(`[useAdminContent] Using legacy URL for ${banner.fileId}`);
+            return banner.fileId;
           })()
-        : banner.fileId || '', // Fallback to fileId if not Appwrite or missing ids
+        : banner.fileId || '', // Use fileId directly (Supabase public URL)
       preview: banner.imagePreview,
       alt: banner.title,
       scale: banner.scale,
@@ -145,11 +144,11 @@ export const useAdminContent = (): AdminContentHook => {
         id: item.id,
         src: (item.storageProvider === 'appwrite' && item.fileId && item.bucketId)
           ? (() => {
-              const url = appwriteSDKStorage.getFilePreview(item.bucketId, item.fileId);
-              console.log(`[useAdminContent] Generated Scanner/Gallery URL for ${item.fileId}:`, url);
-              return url;
+              // For backward compatibility with Appwrite URLs
+              console.log(`[useAdminContent] Using legacy URL for ${item.fileId}`);
+              return item.fileId;
             })()
-          : item.fileId || '', // Fallback to fileId if not Appwrite or missing ids
+          : item.fileId || '', // Use fileId directly (Supabase public URL)
         preview: item.imagePreview,
         alt: item.title,
         scale: item.scale,

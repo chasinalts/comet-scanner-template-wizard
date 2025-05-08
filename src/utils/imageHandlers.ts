@@ -1,5 +1,5 @@
 import { processImageForUpload } from './imageCompression';
-import { uploadFile as uploadFileToSupabase, deleteFile as deleteFileFromSupabase, BucketType as SupabaseBucketType } from './supabaseImageStorage';
+import { uploadImage as uploadFileToSupabase, deleteImage as deleteFileFromSupabase, BucketType as SupabaseBucketType } from './supabaseStorage';
 import { uploadFile as uploadFileToAppwrite, deleteFile as deleteFileFromAppwrite, BucketType as AppwriteBucketType } from './appwriteStorage';
 
 /**
@@ -73,7 +73,7 @@ export const handleSupabaseImageUpload = (
         const userIdToUse = userId || 'system';
 
         const result = await uploadFileToSupabase(processedFile, bucketType, userIdToUse);
-        const imageUrl = result.$id ? result.$id : '';
+        const imageUrl = result.publicUrl;
 
         console.log('Image uploaded to Supabase:', {
           originalSize: file.size,
@@ -83,8 +83,8 @@ export const handleSupabaseImageUpload = (
           publicUrl: result.publicUrl
         });
 
-        // Call the success callback with the image ID and preview URL
-        // We'll use the ID for metadata lookups and the publicUrl for direct display
+        // Call the success callback with the public URL and preview URL
+        // We'll use the public URL for both ID and display
         onSuccess(imageUrl, result.publicUrl || imagePreview);
 
         // Clean up the preview URL after a delay to ensure it's used
@@ -220,7 +220,7 @@ export const handleImageUpload = (
   onSuccess: (imageUrl: string, imagePreview: string) => void,
   onError?: (error: any) => void,
   userId?: string,
-  preferredProvider: 'appwrite' | 'supabase' = 'appwrite'
+  preferredProvider: 'appwrite' | 'supabase' = 'supabase'
 ) => {
   // Use the preferred storage provider
   if (preferredProvider === 'appwrite') {
@@ -243,7 +243,7 @@ export const cleanupImageUrl = async (
   url: string,
   isCloudUrl = false,
   bucketType?: AppwriteBucketType | SupabaseBucketType,
-  provider: 'appwrite' | 'supabase' = 'appwrite'
+  provider: 'appwrite' | 'supabase' = 'supabase'
 ) => {
   if (url.startsWith('blob:')) {
     try {
@@ -256,7 +256,7 @@ export const cleanupImageUrl = async (
       if (provider === 'appwrite') {
         await deleteFileFromAppwrite(url, bucketType as AppwriteBucketType);
       } else {
-        await deleteFileFromSupabase(url);
+        await deleteFileFromSupabase(url, bucketType as SupabaseBucketType);
       }
     } catch (error) {
       console.error(`Error deleting file from ${provider} Storage (${bucketType}):`, error);
