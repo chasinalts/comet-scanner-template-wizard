@@ -25,3 +25,7 @@ dist-ssr
 
 # Local Netlify folder
 .netlify
+
+# Auth0 Deploy CLI files
+config.json
+.env.auth0

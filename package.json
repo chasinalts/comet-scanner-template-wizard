@@ -57,6 +57,13 @@
     "auth0:setup": "npm run auth0:setup-env && npm run auth0:setup-user-profiles",
     "auth0:setup-complete": "node scripts/setup-auth0-complete.js",
     "auth0:fix-domain": "node scripts/fix-auth0-domain.js",
+    "auth0:setup-universal-login": "node scripts/setup-auth0-universal-login.js",
+    "auth0:setup-cli": "node scripts/setup-auth0-cli.js",
+    "auth0:setup-universal-login-cli": "node scripts/setup-auth0-universal-login-cli.js",
+    "auth0:auto-setup": "node scripts/auto-setup-auth0-universal-login.js",
+    "auth0:setup-api": "node scripts/setup-auth0-api.js",
+    "auth0:setup-m2m": "node scripts/setup-auth0-m2m.js",
+    "auth0:setup-deploy-cli": "node scripts/setup-auth0-deploy-cli.js",
     "github:commit-push-noninteractive": "node scripts/commit-and-push-noninteractive.js",
     "netlify:deploy-script": "node scripts/deploy-to-netlify.js",
     "netlify:setup-env": "node scripts/setup-netlify-env.js",
@@ -65,7 +72,9 @@
     "netlify:check": "node scripts/check-deployment.js",
     "deploy": "bash scripts/deploy-with-node18.sh",
     "context7:setup": "node setup-context7.js",
-    "context7:start": "node start-context7.js"
+    "context7:start": "node start-context7.js",
+    "auth0:export": "a0deploy export --format=yaml --output_folder=tenant",
+    "auth0:import": "a0deploy import --input_file=tenant/tenant.yaml"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",

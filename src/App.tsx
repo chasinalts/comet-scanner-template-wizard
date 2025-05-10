@@ -17,10 +17,9 @@ import { useAuth } from './contexts/Auth0Context';
 
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
-const Signup = lazy(() => import('./pages/Signup'));
+const Callback = lazy(() => import('./pages/Callback'));
 const ScannerWizard = lazy(() => import('./pages/ScannerWizard'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
-const Callback = lazy(() => import('./pages/Callback'));
 
 import Home from './pages/Home';
 import Auth0Debug from './components/Auth0Debug';
@@ -121,16 +120,6 @@ function AppContent() {
         }
       />
       <Route
-        path="/signup"
-        element={
-          <Layout>
-            <Suspense fallback={<SuspenseFallback message="Loading signup page..." />}>
-              <Signup />
-            </Suspense>
-          </Layout>
-        }
-      />
-      <Route
         path="/callback"
         element={
           <Suspense fallback={<SuspenseFallback message="Processing authentication..." />}>
@@ -138,7 +127,7 @@ function AppContent() {
           </Suspense>
         }
       />
-      {/* Owner setup route removed - owner account already created */}
+      {/* Signup route removed - using Auth0 Universal Login */}
 
       {/* Protected Routes */}
       <Route
@@ -179,15 +168,7 @@ function App() {
   return (
     <Router>
       <Auth0Provider
-        domain="dev-mytcazei5krtbkqw.us.auth0.com"
-        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || 'Mp0HS9ZAmmgPVbpDU3lCbe8vr4cQgT6L'}
-        authorizationParams={{
-          redirect_uri: `${window.location.origin}/callback`,
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://cometscanner.netlify.app/api',
-          scope: 'openid profile email'
-        }}
-        cacheLocation="localstorage"
-        useRefreshTokens={true}
+        {...auth0Config}
       >
         <WizardProvider>
           <ThemeProvider>

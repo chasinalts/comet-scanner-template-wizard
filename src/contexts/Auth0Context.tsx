@@ -40,12 +40,12 @@ export const Auth0Context = createContext<Auth0ContextType | undefined>(undefine
 export function Auth0Provider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  
-  const { 
-    isLoading: auth0IsLoading, 
-    isAuthenticated, 
-    user, 
-    loginWithRedirect, 
+
+  const {
+    isLoading: auth0IsLoading,
+    isAuthenticated,
+    user,
+    loginWithRedirect,
     logout: auth0Logout,
     getAccessTokenSilently
   } = useAuth0();
@@ -68,7 +68,7 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
         // Get user metadata from Auth0
         const role = getUserRoleFromMetadata(user.user_metadata);
         const isOwner = role === OWNER_ROLE;
-        
+
         // Get permissions based on role
         const permissions = getPermissionsForRole(role);
 
@@ -135,12 +135,16 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
     setupUserProfile();
   }, [auth0IsLoading, isAuthenticated, user]);
 
-  // Login function
+  // Login function - uses Universal Login
   const login = () => {
-    loginWithRedirect();
+    loginWithRedirect({
+      authorizationParams: {
+        prompt: 'login',
+      },
+    });
   };
 
-  // Signup function
+  // Signup function - uses Universal Login with signup hint
   const signup = () => {
     loginWithRedirect({
       authorizationParams: {
