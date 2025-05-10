@@ -56,6 +56,7 @@
     "auth0:setup-owner": "node scripts/setup-auth0-owner.js",
     "auth0:setup": "npm run auth0:setup-env && npm run auth0:setup-user-profiles",
     "auth0:setup-complete": "node scripts/setup-auth0-complete.js",
+    "auth0:fix-domain": "node scripts/fix-auth0-domain.js",
     "github:commit-push-noninteractive": "node scripts/commit-and-push-noninteractive.js",
     "netlify:deploy-script": "node scripts/deploy-to-netlify.js",
     "netlify:setup-env": "node scripts/setup-netlify-env.js",

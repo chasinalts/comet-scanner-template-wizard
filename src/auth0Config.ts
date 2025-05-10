@@ -3,7 +3,7 @@ import { Auth0ClientOptions } from '@auth0/auth0-react';
 
 // Auth0 configuration options
 export const auth0Config: Auth0ClientOptions = {
-  domain: import.meta.env.VITE_AUTH0_DOMAIN || '',
+  domain: 'dev-mytcazei5krtbkqw.us.auth0.com',
   clientId: import.meta.env.VITE_AUTH0_CLIENT_ID || '',
   authorizationParams: {
     redirect_uri: window.location.origin,
@@ -50,17 +50,17 @@ export const DEFAULT_PERMISSIONS = {
 // Helper function to get user role from Auth0 metadata
 export const getUserRoleFromMetadata = (metadata: any): string => {
   if (!metadata) return USER_ROLE;
-  
+
   // Check if user is an owner
   if (metadata.is_owner === true || metadata.is_owner === 'true') {
     return OWNER_ROLE;
   }
-  
+
   // Check if user is an admin
   if (metadata.role === ADMIN_ROLE) {
     return ADMIN_ROLE;
   }
-  
+
   // Default to user role
   return USER_ROLE;
 };

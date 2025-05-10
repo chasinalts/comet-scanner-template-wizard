@@ -23,6 +23,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Callback = lazy(() => import('./pages/Callback'));
 
 import Home from './pages/Home';
+import Auth0Debug from './components/Auth0Debug';
 
 // No need for a wrapper since we're importing the component directly
 
@@ -88,9 +89,11 @@ function AppContent() {
   }
 
   return (
-    <Routes>
-      {/* Login is the entry point for unauthenticated users */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+    <>
+      <Auth0Debug />
+      <Routes>
+        {/* Login is the entry point for unauthenticated users */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* Home Page Route - Protected but accessible to all authenticated users */}
       <Route
@@ -168,6 +171,7 @@ function AppContent() {
       {/* Catch all route - redirect to login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
+    </>
   );
 }
 
@@ -175,7 +179,7 @@ function App() {
   return (
     <Router>
       <Auth0Provider
-        domain={import.meta.env.VITE_AUTH0_DOMAIN || 'dev-mytcazei5krtbkqw.us.auth0.com'}
+        domain="dev-mytcazei5krtbkqw.us.auth0.com"
         clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || 'Mp0HS9ZAmmgPVbpDU3lCbe8vr4cQgT6L'}
         authorizationParams={{
           redirect_uri: `${window.location.origin}/callback`,
