@@ -74,9 +74,17 @@ async function main() {
   console.log('   - update:branding');
   console.log('   - read:prompts');
   console.log('   - update:prompts');
+  console.log('   - read:client_grants');
+  console.log('   - update:client_grants');
+  console.log('   - read:connections');
+  console.log('   - update:connections');
+  console.log('   - read:users');
+  console.log('   - update:users');
   console.log('9. Click "Authorize"');
   console.log('10. Go to the "Settings" tab of your new application');
   console.log('11. Note down the "Client ID" and "Client Secret"');
+  console.log('\nIMPORTANT: After creating the application, you may need to wait a few minutes');
+  console.log('for the permissions to propagate before running this script again.');
 
   const proceed = await prompt('\nHave you created the Machine-to-Machine application? (y/n): ');
 
@@ -115,8 +123,51 @@ async function main() {
 
     managementToken = tokenData.access_token;
     console.log('✅ Got Management API token');
+
+    // Verify token permissions by making a simple API call
+    console.log('Verifying token permissions...');
+    const verifyResponse = await fetch(`https://${auth0Domain}/api/v2/clients`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${managementToken}`
+      }
+    });
+
+    if (!verifyResponse.ok) {
+      const errorData = await verifyResponse.json();
+      console.log('⚠️ Token verification failed:', JSON.stringify(errorData));
+      console.log('\nPossible issues:');
+      console.log('1. The Machine-to-Machine application might not have the necessary permissions');
+      console.log('2. The permissions might not have propagated yet (can take a few minutes)');
+      console.log('3. The token might have expired or been revoked');
+
+      const continueAnyway = await prompt('\nDo you want to continue anyway? (y/n): ');
+      if (continueAnyway.toLowerCase() !== 'y') {
+        console.log('Exiting script. Please check your permissions and try again later.');
+        rl.close();
+        return;
+      }
+
+      console.log('Continuing with the script, but some operations might fail...');
+    } else {
+      console.log('✅ Token permissions verified successfully');
+    }
   } catch (tokenError) {
     console.error('❌ Failed to get Management API token:', tokenError.message);
+    console.log('\nPossible issues:');
+    console.log('1. The Machine-to-Machine application might not exist or have incorrect credentials');
+    console.log('2. The Auth0 domain might be incorrect');
+    console.log('3. There might be network connectivity issues');
+
+    const retry = await prompt('\nDo you want to retry with different credentials? (y/n): ');
+    if (retry.toLowerCase() === 'y') {
+      m2mClientId = await prompt('Enter the Machine-to-Machine application client ID: ');
+      m2mClientSecret = await prompt('Enter the Machine-to-Machine application client secret: ');
+
+      // Recursive call to retry with new credentials
+      return await main();
+    }
+
     rl.close();
     return;
   }
@@ -268,31 +319,89 @@ async function main() {
     console.error('❌ Failed to configure Universal Login experience:', promptError.message);
   }
 
-  // Step 6: Configure Prompt Settings
+  // Step 6: Configure Prompt Settings (using the correct endpoint)
   console.log('\nStep 6: Configuring Prompt Settings...');
 
   try {
-    const promptSettingsResponse = await fetch(`https://${auth0Domain}/api/v2/prompts/settings`, {
-      method: 'PATCH',
+    // First, try to get the current prompt settings to check the correct structure
+    const getPromptsResponse = await fetch(`https://${auth0Domain}/api/v2/prompts`, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${managementToken}`
-      },
-      body: JSON.stringify({
-        prompt: "none"
-      })
+      }
     });
 
-    if (!promptSettingsResponse.ok) {
-      const errorData = await promptSettingsResponse.json();
-      throw new Error(`Failed to update Prompt Settings: ${JSON.stringify(errorData)}`);
+    if (!getPromptsResponse.ok) {
+      const errorData = await getPromptsResponse.json();
+      console.log('⚠️ Could not get current prompt settings:', JSON.stringify(errorData));
+      console.log('Trying alternative approach...');
+    } else {
+      const promptsData = await getPromptsResponse.json();
+      console.log('Current prompts configuration:', JSON.stringify(promptsData, null, 2));
     }
 
-    console.log('✅ Prompt Settings configured successfully');
-    console.log('   - Set "Prompt" to "None" (default)');
-    console.log('   - This allows your application to control when to show the login prompt');
+    // Try updating the prompt settings using the correct endpoint structure
+    console.log('Updating prompt settings...');
+
+    // Try first approach - direct prompt property
+    try {
+      const promptSettingsResponse = await fetch(`https://${auth0Domain}/api/v2/prompts`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${managementToken}`
+        },
+        body: JSON.stringify({
+          prompt: {
+            selection_prompt: {
+              type: "none"
+            }
+          }
+        })
+      });
+
+      if (!promptSettingsResponse.ok) {
+        const errorData = await promptSettingsResponse.json();
+        console.log('⚠️ First approach failed:', JSON.stringify(errorData));
+        throw new Error('First approach failed');
+      }
+
+      console.log('✅ Prompt Settings configured successfully (first approach)');
+    } catch (firstApproachError) {
+      // Try second approach - universal_login property
+      try {
+        const secondApproachResponse = await fetch(`https://${auth0Domain}/api/v2/prompts`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${managementToken}`
+          },
+          body: JSON.stringify({
+            universal_login_experience: "new"
+          })
+        });
+
+        if (!secondApproachResponse.ok) {
+          const errorData = await secondApproachResponse.json();
+          throw new Error(`Second approach failed: ${JSON.stringify(errorData)}`);
+        }
+
+        console.log('✅ Universal Login experience configured successfully');
+        console.log('Note: The specific "Prompt" setting may need to be configured manually in the Auth0 dashboard:');
+        console.log('1. Go to Authentication → Authentication Profile');
+        console.log('2. Under "Login Experience", set "Prompt" to "None"');
+      } catch (secondApproachError) {
+        console.error('❌ Failed to configure Prompt Settings:', secondApproachError.message);
+        console.log('\nPlease configure the Prompt setting manually in the Auth0 dashboard:');
+        console.log('1. Go to Authentication → Authentication Profile');
+        console.log('2. Under "Login Experience", set "Prompt" to "None"');
+      }
+    }
   } catch (promptSettingsError) {
     console.error('❌ Failed to configure Prompt Settings:', promptSettingsError.message);
+    console.log('\nPlease configure the Prompt setting manually in the Auth0 dashboard:');
+    console.log('1. Go to Authentication → Authentication Profile');
+    console.log('2. Under "Login Experience", set "Prompt" to "None"');
   }
 
   console.log('\n=== Auth0 Universal Login Configuration Complete ===');
