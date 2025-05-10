@@ -211,6 +211,22 @@ async function main() {
   console.log('\nStep 3: Configuring Universal Login branding...');
 
   try {
+    // First, get the current branding to understand the structure
+    const getBrandingResponse = await fetch(`https://${auth0Domain}/api/v2/branding`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${managementToken}`
+      }
+    });
+
+    if (getBrandingResponse.ok) {
+      const currentBranding = await getBrandingResponse.json();
+      console.log('Current branding structure:', JSON.stringify(currentBranding, null, 2));
+    } else {
+      console.log('Could not retrieve current branding, proceeding with update...');
+    }
+
+    // Update branding with the correct structure
     const brandingResponse = await fetch(`https://${auth0Domain}/api/v2/branding`, {
       method: 'PATCH',
       headers: {
@@ -218,16 +234,10 @@ async function main() {
         'Authorization': `Bearer ${managementToken}`
       },
       body: JSON.stringify({
-        universal_login: {
-          body_font: {
-            url: "https://fonts.googleapis.com/css?family=Roboto:400,500,700"
-          },
-          colors: {
-            primary: "#0059d6",
-            page_background: "#000000"
-          }
-        },
-        templates: []
+        colors: {
+          primary: "#0059d6",
+          page_background: "#000000"
+        }
       })
     });
 
@@ -237,6 +247,33 @@ async function main() {
     }
 
     console.log('✅ Universal Login branding configured successfully');
+
+    // Try to update font separately if needed
+    try {
+      const fontResponse = await fetch(`https://${auth0Domain}/api/v2/branding/theme`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${managementToken}`
+        },
+        body: JSON.stringify({
+          fonts: {
+            body: {
+              url: "https://fonts.googleapis.com/css?family=Roboto:400,500,700"
+            }
+          }
+        })
+      });
+
+      if (fontResponse.ok) {
+        console.log('✅ Font settings updated successfully');
+      } else {
+        const fontError = await fontResponse.json();
+        console.log('⚠️ Could not update font settings:', JSON.stringify(fontError));
+      }
+    } catch (fontError) {
+      console.log('⚠️ Could not update font settings:', fontError.message);
+    }
   } catch (brandingError) {
     console.error('❌ Failed to configure Universal Login branding:', brandingError.message);
   }
@@ -245,6 +282,22 @@ async function main() {
   console.log('\nStep 4: Configuring application settings...');
 
   try {
+    // First, get the current application settings to understand the structure
+    const getAppResponse = await fetch(`https://${auth0Domain}/api/v2/clients/${spaClientId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${managementToken}`
+      }
+    });
+
+    if (getAppResponse.ok) {
+      const currentApp = await getAppResponse.json();
+      console.log('Current application structure:', JSON.stringify(currentApp, null, 2));
+    } else {
+      console.log('Could not retrieve current application settings, proceeding with update...');
+    }
+
+    // Update application settings with the correct structure
     const appResponse = await fetch(`https://${auth0Domain}/api/v2/clients/${spaClientId}`, {
       method: 'PATCH',
       headers: {
@@ -278,20 +331,91 @@ async function main() {
         oidc_conformant: true,
         jwt_configuration: {
           alg: "RS256",
-          lifetime_in_seconds: 36000,
-          secret_encoded: false
+          lifetime_in_seconds: 36000
         }
       })
     });
 
     if (!appResponse.ok) {
       const errorData = await appResponse.json();
-      throw new Error(`Failed to update application settings: ${JSON.stringify(errorData)}`);
-    }
 
-    console.log('✅ Application settings configured successfully');
+      // If we still have issues, try a more minimal update
+      if (errorData.statusCode === 400) {
+        console.log('⚠️ Detailed update failed, trying minimal update...');
+
+        const minimalAppResponse = await fetch(`https://${auth0Domain}/api/v2/clients/${spaClientId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${managementToken}`
+          },
+          body: JSON.stringify({
+            callbacks: [
+              `${localUrl}/callback`,
+              `${appUrl}/callback`
+            ],
+            allowed_logout_urls: [
+              localUrl,
+              appUrl
+            ],
+            web_origins: [
+              localUrl,
+              appUrl
+            ]
+          })
+        });
+
+        if (!minimalAppResponse.ok) {
+          const minimalErrorData = await minimalAppResponse.json();
+          throw new Error(`Failed to update minimal application settings: ${JSON.stringify(minimalErrorData)}`);
+        }
+
+        console.log('✅ Basic application URLs configured successfully');
+
+        // Try to update OIDC settings separately
+        try {
+          const oidcResponse = await fetch(`https://${auth0Domain}/api/v2/clients/${spaClientId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${managementToken}`
+            },
+            body: JSON.stringify({
+              oidc_conformant: true,
+              token_endpoint_auth_method: "none",
+              app_type: "spa"
+            })
+          });
+
+          if (oidcResponse.ok) {
+            console.log('✅ OIDC settings configured successfully');
+          } else {
+            const oidcError = await oidcResponse.json();
+            console.log('⚠️ Could not update OIDC settings:', JSON.stringify(oidcError));
+          }
+        } catch (oidcError) {
+          console.log('⚠️ Could not update OIDC settings:', oidcError.message);
+        }
+      } else {
+        throw new Error(`Failed to update application settings: ${JSON.stringify(errorData)}`);
+      }
+    } else {
+      console.log('✅ Application settings configured successfully');
+    }
   } catch (appError) {
     console.error('❌ Failed to configure application settings:', appError.message);
+    console.log('\nPlease configure the application settings manually in the Auth0 dashboard:');
+    console.log('1. Go to Applications → Applications → Your SPA Application');
+    console.log('2. Add the following URLs:');
+    console.log(`   - Allowed Callback URLs: ${localUrl}/callback, ${appUrl}/callback`);
+    console.log(`   - Allowed Logout URLs: ${localUrl}, ${appUrl}`);
+    console.log(`   - Allowed Web Origins: ${localUrl}, ${appUrl}`);
+    console.log('3. Under "Advanced Settings" → "Grant Types", enable:');
+    console.log('   - Authorization Code');
+    console.log('   - Implicit');
+    console.log('   - Refresh Token');
+    console.log('4. Under "Advanced Settings" → "OAuth", set:');
+    console.log('   - JsonWebToken Signature Algorithm: RS256');
   }
 
   // Step 5: Configure Universal Login experience
