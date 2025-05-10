@@ -65,6 +65,8 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
           return;
         }
 
+        console.log('Auth0 user:', user);
+
         // Get user metadata from Auth0
         const role = getUserRoleFromMetadata(user.user_metadata);
         const isOwner = role === OWNER_ROLE;
@@ -85,12 +87,14 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
 
         // If user doesn't exist in Supabase, create a new profile
         if (!existingUser) {
+          console.log('Creating new user profile in Supabase');
           const { data: newUser, error: createError } = await supabaseClient
             .from('user_profiles')
             .insert([
               {
                 auth0_id: user.sub,
                 email: user.email,
+                username: user.nickname || user.name,
                 is_owner: isOwner,
                 role: role,
                 created_at: new Date().toISOString(),
@@ -103,6 +107,7 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
           if (createError) {
             console.error('Error creating user profile:', createError);
           } else {
+            console.log('New user profile created:', newUser);
             // Set the current user with the new profile
             setCurrentUser({
               id: newUser.id,
@@ -114,6 +119,7 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
             });
           }
         } else {
+          console.log('Using existing user profile:', existingUser);
           // Set the current user with the existing profile
           setCurrentUser({
             id: existingUser.id,
@@ -137,6 +143,7 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
 
   // Login function - uses Universal Login
   const login = () => {
+    console.log('Redirecting to Auth0 login page');
     loginWithRedirect({
       authorizationParams: {
         prompt: 'login',
@@ -146,6 +153,7 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
 
   // Signup function - uses Universal Login with signup hint
   const signup = () => {
+    console.log('Redirecting to Auth0 signup page');
     loginWithRedirect({
       authorizationParams: {
         screen_hint: 'signup',
@@ -155,6 +163,7 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
 
   // Logout function
   const logout = () => {
+    console.log('Logging out');
     auth0Logout({
       logoutParams: {
         returnTo: window.location.origin

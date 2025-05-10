@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/Auth0Context';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -10,6 +11,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }: ProtectedRouteProps) => {
   const { currentUser, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: auth0IsLoading } = useAuth0();
   const location = useLocation();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -25,16 +27,25 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
       try {
         console.log('ProtectedRoute: Checking authentication');
         console.log('Current user:', currentUser);
+        console.log('Auth0 isAuthenticated:', isAuthenticated);
 
         // If we're still loading auth state, wait
-        if (isLoading) {
+        if (isLoading || auth0IsLoading) {
           console.log('ProtectedRoute: Auth is still loading');
           return;
         }
 
-        // No user, definitely no access
+        // Check if authenticated with Auth0
+        if (!isAuthenticated) {
+          console.log('ProtectedRoute: Not authenticated with Auth0');
+          setHasAccess(false);
+          setIsCheckingAuth(false);
+          return;
+        }
+
+        // No user profile in our system, no access
         if (!currentUser) {
-          console.log('ProtectedRoute: No user, no access');
+          console.log('ProtectedRoute: No user profile, no access');
           setHasAccess(false);
           setIsCheckingAuth(false);
           return;
@@ -73,7 +84,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
     return () => {
       clearTimeout(authCheckTimeout);
     };
-  }, [currentUser, isLoading, requireOwner, requireAdmin]);
+  }, [currentUser, isLoading, auth0IsLoading, isAuthenticated, requireOwner, requireAdmin]);
 
   // Show loading state while checking auth
   if (isLoading || isCheckingAuth) {

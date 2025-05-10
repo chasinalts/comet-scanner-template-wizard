@@ -3,6 +3,7 @@ import { useEffect, useState } from '../utils/react-imports';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/Auth0Context';
+import { useAuth0 } from '@auth0/auth0-react';
 import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
@@ -14,6 +15,7 @@ const containerVariants = {
 const Login = () => {
   const [redirecting, setRedirecting] = useState(false);
   const { login, currentUser, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: auth0IsLoading } = useAuth0();
   const navigate = useNavigate();
 
   // If user is already logged in, redirect to the appropriate page
@@ -33,7 +35,16 @@ const Login = () => {
 
   // Auto-redirect to Auth0 login after a short delay
   useEffect(() => {
-    if (!currentUser && !isLoading && !redirecting) {
+    console.log('Login page - Auth state:', {
+      isAuthenticated,
+      auth0IsLoading,
+      currentUser,
+      isLoading,
+      redirecting
+    });
+
+    if (!isAuthenticated && !auth0IsLoading && !currentUser && !isLoading && !redirecting) {
+      console.log('Auto-redirecting to Auth0 login...');
       const redirectTimer = setTimeout(() => {
         setRedirecting(true);
         login();
@@ -41,7 +52,7 @@ const Login = () => {
 
       return () => clearTimeout(redirectTimer);
     }
-  }, [currentUser, isLoading, login, redirecting]);
+  }, [isAuthenticated, auth0IsLoading, currentUser, isLoading, login, redirecting]);
 
   const handleLogin = () => {
     setRedirecting(true);

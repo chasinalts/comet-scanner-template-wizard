@@ -11,22 +11,28 @@ const Callback = () => {
   const { currentUser } = useAuth();
 
   useEffect(() => {
+    console.log('Callback: Auth state', { isLoading, isAuthenticated, error, currentUser });
+
     // If Auth0 has finished loading and the user is authenticated
     if (!isLoading && isAuthenticated) {
       console.log('Callback: Auth0 authentication successful, redirecting...');
-      
+
       // If we have a current user, redirect based on role
       if (currentUser) {
+        console.log('Callback: Current user found, redirecting based on role', currentUser);
         const isOwner = currentUser.is_owner === true || currentUser.is_owner === 'true';
         const isAdmin = currentUser.role === 'admin';
 
         if (isOwner || isAdmin) {
+          console.log('Callback: User is owner or admin, redirecting to dashboard');
           navigate('/dashboard');
         } else {
+          console.log('Callback: User is regular user, redirecting to home');
           navigate('/home');
         }
       } else {
         // If we don't have a current user yet, redirect to home
+        console.log('Callback: No current user yet, redirecting to home');
         navigate('/home');
       }
     } else if (!isLoading && !isAuthenticated && error) {
@@ -45,7 +51,7 @@ const Callback = () => {
           variant="title"
           className="text-3xl font-bold mb-4"
         />
-        
+
         {isLoading && (
           <div className="flex justify-center">
             <svg
@@ -70,7 +76,7 @@ const Callback = () => {
             </svg>
           </div>
         )}
-        
+
         {error && (
           <div className="mt-4 text-red-500">
             <p>Authentication Error</p>
