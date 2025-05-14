@@ -1,5 +1,5 @@
 // User profile component that displays user information
-import { useAuth } from '../../contexts/Auth0Context';
+import { useAuth } from '../../contexts/AuthContext';
 import HolographicText from './HolographicText';
 
 interface UserProfileProps {

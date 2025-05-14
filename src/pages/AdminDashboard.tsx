@@ -2,7 +2,7 @@
 import { useState, ChangeEvent, useEffect } from '../utils/react-imports';
 
 import { motion, Reorder, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/Auth0Context';
+import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ui/Toast';
 import Button from '../components/ui/Button';
 import DragDropUpload from '../components/ui/DragDropUpload';

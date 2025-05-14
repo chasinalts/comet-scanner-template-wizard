@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from '../utils/react-imports';
-import { useAuth } from '../contexts/Auth0Context';
+import { useAuth } from '../contexts/AuthContext';
 import { supabaseClient } from '../supabaseConfig';
 import { v4 as uuidv4 } from 'uuid';
 

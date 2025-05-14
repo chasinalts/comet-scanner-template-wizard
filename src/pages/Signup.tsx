@@ -1,8 +1,8 @@
-// Simplified signup page component that redirects to Auth0 Universal Login with signup hint
+// Simple signup page component
 import { useEffect, useState } from '../utils/react-imports';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../contexts/Auth0Context';
+import { useAuth } from '../contexts/AuthContext';
 import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
@@ -31,7 +31,7 @@ const Signup = () => {
     }
   }, [currentUser, isLoading, navigate]);
 
-  // Auto-redirect to Auth0 signup after a short delay
+  // Auto-redirect to signup after a short delay
   useEffect(() => {
     if (!currentUser && !isLoading && !redirecting) {
       const redirectTimer = setTimeout(() => {
@@ -80,7 +80,7 @@ const Signup = () => {
           <div className="space-y-6">
             <div className="text-center mb-6">
               <p className="text-sm text-gray-400 mb-4">
-                You will be redirected to Auth0 to complete the registration process.
+                Enter your information to create an account.
               </p>
             </div>
 

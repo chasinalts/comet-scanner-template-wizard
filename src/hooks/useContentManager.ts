@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from '../utils/react-imports';
 import type { ContentItem } from './useAdminContent';
 import { handleImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
 import { BucketType as SupabaseBucketType } from '../utils/supabaseStorage';
-import { useAuth } from '../contexts/Auth0Context';
+import { useAuth } from '../contexts/AuthContext';
 
 export interface ContentManagerHook {
   contents: ContentItem[];

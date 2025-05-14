@@ -8,7 +8,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import analytics from './utils/analytics';
 import loggingService from './utils/loggingService';
 
-// Auth0 handles authentication now
+// Simple authentication is now handled by AuthContext
 
 // Make sure the root element exists
 const rootElement = document.getElementById('root');

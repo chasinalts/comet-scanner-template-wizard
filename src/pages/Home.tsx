@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from '../utils/react-imports';
 
 import HolographicText from '../components/ui/HolographicText';
-import { useAuth } from '../contexts/Auth0Context';
+import { useAuth } from '../contexts/AuthContext';
 import UserProfile from '../components/ui/UserProfile';
 import { useNavigate } from 'react-router-dom';
 import { supabaseClient, BANNER_BUCKET } from '../supabaseConfig';
