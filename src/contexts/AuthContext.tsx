@@ -1,11 +1,13 @@
-// Authentication context that manages user authentication state, login/logout functionality, and user profiles
+// Simple authentication context without external auth dependencies
 import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
-import { account, databases, client, DATABASE_ID, USER_PROFILES_COLLECTION_ID, ID, type Models } from '../appwriteConfig.ts';
-import { storeSession, hasValidSession } from '../utils/sessionHelper';
-import { UserProfile as DbUserProfile } from '../utils/appwriteDatabase';
 
-// Extended user profile with additional UI-specific fields
-export interface UserProfile extends Omit<DbUserProfile, 'permissions'> {
+// User roles
+export const USER_ROLE = 'user';
+export const ADMIN_ROLE = 'admin';
+export const OWNER_ROLE = 'owner';
+
+// User profile interface
+export interface UserProfile {
   id: string;
   email: string;
   username?: string;
@@ -20,16 +22,43 @@ export interface UserProfile extends Omit<DbUserProfile, 'permissions'> {
     security_settings: boolean;
     site_customization: boolean;
   };
-  role?: 'user' | 'admin' | 'owner';
+  role: typeof USER_ROLE | typeof ADMIN_ROLE | typeof OWNER_ROLE;
 }
+
+// Default permissions for different roles
+export const DEFAULT_PERMISSIONS = {
+  [OWNER_ROLE]: {
+    content_management: true,
+    user_management: true,
+    system_configuration: true,
+    media_uploads: true,
+    security_settings: true,
+    site_customization: true,
+  },
+  [ADMIN_ROLE]: {
+    content_management: true,
+    user_management: true,
+    system_configuration: false,
+    media_uploads: true,
+    security_settings: false,
+    site_customization: true,
+  },
+  [USER_ROLE]: {
+    content_management: false,
+    user_management: false,
+    system_configuration: false,
+    media_uploads: false,
+    security_settings: false,
+    site_customization: false,
+  },
+};
 
 interface AuthContextType {
   currentUser: UserProfile | null;
-  session: Models.Session | null;
-  login: (email: string, password: string) => Promise<{ session: Models.Session } | undefined>;
+  login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, isOwner: boolean) => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
   isLoading: boolean;
 }
 
@@ -37,127 +66,42 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [session, setSession] = useState<Models.Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Set up a timeout to prevent getting stuck in loading state
     const authTimeout = setTimeout(() => {
-      console.log('Auth check timed out after 10 seconds, forcing completion');
+      console.log('Auth check timed out after 5 seconds, forcing completion');
       setIsLoading(false);
-    }, 10000);
+    }, 5000);
 
-    // Check for an existing session
-    const checkSession = async () => {
+    // Check for an existing user in localStorage
+    const checkSession = () => {
       try {
-        if (hasValidSession()) {
-          console.log('Found valid JWT in localStorage');
+        const storedUser = localStorage.getItem('currentUser');
 
-          try {
-            // Verify session and get user data
-            const userData = await account.get();
-            const currentSession = await account.getSession('current');
-            setSession(currentSession);
-
-            // Get user profile from database
-            try {
-              const profile = await databases.getDocument<DbUserProfile>(
-                DATABASE_ID,
-                USER_PROFILES_COLLECTION_ID,
-                userData.$id
-              );
-
-              // Parse permissions from string to object
-              let permissions;
-              try {
-                permissions = profile.permissions ? JSON.parse(profile.permissions) : null;
-              } catch (e) {
-                console.error('Error parsing permissions:', e);
-                permissions = null;
-              }
-
-              // Set the role based on permissions
-              const profileWithRole: UserProfile = {
-                ...profile,
-                id: profile.$id,
-                permissions,
-                role: profile.is_owner ? 'owner' :
-                      (permissions?.user_management ? 'admin' : 'user')
-              };
-
-              setCurrentUser(profileWithRole);
-            } catch (profileError) {
-              console.error('Error getting user profile:', profileError);
-
-              // If profile doesn't exist, create a default one
-              const isOwnerFromMetadata = userData.prefs?.is_owner === true ||
-                                        userData.prefs?.is_owner === 'true';
-
-              const defaultPermissions = isOwnerFromMetadata ? {
-                content_management: true,
-                user_management: true,
-                system_configuration: true,
-                media_uploads: true,
-                security_settings: true,
-                site_customization: true,
-              } : {
-                content_management: false,
-                user_management: false,
-                system_configuration: false,
-                media_uploads: false,
-                security_settings: false,
-                site_customization: false,
-              };
-
-              const newProfile: UserProfile = {
-                id: userData.$id,
-                $id: userData.$id,
-                $createdAt: userData.$createdAt,
-                $updatedAt: userData.$updatedAt,
-                email: userData.email,
-                is_owner: isOwnerFromMetadata || false,
-                created_at: new Date().toISOString(),
-                permissions: defaultPermissions
-              };
-
-              // Create the profile in the database
-              try {
-                await databases.createDocument<DbUserProfile>(
-                  DATABASE_ID,
-                  USER_PROFILES_COLLECTION_ID,
-                  userData.$id,
-                  {
-                    email: newProfile.email,
-                    is_owner: newProfile.is_owner,
-                    created_at: newProfile.created_at,
-                    permissions: JSON.stringify(defaultPermissions)
-                  }
-                );
-
-                const profileWithRole: UserProfile = {
-                  ...newProfile,
-                  role: newProfile.is_owner ? 'owner' :
-                        (defaultPermissions?.user_management ? 'admin' : 'user')
-                };
-
-                setCurrentUser(profileWithRole);
-              } catch (createError) {
-                console.error('Error creating user profile:', createError);
-              }
-            }
-          } catch (error) {
-            console.error('Error verifying session:', error);
-            setSession(null);
-            setCurrentUser(null);
-          }
+        if (storedUser) {
+          console.log('Found user in localStorage');
+          setCurrentUser(JSON.parse(storedUser));
         } else {
-          console.log('No valid JWT found in localStorage');
-          setSession(null);
-          setCurrentUser(null);
+          console.log('No user found in localStorage');
+
+          // For demo purposes, create a default owner user
+          const defaultUser: UserProfile = {
+            id: '1',
+            email: 'owner@example.com',
+            username: 'Owner User',
+            is_owner: true,
+            role: OWNER_ROLE,
+            created_at: new Date().toISOString(),
+            permissions: DEFAULT_PERMISSIONS[OWNER_ROLE]
+          };
+
+          setCurrentUser(defaultUser);
+          localStorage.setItem('currentUser', JSON.stringify(defaultUser));
         }
       } catch (error) {
         console.error('Error checking session:', error);
-        setSession(null);
         setCurrentUser(null);
       } finally {
         clearTimeout(authTimeout);
@@ -167,262 +111,102 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     checkSession();
 
-    // Set up event listener for account changes using the latest Appwrite SDK
-    const unsubscribe = client.subscribe('account', (response) => {
-      if (response.events.includes('users.update') ||
-          response.events.includes('sessions.create') ||
-          response.events.includes('sessions.delete')) {
-        checkSession();
-      }
-    });
-
     return () => {
       clearTimeout(authTimeout);
-      unsubscribe();
     };
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ session: Models.Session } | undefined> => {
+  // Login function - simplified for demo
+  const login = async (email: string, password: string): Promise<void> => {
+    setIsLoading(true);
+
     try {
-      console.log('Attempting to sign in with Appwrite auth');
+      console.log('Attempting to sign in with email:', email);
 
-      const session = await account.createEmailPasswordSession(email, password);
-      console.log('Appwrite auth successful:', session);
+      // For demo purposes, we'll just set the user based on email
+      let role = USER_ROLE;
+      let isOwner = false;
 
-      // Store the JWT in localStorage
-      await storeSession(session);
-
-      // Update the session state
-      setSession(session);
-
-      // Get user data
-      const userData = await account.get();
-      console.log('User data retrieved:', userData);
-
-      // Get user profile from database
-      try {
-        const profile = await databases.getDocument<DbUserProfile>(
-          DATABASE_ID,
-          USER_PROFILES_COLLECTION_ID,
-          userData.$id
-        );
-
-        // Parse permissions from string to object
-        let permissions: UserProfile['permissions'] | null = null;
-        try {
-          permissions = profile.permissions ? JSON.parse(profile.permissions) : null;
-        } catch (e) {
-          console.error('Error parsing permissions:', e);
-          permissions = null;
-        }
-
-        // Set the role based on permissions
-        const profileWithRole: UserProfile = {
-          ...profile,
-          id: profile.$id,
-          permissions,
-          role: profile.is_owner ? 'owner' :
-                (permissions?.user_management ? 'admin' : 'user')
-        };
-
-        console.log('User profile retrieved:', profileWithRole);
-        setCurrentUser(profileWithRole);
-      } catch (profileError) {
-        console.error('Error getting user profile:', profileError);
-
-        // If profile doesn't exist, create a default one
-        const isOwnerFromMetadata = userData.prefs?.is_owner === true ||
-                                  userData.prefs?.is_owner === 'true';
-
-        const defaultPermissions: UserProfile['permissions'] = isOwnerFromMetadata ? {
-          content_management: true,
-          user_management: true,
-          system_configuration: true,
-          media_uploads: true,
-          security_settings: true,
-          site_customization: true,
-        } : {
-          content_management: false,
-          user_management: false,
-          system_configuration: false,
-          media_uploads: false,
-          security_settings: false,
-          site_customization: false,
-        };
-
-        const newProfile: UserProfile = {
-          id: userData.$id,
-          $id: userData.$id,
-          $createdAt: userData.$createdAt,
-          $updatedAt: userData.$updatedAt,
-          email: userData.email,
-          is_owner: isOwnerFromMetadata || false,
-          created_at: new Date().toISOString(),
-          permissions: defaultPermissions
-        };
-
-        // Create the profile in the database
-        try {
-          await databases.createDocument<DbUserProfile>(
-            DATABASE_ID,
-            USER_PROFILES_COLLECTION_ID,
-            userData.$id,
-            {
-              email: newProfile.email,
-              is_owner: newProfile.is_owner,
-              created_at: newProfile.created_at,
-              permissions: JSON.stringify(defaultPermissions)
-            }
-          );
-
-          const profileWithRole: UserProfile = {
-            ...newProfile,
-            role: newProfile.is_owner ? 'owner' :
-                  (defaultPermissions?.user_management ? 'admin' : 'user')
-          };
-
-          setCurrentUser(profileWithRole);
-        } catch (createError) {
-          console.error('Error creating user profile:', createError);
-        }
+      if (email.includes('owner')) {
+        role = OWNER_ROLE;
+        isOwner = true;
+      } else if (email.includes('admin')) {
+        role = ADMIN_ROLE;
+        isOwner = false;
       }
 
-      return { session };
+      const user: UserProfile = {
+        id: '1',
+        email: email,
+        username: email.split('@')[0],
+        role: role,
+        is_owner: isOwner,
+        created_at: new Date().toISOString(),
+        permissions: DEFAULT_PERMISSIONS[role as keyof typeof DEFAULT_PERMISSIONS]
+      };
+
+      setCurrentUser(user);
+      localStorage.setItem('currentUser', JSON.stringify(user));
+
+      console.log('Login successful:', user);
     } catch (error) {
       console.error('Error logging in:', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Signup function - simplified for demo
   const signup = async (email: string, password: string, isOwner: boolean = false): Promise<void> => {
-    // Prevent creating new owner accounts from UI
-    if (isOwner) {
-      console.warn('Attempt to create owner account prevented - owner already exists');
-      throw new Error('Owner account already exists. Please use a regular account.');
-    }
+    setIsLoading(true);
 
     try {
-      // Create the user account
-      const userData = await account.create(
-        ID.unique(),
-        email,
-        password,
-        email
-      );
+      console.log('Signing up with email:', email);
 
-      // Define default permissions based on user role
-      const defaultPermissions: UserProfile['permissions'] = isOwner ? {
-        content_management: true,
-        user_management: true,
-        system_configuration: true,
-        media_uploads: true,
-        security_settings: true,
-        site_customization: true,
-      } : {
-        content_management: false,
-        user_management: false,
-        system_configuration: false,
-        media_uploads: false,
-        security_settings: false,
-        site_customization: false,
-      };
+      // For demo purposes, create a user with the specified role
+      const role = isOwner ? OWNER_ROLE : USER_ROLE;
 
-      // Set user preferences
-      await account.updatePrefs({
-        is_owner: isOwner,
-        permissions: defaultPermissions
-      });
-
-      // Sign in the user
-      const session = await account.createEmailPasswordSession(email, password);
-
-      // Store the JWT in localStorage
-      await storeSession(session);
-
-      // Update the session state
-      setSession(session);
-
-      // Create user profile in database
-      await databases.createDocument<DbUserProfile>(
-        DATABASE_ID,
-        USER_PROFILES_COLLECTION_ID,
-        userData.$id,
-        {
-          email: email,
-          is_owner: isOwner,
-          created_at: new Date().toISOString(),
-          permissions: JSON.stringify(defaultPermissions)
-        }
-      );
-
-      // Set the current user
-      const newProfile: UserProfile = {
-        id: userData.$id,
-        $id: userData.$id,
-        $createdAt: userData.$createdAt,
-        $updatedAt: userData.$updatedAt,
-        email: userData.email,
+      const user: UserProfile = {
+        id: Math.random().toString(36).substring(2, 9), // Generate a random ID
+        email: email,
+        username: email.split('@')[0],
+        role: role,
         is_owner: isOwner,
         created_at: new Date().toISOString(),
-        permissions: defaultPermissions,
-        role: isOwner ? 'owner' :
-              (defaultPermissions.user_management ? 'admin' : 'user')
+        permissions: DEFAULT_PERMISSIONS[role as keyof typeof DEFAULT_PERMISSIONS]
       };
 
-      setCurrentUser(newProfile);
+      setCurrentUser(user);
+      localStorage.setItem('currentUser', JSON.stringify(user));
+
+      console.log('Signup successful:', user);
     } catch (error) {
       console.error('Error signing up:', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  /**
-   * Log out the current user
-   * Deletes the current session and clears the user state
-   */
-  const logout = async (): Promise<void> => {
-    try {
-      // Delete the current session
-      await account.deleteSession('current');
-
-      // Clear the session from localStorage
-      localStorage.removeItem('appwrite_session');
-
-      // Clear the user state
-      setSession(null);
-      setCurrentUser(null);
-    } catch (error) {
-      console.error('Error signing out:', error);
-      throw error;
-    }
+  // Logout function
+  const logout = (): void => {
+    console.log('Logging out');
+    setCurrentUser(null);
+    localStorage.removeItem('currentUser');
   };
 
-  /**
-   * Send a password reset email
-   * @param email The email address to send the reset link to
-   */
+  // Send password reset email - simplified for demo
   const sendPasswordResetEmail = async (email: string): Promise<void> => {
-    try {
-      // Get the reset password URL from environment variables or use the current origin
-      const resetPasswordUrl = import.meta.env.VITE_RESET_PASSWORD_URL ||
-                             `${import.meta.env.VITE_APP_URL || window.location.origin}/reset-password`;
-
-      console.log('Using reset password URL:', resetPasswordUrl);
-
-      // Create a recovery token and send the email
-      await account.createRecovery(email, resetPasswordUrl);
-    } catch (error) {
-      console.error('Error sending password reset:', error);
-      throw error;
-    }
+    console.log(`Password reset email would be sent to ${email}`);
+    // In a real app, this would call an API to send a reset email
   };
 
   const value = {
     currentUser,
-    session,
+    login,
     signup,
     logout,
-    login,
     isLoading,
     sendPasswordResetEmail,
   };

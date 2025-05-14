@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/Auth0Context';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -11,7 +10,6 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }: ProtectedRouteProps) => {
   const { currentUser, isLoading } = useAuth();
-  const { isAuthenticated, isLoading: auth0IsLoading } = useAuth0();
   const location = useLocation();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -27,19 +25,10 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
       try {
         console.log('ProtectedRoute: Checking authentication');
         console.log('Current user:', currentUser);
-        console.log('Auth0 isAuthenticated:', isAuthenticated);
 
         // If we're still loading auth state, wait
-        if (isLoading || auth0IsLoading) {
+        if (isLoading) {
           console.log('ProtectedRoute: Auth is still loading');
-          return;
-        }
-
-        // Check if authenticated with Auth0
-        if (!isAuthenticated) {
-          console.log('ProtectedRoute: Not authenticated with Auth0');
-          setHasAccess(false);
-          setIsCheckingAuth(false);
           return;
         }
 
@@ -84,7 +73,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
     return () => {
       clearTimeout(authCheckTimeout);
     };
-  }, [currentUser, isLoading, auth0IsLoading, isAuthenticated, requireOwner, requireAdmin]);
+  }, [currentUser, isLoading, requireOwner, requireAdmin]);
 
   // Show loading state while checking auth
   if (isLoading || isCheckingAuth) {

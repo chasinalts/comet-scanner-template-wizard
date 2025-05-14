@@ -1,9 +1,8 @@
-// Simplified login page component that redirects to Auth0 Universal Login
+// Simple login page component
 import { useEffect, useState } from '../utils/react-imports';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../contexts/Auth0Context';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../contexts/AuthContext';
 import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
@@ -13,9 +12,9 @@ const containerVariants = {
 };
 
 const Login = () => {
-  const [redirecting, setRedirecting] = useState(false);
+  const [email, setEmail] = useState('owner@example.com');
+  const [password, setPassword] = useState('password');
   const { login, currentUser, isLoading } = useAuth();
-  const { isAuthenticated, isLoading: auth0IsLoading } = useAuth0();
   const navigate = useNavigate();
 
   // If user is already logged in, redirect to the appropriate page
@@ -33,30 +32,15 @@ const Login = () => {
     }
   }, [currentUser, isLoading, navigate]);
 
-  // Auto-redirect to Auth0 login after a short delay
-  useEffect(() => {
-    console.log('Login page - Auth state:', {
-      isAuthenticated,
-      auth0IsLoading,
-      currentUser,
-      isLoading,
-      redirecting
-    });
+  // No auto-redirect needed anymore
 
-    if (!isAuthenticated && !auth0IsLoading && !currentUser && !isLoading && !redirecting) {
-      console.log('Auto-redirecting to Auth0 login...');
-      const redirectTimer = setTimeout(() => {
-        setRedirecting(true);
-        login();
-      }, 1500); // Redirect after 1.5 seconds
-
-      return () => clearTimeout(redirectTimer);
+  const handleLogin = async () => {
+    try {
+      await login(email, password);
+      // Navigate will happen automatically via the useEffect above
+    } catch (error) {
+      console.error('Login error:', error);
     }
-  }, [isAuthenticated, auth0IsLoading, currentUser, isLoading, login, redirecting]);
-
-  const handleLogin = () => {
-    setRedirecting(true);
-    login();
   };
 
   return (
@@ -91,26 +75,56 @@ const Login = () => {
           <div className="space-y-6">
             <div className="text-center mb-6">
               <p className="text-sm text-gray-400 mb-4">
-                You will be redirected to Auth0 to complete the authentication process.
+                Enter your credentials to sign in
               </p>
             </div>
 
-            <div className="flex justify-center">
-              <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md shadow-sm text-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md shadow-sm text-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
             </div>
 
             <div className="text-center mt-4">
-              <p className="text-sm text-gray-400">
-                If you are not redirected automatically, click the button below.
-              </p>
               <button
                 type="button"
                 onClick={handleLogin}
-                disabled={redirecting}
-                className="mt-4 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button"
+                disabled={isLoading}
+                className="w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button"
               >
-                Sign In with Auth0
+                {isLoading ? 'Signing in...' : 'Sign In'}
               </button>
+              <p className="mt-2 text-xs text-gray-400">
+                For demo: use owner@example.com / password
+              </p>
             </div>
           </div>
         </div>

@@ -4,25 +4,21 @@ import React from 'react';
 import { useEffect } from './utils/react-imports';
 const { lazy, Suspense } = React;
 // ErrorBoundary removed to fix TypeScript errors
-import { Auth0Provider } from '@auth0/auth0-react';
-import { Auth0Provider as CustomAuth0Provider } from './contexts/Auth0Context';
+import { AuthProvider } from './contexts/AuthContext';
 import { WizardProvider } from './contexts/WizardContext';
 import { ToastProvider } from './components/ui/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import SuspenseFallback from './components/ui/SuspenseFallback';
-import { auth0Config } from './auth0Config';
-import { useAuth } from './contexts/Auth0Context';
+import { useAuth } from './contexts/AuthContext';
 
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
-const Callback = lazy(() => import('./pages/Callback'));
 const ScannerWizard = lazy(() => import('./pages/ScannerWizard'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 import Home from './pages/Home';
-import Auth0Debug from './components/Auth0Debug';
 
 // No need for a wrapper since we're importing the component directly
 
@@ -89,7 +85,6 @@ function AppContent() {
 
   return (
     <>
-      <Auth0Debug />
       <Routes>
         {/* Login is the entry point for unauthenticated users */}
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -119,15 +114,7 @@ function AppContent() {
           </Layout>
         }
       />
-      <Route
-        path="/callback"
-        element={
-          <Suspense fallback={<SuspenseFallback message="Processing authentication..." />}>
-            <Callback />
-          </Suspense>
-        }
-      />
-      {/* Signup route removed - using Auth0 Universal Login */}
+      {/* Authentication callback route removed - no longer using external auth */}
 
       {/* Protected Routes */}
       <Route
@@ -167,19 +154,15 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <Auth0Provider
-        {...auth0Config}
-      >
+      <AuthProvider>
         <WizardProvider>
           <ThemeProvider>
             <ToastProvider>
-              <CustomAuth0Provider>
-                <AppContent />
-              </CustomAuth0Provider>
+              <AppContent />
             </ToastProvider>
           </ThemeProvider>
         </WizardProvider>
-      </Auth0Provider>
+      </AuthProvider>
     </Router>
   );
 }
