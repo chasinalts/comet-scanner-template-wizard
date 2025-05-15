@@ -4,26 +4,27 @@ import React from 'react';
 import { useEffect } from './utils/react-imports';
 const { lazy, Suspense } = React;
 // ErrorBoundary removed to fix TypeScript errors
-import { AuthProvider } from './contexts/AuthContext';
+import { Auth0ProviderWithNavigate, Auth0ContextProvider, useAuth0Context } from './contexts/Auth0Context';
 import { WizardProvider } from './contexts/WizardContext';
 import { ToastProvider } from './components/ui/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import SuspenseFallback from './components/ui/SuspenseFallback';
-import { useAuth } from './contexts/AuthContext';
 
 // Lazy load page components
 const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
 const ScannerWizard = lazy(() => import('./pages/ScannerWizard'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Callback = lazy(() => import('./pages/Callback'));
 
 import Home from './pages/Home';
 
 // No need for a wrapper since we're importing the component directly
 
 function AppContent() {
-  const { currentUser, isLoading } = useAuth();
+  const { currentUser, isLoading, isAuthenticated, syncUserWithSupabase } = useAuth0Context();
 
   // Initialize storage only when the user is authenticated and is an owner
   useEffect(() => {
@@ -48,6 +49,13 @@ function AppContent() {
 
     init();
   }, [currentUser, isLoading]);
+
+  // Sync Auth0 user with Supabase when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      syncUserWithSupabase();
+    }
+  }, [isAuthenticated, syncUserWithSupabase]);
 
   // Set up a timeout to prevent getting stuck in loading state
   useEffect(() => {
@@ -114,7 +122,27 @@ function AppContent() {
           </Layout>
         }
       />
-      {/* Authentication callback route removed - no longer using external auth */}
+
+      <Route
+        path="/signup"
+        element={
+          <Layout>
+            <Suspense fallback={<SuspenseFallback message="Loading signup page..." />}>
+              <Signup />
+            </Suspense>
+          </Layout>
+        }
+      />
+
+      {/* Auth0 Callback Route */}
+      <Route
+        path="/callback"
+        element={
+          <Suspense fallback={<SuspenseFallback message="Processing authentication..." />}>
+            <Callback />
+          </Suspense>
+        }
+      />
 
       {/* Protected Routes */}
       <Route
@@ -154,15 +182,17 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <WizardProvider>
-          <ThemeProvider>
-            <ToastProvider>
-              <AppContent />
-            </ToastProvider>
-          </ThemeProvider>
-        </WizardProvider>
-      </AuthProvider>
+      <Auth0ProviderWithNavigate>
+        <Auth0ContextProvider>
+          <WizardProvider>
+            <ThemeProvider>
+              <ToastProvider>
+                <AppContent />
+              </ToastProvider>
+            </ThemeProvider>
+          </WizardProvider>
+        </Auth0ContextProvider>
+      </Auth0ProviderWithNavigate>
     </Router>
   );
 }

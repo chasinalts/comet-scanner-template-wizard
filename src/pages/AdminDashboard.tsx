@@ -2,7 +2,7 @@
 import { useState, ChangeEvent, useEffect } from '../utils/react-imports';
 
 import { motion, Reorder, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth0Context } from '../contexts/Auth0Context';
 import { useToast } from '../components/ui/Toast';
 import Button from '../components/ui/Button';
 import DragDropUpload from '../components/ui/DragDropUpload';
@@ -32,7 +32,7 @@ interface UploadingState {
 }
 
 export default function AdminDashboard() {
-  const { currentUser } = useAuth();
+  const { currentUser, isAuthenticated } = useAuth0Context();
   const { showToast } = useToast();
   const { theme } = useTheme();
   const [canUpload, setCanUpload] = useState<boolean>(false);

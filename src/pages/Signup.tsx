@@ -1,8 +1,8 @@
-// Simple signup page component
+// Signup page component using Auth0 authentication
 import { useEffect, useState } from '../utils/react-imports';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth0Context } from '../contexts/Auth0Context';
 import HolographicText from '../components/ui/HolographicText';
 
 const containerVariants = {
@@ -13,12 +13,12 @@ const containerVariants = {
 
 const Signup = () => {
   const [redirecting, setRedirecting] = useState(false);
-  const { signup, currentUser, isLoading } = useAuth();
+  const { signup, currentUser, isLoading, isAuthenticated } = useAuth0Context();
   const navigate = useNavigate();
 
   // If user is already logged in, redirect to the appropriate page
   useEffect(() => {
-    if (currentUser && !isLoading) {
+    if (isAuthenticated && currentUser && !isLoading) {
       // Redirect owners and admins to the dashboard, others to home
       const isOwner = currentUser.is_owner === true || currentUser.is_owner === 'true';
       const isAdmin = currentUser.role === 'admin';
@@ -29,11 +29,11 @@ const Signup = () => {
         navigate('/home');
       }
     }
-  }, [currentUser, isLoading, navigate]);
+  }, [currentUser, isLoading, isAuthenticated, navigate]);
 
   // Auto-redirect to signup after a short delay
   useEffect(() => {
-    if (!currentUser && !isLoading && !redirecting) {
+    if (!isAuthenticated && !isLoading && !redirecting) {
       const redirectTimer = setTimeout(() => {
         setRedirecting(true);
         signup();
@@ -41,7 +41,7 @@ const Signup = () => {
 
       return () => clearTimeout(redirectTimer);
     }
-  }, [currentUser, isLoading, signup, redirecting]);
+  }, [isAuthenticated, isLoading, signup, redirecting]);
 
   const handleSignup = () => {
     setRedirecting(true);
@@ -98,7 +98,7 @@ const Signup = () => {
                 disabled={redirecting}
                 className="mt-4 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white futuristic-button"
               >
-                Continue to Sign Up
+                Sign Up with Auth0
               </button>
             </div>
           </div>

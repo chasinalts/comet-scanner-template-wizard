@@ -1,5 +1,6 @@
 import { supabaseClient } from '../supabaseConfig';
 import { getUserProfile } from '../supabaseConfig';
+import { Auth0ContextProvider, useAuth0Context } from '../contexts/Auth0Context';
 
 /**
  * Checks if the current user has a specific permission
@@ -53,7 +54,25 @@ export const isOwner = async (): Promise<boolean> => {
   try {
     console.log('isOwner: Checking if current user is an owner');
 
-    // Get the current user
+    // Try to get the current user from Auth0Context first
+    try {
+      // This is a hack to get the Auth0Context outside of a React component
+      // In a real application, you would use a more robust solution
+      const auth0Context = window.__AUTH0_CONTEXT__;
+      if (auth0Context && auth0Context.currentUser) {
+        console.log('isOwner: Using Auth0Context user');
+        const isOwnerValue =
+          auth0Context.currentUser.is_owner === true ||
+          auth0Context.currentUser.is_owner === 'true';
+
+        console.log('isOwner: Auth0Context is_owner value:', isOwnerValue);
+        return isOwnerValue;
+      }
+    } catch (error) {
+      console.log('isOwner: Could not get Auth0Context user, falling back to Supabase');
+    }
+
+    // Fallback to Supabase if Auth0Context is not available
     const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (!user) {

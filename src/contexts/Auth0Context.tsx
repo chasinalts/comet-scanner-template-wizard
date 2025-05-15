@@ -1,15 +1,19 @@
-// Auth0 context that manages user authentication state, login/logout functionality, and user profiles
-import { createContext, useContext, useState, useEffect, type ReactNode } from '../utils/react-imports';
-import { useAuth0 } from '@auth0/auth0-react';
+// Auth0 authentication context for the COMET Scanner Template Wizard
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Auth0Provider, Auth0ProviderOptions, useAuth0 } from '@auth0/auth0-react';
 import { supabaseClient } from '../supabaseConfig';
-import { getUserRoleFromMetadata, getPermissionsForRole, OWNER_ROLE, ADMIN_ROLE, USER_ROLE } from '../auth0Config';
 
-// Define the user profile interface
+// User roles
+export const USER_ROLE = 'user';
+export const ADMIN_ROLE = 'admin';
+export const OWNER_ROLE = 'owner';
+
+// User profile interface
 export interface UserProfile {
   id: string;
   email: string;
   username?: string;
-  role: string;
   is_owner: boolean;
   created_at?: string;
   last_sign_in_at?: string;
@@ -21,139 +25,201 @@ export interface UserProfile {
     security_settings: boolean;
     site_customization: boolean;
   };
+  role: typeof USER_ROLE | typeof ADMIN_ROLE | typeof OWNER_ROLE;
 }
 
-// Define the Auth context interface
+// Default permissions for each role
+export const DEFAULT_PERMISSIONS = {
+  [USER_ROLE]: {
+    content_management: false,
+    user_management: false,
+    system_configuration: false,
+    media_uploads: false,
+    security_settings: false,
+    site_customization: false,
+  },
+  [ADMIN_ROLE]: {
+    content_management: true,
+    user_management: true,
+    system_configuration: false,
+    media_uploads: true,
+    security_settings: false,
+    site_customization: true,
+  },
+  [OWNER_ROLE]: {
+    content_management: true,
+    user_management: true,
+    system_configuration: true,
+    media_uploads: true,
+    security_settings: true,
+    site_customization: true,
+  },
+};
+
+// Auth0 context interface
 interface Auth0ContextType {
   currentUser: UserProfile | null;
-  isLoading: boolean;
   login: () => void;
   signup: () => void;
   logout: () => void;
-  sendPasswordResetEmail: (email: string) => Promise<void>;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  getAccessToken: () => Promise<string | undefined>;
+  syncUserWithSupabase: () => Promise<void>;
 }
 
-// Create the Auth context
+// Create the Auth0 context
 export const Auth0Context = createContext<Auth0ContextType | undefined>(undefined);
 
-// Auth0 provider component
-export function Auth0Provider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+// Auth0 provider wrapper component
+export function Auth0ProviderWithNavigate({ children }: { children: ReactNode }) {
+  const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+  const redirectUri = window.location.origin + '/callback';
 
+  if (!domain || !clientId) {
+    throw new Error('Auth0 domain and client ID must be defined');
+  }
+
+  const providerConfig: Auth0ProviderOptions = {
+    domain,
+    clientId,
+    authorizationParams: {
+      redirect_uri: redirectUri,
+      audience,
+    },
+    useRefreshTokens: true,
+    cacheLocation: 'localstorage',
+  };
+
+  return (
+    <Auth0Provider {...providerConfig}>
+      {children}
+    </Auth0Provider>
+  );
+}
+
+// Auth0 context provider component
+export function Auth0ContextProvider({ children }: { children: ReactNode }) {
   const {
-    isLoading: auth0IsLoading,
     isAuthenticated,
+    isLoading: auth0IsLoading,
     user,
     loginWithRedirect,
     logout: auth0Logout,
     getAccessTokenSilently
   } = useAuth0();
 
-  // Effect to set up user profile when Auth0 authentication state changes
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+
+  // Sync Auth0 user with our user profile
   useEffect(() => {
-    const setupUserProfile = async () => {
-      try {
-        // If still loading Auth0 or not authenticated, return
-        if (auth0IsLoading) {
-          return;
-        }
-
-        if (!isAuthenticated || !user) {
-          setCurrentUser(null);
-          setIsLoading(false);
-          return;
-        }
-
-        console.log('Auth0 user:', user);
-
-        // Get user metadata from Auth0
-        const role = getUserRoleFromMetadata(user.user_metadata);
-        const isOwner = role === OWNER_ROLE;
-
-        // Get permissions based on role
-        const permissions = getPermissionsForRole(role);
-
-        // Check if user exists in Supabase
-        const { data: existingUser, error: fetchError } = await supabaseClient
-          .from('user_profiles')
-          .select('*')
-          .eq('auth0_id', user.sub)
-          .single();
-
-        if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-          console.error('Error fetching user profile:', fetchError);
-        }
-
-        // If user doesn't exist in Supabase, create a new profile
-        if (!existingUser) {
-          console.log('Creating new user profile in Supabase');
-          const { data: newUser, error: createError } = await supabaseClient
+    const syncUser = async () => {
+      if (isAuthenticated && user) {
+        try {
+          // Check if user exists in Supabase
+          const { data: existingUser, error: fetchError } = await supabaseClient
             .from('user_profiles')
-            .insert([
-              {
-                auth0_id: user.sub,
-                email: user.email,
-                username: user.nickname || user.name,
-                is_owner: isOwner,
-                role: role,
-                created_at: new Date().toISOString(),
-                permissions: permissions
-              }
-            ])
-            .select()
+            .select('*')
+            .eq('email', user.email)
             .single();
 
-          if (createError) {
-            console.error('Error creating user profile:', createError);
-          } else {
-            console.log('New user profile created:', newUser);
-            // Set the current user with the new profile
-            setCurrentUser({
-              id: newUser.id,
-              email: newUser.email,
-              role: newUser.role,
-              is_owner: newUser.is_owner,
-              created_at: newUser.created_at,
-              permissions: newUser.permissions
-            });
+          if (fetchError && fetchError.code !== 'PGRST116') {
+            console.error('Error fetching user profile:', fetchError);
           }
-        } else {
-          console.log('Using existing user profile:', existingUser);
-          // Set the current user with the existing profile
-          setCurrentUser({
-            id: existingUser.id,
-            email: existingUser.email,
-            role: existingUser.role,
-            is_owner: existingUser.is_owner,
-            created_at: existingUser.created_at,
-            permissions: existingUser.permissions
-          });
-        }
 
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error setting up user profile:', error);
-        setIsLoading(false);
+          let userProfile: UserProfile;
+
+          if (existingUser) {
+            // User exists, update last sign in
+            userProfile = {
+              id: existingUser.id,
+              email: user.email || '',
+              username: user.name || user.nickname || user.email?.split('@')[0] || '',
+              is_owner: existingUser.is_owner,
+              role: existingUser.role || USER_ROLE,
+              created_at: existingUser.created_at,
+              last_sign_in_at: new Date().toISOString(),
+              permissions: existingUser.permissions || DEFAULT_PERMISSIONS[existingUser.role || USER_ROLE],
+            };
+
+            // Update last sign in time
+            await supabaseClient
+              .from('user_profiles')
+              .update({ last_sign_in_at: new Date().toISOString() })
+              .eq('id', existingUser.id);
+          } else {
+            // User doesn't exist, create new profile
+            // Default to regular user role
+            const role = user.email === 'chasinalts@gmail.com' ? OWNER_ROLE : USER_ROLE;
+            const isOwner = role === OWNER_ROLE;
+
+            userProfile = {
+              id: user.sub || '',
+              email: user.email || '',
+              username: user.name || user.nickname || user.email?.split('@')[0] || '',
+              is_owner: isOwner,
+              role: role,
+              created_at: new Date().toISOString(),
+              last_sign_in_at: new Date().toISOString(),
+              permissions: DEFAULT_PERMISSIONS[role],
+            };
+
+            // Create user profile in Supabase
+            const { error: createError } = await supabaseClient
+              .from('user_profiles')
+              .insert(userProfile);
+
+            if (createError) {
+              console.error('Error creating user profile:', createError);
+            }
+          }
+
+          setCurrentUser(userProfile);
+        } catch (error) {
+          console.error('Error syncing user:', error);
+        }
+      } else if (!isAuthenticated && !auth0IsLoading) {
+        setCurrentUser(null);
       }
+
+      setIsLoading(false);
     };
 
-    setupUserProfile();
-  }, [auth0IsLoading, isAuthenticated, user]);
+    syncUser();
+  }, [isAuthenticated, user, auth0IsLoading]);
 
-  // Login function - uses Universal Login
-  const login = () => {
-    console.log('Redirecting to Auth0 login page');
-    loginWithRedirect({
-      authorizationParams: {
-        prompt: 'login',
-      },
-    });
+  // Sync user with Supabase
+  const syncUserWithSupabase = async () => {
+    if (!isAuthenticated || !user) return;
+
+    try {
+      const token = await getAccessTokenSilently();
+
+      // Set the Auth0 token in Supabase
+      const { error } = await supabaseClient.auth.setSession({
+        access_token: token,
+        refresh_token: '',
+      });
+
+      if (error) {
+        console.error('Error setting Supabase session:', error);
+      }
+    } catch (error) {
+      console.error('Error syncing user with Supabase:', error);
+    }
   };
 
-  // Signup function - uses Universal Login with signup hint
+  // Login function
+  const login = () => {
+    loginWithRedirect();
+  };
+
+  // Signup function
   const signup = () => {
-    console.log('Redirecting to Auth0 signup page');
     loginWithRedirect({
       authorizationParams: {
         screen_hint: 'signup',
@@ -163,54 +229,52 @@ export function Auth0Provider({ children }: { children: ReactNode }) {
 
   // Logout function
   const logout = () => {
-    console.log('Logging out');
     auth0Logout({
       logoutParams: {
-        returnTo: window.location.origin
-      }
+        returnTo: window.location.origin,
+      },
     });
+    setCurrentUser(null);
   };
 
-  // Send password reset email
-  const sendPasswordResetEmail = async (email: string): Promise<void> => {
+  // Get access token
+  const getAccessToken = async () => {
     try {
-      // Auth0 doesn't have a direct method for this in the SDK
-      // We'll use the Auth0 Management API via a Netlify function
-      const response = await fetch('/.netlify/functions/auth0-reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send password reset email');
-      }
+      return await getAccessTokenSilently();
     } catch (error) {
-      console.error('Error sending password reset:', error);
-      throw error;
+      console.error('Error getting access token:', error);
+      return undefined;
     }
   };
 
-  // Context value
   const value = {
     currentUser,
-    isLoading: isLoading || auth0IsLoading,
     login,
     signup,
     logout,
-    sendPasswordResetEmail,
+    isLoading: isLoading || auth0IsLoading,
+    isAuthenticated,
+    getAccessToken,
+    syncUserWithSupabase,
   };
 
-  return <Auth0Context.Provider value={value}>{children}</Auth0Context.Provider>;
+  // Expose the context to the window object for use in non-React components
+  if (typeof window !== 'undefined') {
+    window.__AUTH0_CONTEXT__ = value;
+  }
+
+  return (
+    <Auth0Context.Provider value={value}>
+      {children}
+    </Auth0Context.Provider>
+  );
 }
 
-// Custom hook to use the Auth context
-export const useAuth = (): Auth0ContextType => {
+// Hook to use Auth0 context
+export function useAuth0Context() {
   const context = useContext(Auth0Context);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an Auth0Provider');
+    throw new Error('useAuth0Context must be used within an Auth0ContextProvider');
   }
   return context;
-};
+}

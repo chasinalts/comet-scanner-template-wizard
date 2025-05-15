@@ -4,7 +4,7 @@ import { useState, useEffect } from '../utils/react-imports';
 import { motion } from 'framer-motion';
 import Modal from '../components/ui/Modal';
 import { useAdminContent } from '../hooks/useAdminContent';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth0Context } from '../contexts/Auth0Context';
 import { useTheme } from '../contexts/ThemeContext';
 import ResponsiveImageWithPlaceholder from '../components/ui/ResponsiveImageWithPlaceholder';
 import LiveCodePreview from '../components/LiveCodePreview';
@@ -36,7 +36,7 @@ const itemVariants = {
 
 const ScannerWizard = () => {
   const { getBannerImage, getScannerImages, getTemplates, getFullTemplate } = useAdminContent();
-  const { currentUser } = useAuth();
+  const { currentUser, isAuthenticated } = useAuth0Context();
   const { theme } = useTheme();
   const { state: wizardState, dispatch: wizardDispatch } = useWizard();
   const { questions } = useQuestions(); // Load questions managed by admin
@@ -96,14 +96,16 @@ const ScannerWizard = () => {
       // Also load saved templates for the current user
       // This would typically come from a database call
       // For now, we'll use localStorage as a placeholder
-      const userTemplates = localStorage.getItem(`user_templates_${currentUser?.id}`);
-      if (userTemplates) {
-        setSavedTemplates(JSON.parse(userTemplates));
+      if (isAuthenticated && currentUser?.id) {
+        const userTemplates = localStorage.getItem(`user_templates_${currentUser.id}`);
+        if (userTemplates) {
+          setSavedTemplates(JSON.parse(userTemplates));
+        }
       }
     } catch (error) {
       console.error('Error loading templates:', error);
     }
-  }, [getFullTemplate, currentUser]);
+  }, [getFullTemplate, currentUser, isAuthenticated]);
 
   // Navigation functions
   const goToNextQuestion = () => {
@@ -134,6 +136,11 @@ const ScannerWizard = () => {
 
   // Template management functions
   const saveTemplate = () => {
+    if (!isAuthenticated) {
+      alert('Please sign in to save templates');
+      return;
+    }
+
     if (!templateName.trim()) {
       alert('Please enter a template name');
       return;
@@ -162,6 +169,11 @@ const ScannerWizard = () => {
   };
 
   const deleteTemplate = (templateId: string) => {
+    if (!isAuthenticated) {
+      alert('Please sign in to delete templates');
+      return;
+    }
+
     const updatedTemplates = savedTemplates.filter(t => t.id !== templateId);
     setSavedTemplates(updatedTemplates);
 
@@ -184,6 +196,11 @@ const ScannerWizard = () => {
   const [shareLink, setShareLink] = useState<string | null>(null);
 
   const openShareModal = (templateId: string) => {
+    if (!isAuthenticated) {
+      alert('Please sign in to share templates');
+      return;
+    }
+
     setShareTemplateId(templateId);
     setShareModalOpen(true);
     setShareLink(null);
@@ -234,6 +251,11 @@ const ScannerWizard = () => {
   };
 
   const loadTemplate = (templateId: string) => {
+    if (!isAuthenticated) {
+      alert('Please sign in to load templates');
+      return;
+    }
+
     const template = savedTemplates.find(t => t.id === templateId);
     if (template) {
       setSelectedTemplateId(templateId);

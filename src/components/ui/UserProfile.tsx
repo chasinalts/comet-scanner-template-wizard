@@ -1,5 +1,5 @@
 // User profile component that displays user information
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth0Context } from '../../contexts/Auth0Context';
 import HolographicText from './HolographicText';
 
 interface UserProfileProps {
@@ -8,7 +8,7 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({ className = '', showDetails = false }: UserProfileProps) => {
-  const { currentUser, isLoading } = useAuth();
+  const { currentUser, isLoading, isAuthenticated } = useAuth0Context();
 
   if (isLoading) {
     return (
@@ -27,7 +27,7 @@ const UserProfile = ({ className = '', showDetails = false }: UserProfileProps) 
     );
   }
 
-  if (!currentUser) {
+  if (!isAuthenticated || !currentUser) {
     return (
       <div className={`p-4 rounded-lg bg-gray-800 bg-opacity-50 ${className}`}>
         <HolographicText

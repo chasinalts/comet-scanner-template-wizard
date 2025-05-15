@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from '../utils/react-imports';
 
 import HolographicText from '../components/ui/HolographicText';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth0Context } from '../contexts/Auth0Context';
 import UserProfile from '../components/ui/UserProfile';
 import { useNavigate } from 'react-router-dom';
 import { supabaseClient, BANNER_BUCKET } from '../supabaseConfig';
@@ -26,7 +26,7 @@ Key features of COMET Scanners include:
 The COMET Scanner Template Wizard helps you create a customized scanner template tailored to your specific trading needs and preferences.`;
 
 const Home: React.FC = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, isAuthenticated } = useAuth0Context();
   const navigate = useNavigate();
   const [bannerUrl, setBannerUrl] = useState<string | null>(null);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);

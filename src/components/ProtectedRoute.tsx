@@ -1,6 +1,6 @@
-import { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth0Context } from '../contexts/Auth0Context';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }: ProtectedRouteProps) => {
-  const { currentUser, isLoading } = useAuth();
+  const { currentUser, isLoading, isAuthenticated } = useAuth0Context();
   const location = useLocation();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -25,6 +25,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
       try {
         console.log('ProtectedRoute: Checking authentication');
         console.log('Current user:', currentUser);
+        console.log('Is authenticated:', isAuthenticated);
 
         // If we're still loading auth state, wait
         if (isLoading) {
@@ -32,9 +33,9 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
           return;
         }
 
-        // No user profile in our system, no access
-        if (!currentUser) {
-          console.log('ProtectedRoute: No user profile, no access');
+        // Not authenticated or no user profile, no access
+        if (!isAuthenticated || !currentUser) {
+          console.log('ProtectedRoute: Not authenticated or no user profile, no access');
           setHasAccess(false);
           setIsCheckingAuth(false);
           return;
@@ -73,7 +74,7 @@ const ProtectedRoute = ({ children, requireOwner = false, requireAdmin = false }
     return () => {
       clearTimeout(authCheckTimeout);
     };
-  }, [currentUser, isLoading, requireOwner, requireAdmin]);
+  }, [currentUser, isLoading, isAuthenticated, requireOwner, requireAdmin]);
 
   // Show loading state while checking auth
   if (isLoading || isCheckingAuth) {
