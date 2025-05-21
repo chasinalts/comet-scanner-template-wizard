@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from "./src/utils/react-imports";
 
 const Test = () => {
   useEffect(() => {

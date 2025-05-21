@@ -1,22 +1,17 @@
 import { processImageForUpload } from './imageCompression';
-import { uploadImage as uploadFileToSupabase, deleteImage as deleteFileFromSupabase, BucketType as SupabaseBucketType } from './supabaseStorage';
-import { uploadFile as uploadFileToAppwrite, deleteFile as deleteFileFromAppwrite, BucketType as AppwriteBucketType } from './appwriteStorage';
+// Removed uploadFile, deleteFile imports as they are replaced by fetch calls
+import { getUserId } from './storage'; // Corrected import path
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Handles image upload using local storage (base64 encoding)
- * @deprecated Use handleAppwriteImageUpload instead for better performance
+ * @deprecated Use handleSupabaseImageUpload instead for better performance
  */
 export const handleLocalImageUpload = (
   file: File,
   onSuccess: (imageUrl: string, imagePreview: string) => void
 ) => {
-  let imagePreview = '';
-  try {
-    imagePreview = URL.createObjectURL(file);
-  } catch (urlError) {
-    console.warn('Failed to create object URL, using fallback:', urlError);
-    imagePreview = 'data:image/jpeg;base64,placeholder';
-  }
+  const imagePreview = URL.createObjectURL(file);
   const reader = new FileReader();
 
   reader.onloadend = () => {
@@ -29,31 +24,40 @@ export const handleLocalImageUpload = (
 };
 
 /**
- * Handles image upload using Supabase Storage with compression
+ * Handles image upload using Netlify Blobs and Turso
  * @param file The file to upload
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  * @param onError Optional callback function to be called when upload fails
- * @param userId The ID of the user uploading the file
  */
-export const handleSupabaseImageUpload = (
+export const handleTursoImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void,
-  onError?: (error: any) => void,
-  userId?: string
+  onError?: (error: any) => void
 ) => {
   try {
     // Create a temporary preview URL for immediate display
-    let imagePreview = '';
-    try {
-      imagePreview = URL.createObjectURL(file);
-    } catch (urlError) {
-      console.warn('Failed to create object URL, using fallback:', urlError);
-      imagePreview = 'data:image/jpeg;base64,placeholder';
-    }
+    const imagePreview = URL.createObjectURL(file);
 
     // Process the image in a non-blocking way
+    // Helper function to read file as base64
+    const readFileAsBase64 = (inputFile: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64String = (reader.result as string)?.split(',')[1];
+                if (base64String) {
+                    resolve(base64String);
+                } else {
+                    reject(new Error("Failed to read file as base64."));
+                }
+            };
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(inputFile);
+        });
+    };
+
     (async () => {
       try {
         // Process and compress the image if needed
@@ -61,38 +65,88 @@ export const handleSupabaseImageUpload = (
           maxWidth: 1920,
           maxHeight: 1080,
           quality: 0.85,
-          maxSizeInMB: 1
+          maxSizeInMB: 1 // Ensure this limit is reasonable for base64 encoding + JSON overhead
         });
 
-        // Upload to Supabase Storage
         // Map scanner type to gallery folder since they are the same
-        const bucketType = type === 'scanner' ? 'gallery' : type as SupabaseBucketType;
-        console.log(`Uploading ${type} image to ${bucketType} bucket in Supabase`);
+        const storagePath = type === 'scanner' ? 'gallery' : type;
+        console.log(`Uploading ${type} image to ${storagePath} folder via Netlify Function`);
 
-        // If userId is not provided, use a default value
-        const userIdToUse = userId || 'system';
+        // --- Prepare data for Netlify Function ---
+        const userId = getUserId();
+        if (!userId) {
+          throw new Error("User not authenticated for upload.");
+        }
 
-        const result = await uploadFileToSupabase(processedFile, bucketType, userIdToUse);
-        const imageUrl = result.publicUrl;
+        const fileExt = processedFile.name.split('.').pop();
+        const uniqueFileName = `${uuidv4()}.${fileExt}`;
+        const blobKey = `${storagePath}/${uniqueFileName}`; // e.g., gallery/uuid.jpg
 
-        console.log('Image uploaded to Supabase:', {
+        const base64Value = await readFileAsBase64(processedFile);
+
+        const requestBody = {
+            action: 'set',
+            key: blobKey,
+            value: base64Value,
+            contentType: processedFile.type,
+            metadata: {
+                userId: userId,
+                originalName: file.name, // Original file name
+                path: storagePath,       // The 'folder'
+                type: type,              // The logical type ('banner', 'gallery')
+                size: processedFile.size,
+                // Add uploadedAt here if needed, or let the function handle it
+                uploadedAt: new Date().toISOString()
+            }
+        };
+        // --- End Prepare data ---
+
+        // --- Call Netlify Function ---
+        const response = await fetch('/.netlify/functions/blob-handler.js', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+            let errorMsg = `Upload failed: ${response.status} ${response.statusText}`;
+            try {
+                const errorData = await response.json();
+                errorMsg += ` - ${errorData?.error || 'Unknown server error'}`;
+            } catch (e) { /* Ignore parsing error */ }
+            throw new Error(errorMsg);
+        }
+
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(`Upload failed: ${result.error || 'Function returned failure'}`);
+        }
+        // --- End Call Netlify Function ---
+
+        const { url: uploadedUrl, imageId } = result; // Get URL and imageId from response
+
+        console.log('Image uploaded successfully via Netlify Function:', {
           originalSize: file.size,
           processedSize: processedFile.size,
           compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
-          imageUrl,
-          publicUrl: result.publicUrl
+          imageUrl: uploadedUrl,
+          imageId: imageId
         });
 
-        // Call the success callback with the public URL and preview URL
-        // We'll use the public URL for both ID and display
-        onSuccess(imageUrl, result.publicUrl || imagePreview);
+        // Call the success callback with the URL, preview URL, and potentially imageId
+        // Adjust onSuccess signature if imageId is needed downstream:
+        // onSuccess: (imageUrl: string, imagePreview: string, imageId?: string) => void
+        onSuccess(uploadedUrl, imagePreview /*, imageId */);
 
         // Clean up the preview URL after a delay to ensure it's used
         setTimeout(() => {
           URL.revokeObjectURL(imagePreview);
-        }, 5000);
+        }, 5000); // Keep delay or adjust as needed
+
       } catch (error) {
-        console.error('Error in image processing or upload:', error);
+        console.error('Error in image processing or upload via Netlify Function:', error);
 
         // Clean up the preview URL
         URL.revokeObjectURL(imagePreview);
@@ -106,7 +160,7 @@ export const handleSupabaseImageUpload = (
       }
     })();
   } catch (error) {
-    console.error('Error in handleSupabaseImageUpload:', error);
+    console.error('Error in handleTursoImageUpload:', error);
     if (onError) {
       onError(error);
     } else {
@@ -116,150 +170,58 @@ export const handleSupabaseImageUpload = (
 };
 
 /**
- * Handles image upload using Appwrite Storage with compression
+ * Handles image upload using our unified storage system
  * @param file The file to upload
  * @param type The type of image (banner, scanner, etc.)
  * @param onSuccess Callback function to be called when upload is successful
  * @param onError Optional callback function to be called when upload fails
- * @param userId The ID of the user uploading the file
- */
-export const handleAppwriteImageUpload = (
-  file: File,
-  type: string,
-  onSuccess: (imageUrl: string, imagePreview: string) => void,
-  onError?: (error: any) => void,
-  userId?: string
-) => {
-  try {
-    // Create a temporary preview URL for immediate display
-    let imagePreview = '';
-    try {
-      imagePreview = URL.createObjectURL(file);
-    } catch (urlError) {
-      console.warn('Failed to create object URL, using fallback:', urlError);
-      imagePreview = 'data:image/jpeg;base64,placeholder';
-    }
-
-    // Process the image in a non-blocking way
-    (async () => {
-      try {
-        // Process and compress the image if needed
-        const processedFile = await processImageForUpload(file, {
-          maxWidth: 1920,
-          maxHeight: 1080,
-          quality: 0.85,
-          maxSizeInMB: 1
-        });
-
-        // Upload to Appwrite Storage
-        // Map scanner type to gallery folder since they are the same
-        const bucketType = type === 'scanner' ? 'gallery' : type as AppwriteBucketType;
-        console.log(`Uploading ${type} image to ${bucketType} bucket in Appwrite`);
-
-        // If userId is not provided, use a default value
-        const userIdToUse = userId || 'system';
-
-        // Upload the file to Appwrite
-        const result = await uploadFileToAppwrite(processedFile, bucketType, userIdToUse);
-
-        // Get the file ID and preview URL
-        const imageUrl = result.file.$id;
-        const filePreview = result.file.url;
-
-        console.log('Image uploaded to Appwrite:', {
-          originalSize: file.size,
-          processedSize: processedFile.size,
-          compressionRatio: ((processedFile.size / file.size) * 100).toFixed(2) + '%',
-          imageUrl,
-          filePreview
-        });
-
-        // Call the success callback with the image ID and preview URL
-        onSuccess(imageUrl, filePreview || imagePreview);
-
-        // Clean up the preview URL after a delay to ensure it's used
-        setTimeout(() => {
-          URL.revokeObjectURL(imagePreview);
-        }, 5000);
-      } catch (error) {
-        console.error('Error in image processing or upload:', error);
-
-        // Clean up the preview URL
-        URL.revokeObjectURL(imagePreview);
-
-        // Call the error callback if provided
-        if (onError) {
-          onError(error);
-        } else {
-          throw error;
-        }
-      }
-    })();
-  } catch (error) {
-    console.error('Error in handleAppwriteImageUpload:', error);
-    if (onError) {
-      onError(error);
-    } else {
-      throw error;
-    }
-  }
-};
-
-/**
- * Handles image upload using the preferred storage provider (Appwrite or Supabase)
- * @param file The file to upload
- * @param type The type of image (banner, scanner, etc.)
- * @param onSuccess Callback function to be called when upload is successful
- * @param onError Optional callback function to be called when upload fails
- * @param userId The ID of the user uploading the file
- * @param preferredProvider Optional preferred provider ('appwrite' or 'supabase')
  */
 export const handleImageUpload = (
   file: File,
   type: string,
   onSuccess: (imageUrl: string, imagePreview: string) => void,
-  onError?: (error: any) => void,
-  userId?: string,
-  preferredProvider: 'appwrite' | 'supabase' = 'supabase'
+  onError?: (error: any) => void
 ) => {
-  // Use the preferred storage provider
-  if (preferredProvider === 'appwrite') {
-    console.log('Using Appwrite for image upload');
-    return handleAppwriteImageUpload(file, type, onSuccess, onError, userId);
-  } else {
-    console.log('Using Supabase for image upload');
-    return handleSupabaseImageUpload(file, type, onSuccess, onError, userId);
-  }
+  // Use Turso and Netlify Blobs for storage
+  return handleTursoImageUpload(file, type, onSuccess, onError);
 };
 
 /**
  * Cleans up a URL, revoking object URLs if necessary
  * @param url The URL to clean up
  * @param isCloudUrl Whether the URL is from a cloud storage provider
- * @param bucketType Optional bucket type for storage
- * @param provider Optional storage provider ('appwrite' or 'supabase')
+ * @param fileId Optional file ID for deleting from storage
  */
-export const cleanupImageUrl = async (
-  url: string,
-  isCloudUrl = false,
-  bucketType?: AppwriteBucketType | SupabaseBucketType,
-  provider: 'appwrite' | 'supabase' = 'supabase'
-) => {
+export const cleanupImageUrl = async (url: string, isCloudUrl = false, fileId?: string) => {
   if (url.startsWith('blob:')) {
+    URL.revokeObjectURL(url);
+  } else if (isCloudUrl && fileId) {
     try {
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.warn('Failed to revoke object URL:', error);
-    }
-  } else if (isCloudUrl && bucketType) {
-    try {
-      if (provider === 'appwrite') {
-        await deleteFileFromAppwrite(url, bucketType as AppwriteBucketType);
+      // Delete the file using the Netlify function
+      console.log(`Attempting to delete image with ID: ${fileId} via Netlify Function`);
+      const response = await fetch(`/.netlify/functions/blob-handler.js?action=delete&key=${encodeURIComponent(fileId)}`, {
+          method: 'DELETE',
+      });
+
+      if (!response.ok) {
+          let errorMsg = `Failed to delete image ${fileId}: ${response.status} ${response.statusText}`;
+          try {
+              const errorData = await response.json();
+              errorMsg += ` - ${errorData?.error || 'Unknown server error'}`;
+          } catch (e) { /* Ignore parsing error */ }
+          console.error(errorMsg);
+          // Decide if this should throw or just log
       } else {
-        await deleteFileFromSupabase(url, bucketType as SupabaseBucketType);
+          const result = await response.json();
+          if (!result.success) {
+               console.error(`Failed to delete image ${fileId}: ${result.error || 'Function returned failure'}`);
+               // Decide if this should throw or just log
+          } else {
+              console.log(`Image ${fileId} deleted successfully via function.`);
+          }
       }
     } catch (error) {
-      console.error(`Error deleting file from ${provider} Storage (${bucketType}):`, error);
+      console.error('Error during fetch call for image deletion:', error);
     }
   }
 };
@@ -278,13 +240,7 @@ export const resizeImage = (
 ): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    try {
-      image.src = URL.createObjectURL(file);
-    } catch (urlError) {
-      console.warn('Failed to create object URL for resizing, returning original file:', urlError);
-      resolve(file);
-      return;
-    }
+    image.src = URL.createObjectURL(file);
 
     image.onload = () => {
       let width = image.width;
