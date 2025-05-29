@@ -1,3 +1,4 @@
+
 # COMET Scanner Wizard
 
 A comprehensive setup wizard for scanner configuration built with React, TypeScript, and Vite.
