@@ -12,13 +12,16 @@ import { useQuestions } from '../hooks/useQuestions';
 import { useSections } from '../hooks/useSections';
 import { useContentManager } from '../hooks/useContentManager';
 import { useAdminContent, type ImageContent } from '../hooks/useAdminContent';
+import { useTemplates } from '../hooks/useTemplates';
+
 import type { Question, QuestionOption } from '../types/questions';
 import type { Section } from '../hooks/useSections';
 // TrashIcon import removed as it's not used
 import ImageThumbnail from '../components/ui/ImageThumbnail';
-import TemplateCreator from '../components/TemplateCreator';
+
 import HolographicText from '../components/ui/HolographicText';
 import { isOwner } from '../utils/permissionChecks';
+import supabase from '@/supabaseConfig';
 
 interface UploadingState {
   questionId?: string;
@@ -584,58 +587,7 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* Template Builder Section */}
-      <section className="space-y-8">
-        <HolographicText
-          text="Template Builder"
-          as="h2"
-          variant="subtitle"
-          className="text-2xl font-semibold"
-        />
-        <TemplateCreator />
-        <div className="space-y-6">
-          <Button onClick={addSection}>Add New Section</Button>
-          <Reorder.Group axis="y" values={sections} onReorder={reorderSections} className="space-y-4">
-            {sections.map((section: Section) => (
-              <Reorder.Item
-                key={section.id}
-                value={section}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <TextField
-                    value={section.title}
-                    onChange={(e) => updateSection(section.id, { title: e.target.value })}
-                    className="text-lg font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                    placeholder="Section Title"
-                  />
-                  <div className="flex items-center space-x-4">
-                    <CheckboxField
-                      label="Mandatory"
-                      checked={section.isMandatory}
-                      onChange={(e) => updateSection(section.id, { isMandatory: e.target.checked })}
-                    />
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => deleteSection(section.id)}
-                    >
-                      Delete Section
-                    </Button>
-                  </div>
-                </div>
-                <TextArea
-                  value={section.code}
-                  onChange={(e) => updateSection(section.id, { code: e.target.value })}
-                  className="w-full font-mono text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-                  rows={5}
-                  placeholder="Enter section code here..."
-                />
-              </Reorder.Item>
-            ))}
-          </Reorder.Group>
-        </div>
-      </section>
+
 
       {/* Questions Section */}
       <section className="space-y-8">
@@ -818,6 +770,693 @@ export default function AdminDashboard() {
           </AnimatePresence>
         </div>
       </section>
+
+
+
+      {/* Master Templates Management */}
+      <section className="mb-12">
+        <HolographicText
+          text="Master Templates"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-bold mb-6"
+        />
+        <MasterTemplatesSection />
+      </section>
+
+      {/* Template Categories Management */}
+      <section className="mb-12">
+        <HolographicText
+          text="Template Categories"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-bold mb-6"
+        />
+        <TemplateCategoriesSection />
+      </section>
+
+      {/* Code Snippets Management */}
+      <section className="mb-12">
+        <HolographicText
+          text="Code Snippets"
+          as="h2"
+          variant="subtitle"
+          className="text-2xl font-bold mb-6"
+        />
+        <CodeSnippetsSection />
+      </section>
+
+
     </div>
   );
 }
+
+// Master Templates Management Component
+const MasterTemplatesSection: React.FC = () => {
+  const { templates, categories, createTemplate, updateTemplate, deleteTemplate, loadingTemplates } = useTemplates();
+  const { currentUser } = useAuth();
+  const { theme } = useTheme();
+  const [isCreating, setIsCreating] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    master_code: '',
+    category_id: '',
+    version: '1.0.0'
+  });
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      master_code: '',
+      category_id: '',
+      version: '1.0.0'
+    });
+    setIsCreating(false);
+    setEditingTemplate(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingTemplate) {
+        await updateTemplate(editingTemplate.id, formData);
+      } else {
+        await createTemplate(formData);
+      }
+      resetForm();
+    } catch (error) {
+      console.error('Error saving template:', error);
+    }
+  };
+
+  const handleEdit = (template: any) => {
+    setEditingTemplate(template);
+    setFormData({
+      name: template.name,
+      description: template.description || '',
+      master_code: template.master_code,
+      category_id: template.category_id || '',
+      version: template.version
+    });
+    setIsCreating(true);
+  };
+
+  const handleDelete = async (templateId: string) => {
+    if (window.confirm('Are you sure you want to delete this template?')) {
+      try {
+        await deleteTemplate(templateId);
+      } catch (error) {
+        console.error('Error deleting template:', error);
+      }
+    }
+  };
+
+  return (
+    <div className={`space-y-6 ${theme === 'dark' ? 'dark' : ''}`}>
+      {/* Create/Edit Form */}
+      {isCreating && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4">
+            {editingTemplate ? 'Edit Template' : 'Create New Template'}
+          </h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Template Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                  placeholder="Enter template name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Version
+                </label>
+                <input
+                  type="text"
+                  value={formData.version}
+                  onChange={(e) => setFormData({ ...formData, version: e.target.value })}
+                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                  placeholder="1.0.0"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Category
+              </label>
+              <select
+                value={formData.category_id}
+                onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              >
+                <option value="">Select a category</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Description
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                placeholder="Enter template description"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Master Template Code
+              </label>
+              <textarea
+                value={formData.master_code}
+                onChange={(e) => setFormData({ ...formData, master_code: e.target.value })}
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 font-mono text-sm"
+                placeholder="Enter your master template code with placeholders like {{PLACEHOLDER_NAME}}"
+                rows={10}
+                required
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                type="submit"
+                variant="primary"
+                className="flex-1"
+              >
+                {editingTemplate ? 'Update Template' : 'Create Template'}
+              </Button>
+              <Button
+                type="button"
+                onClick={resetForm}
+                variant="secondary"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </motion.div>
+      )}
+
+      {/* Templates List */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-white">
+            Existing Templates ({templates.length})
+          </h3>
+          <Button
+            onClick={() => setIsCreating(true)}
+            variant="primary"
+            size="sm"
+          >
+            Add New Template
+          </Button>
+        </div>
+
+        {loadingTemplates ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+          </div>
+        ) : templates.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            No templates created yet. Create your first template above.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {templates.map((template) => (
+              <motion.div
+                key={template.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-cyan-500/30 hover:border-cyan-400/50 transition-all"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4 className="font-semibold text-white">{template.name}</h4>
+                    <p className="text-sm text-cyan-300">v{template.version}</p>
+                    {template.description && (
+                      <p className="text-sm text-gray-300 mt-1">{template.description}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(template)}
+                      className="p-1 text-cyan-400 hover:text-cyan-300 transition-colors"
+                      title="Edit template"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDelete(template.id)}
+                      className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                      title="Delete template"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-400 mb-2">
+                  Category: {categories.find(cat => cat.id === template.category_id)?.name || 'Uncategorized'}
+                </div>
+                <div className="bg-gray-900/50 rounded p-2 max-h-32 overflow-y-auto">
+                  <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+                    {template.master_code.substring(0, 200)}
+                    {template.master_code.length > 200 && '...'}
+                  </pre>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Code Snippets Management Component
+const CodeSnippetsSection: React.FC = () => {
+  const { codeSnippets, createCodeSnippet, updateCodeSnippet, deleteCodeSnippet } = useTemplates();
+  const { theme } = useTheme();
+  const [isCreating, setIsCreating] = useState(false);
+  const [editingSnippet, setEditingSnippet] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    placeholder_key: '',
+    code: '',
+    description: ''
+  });
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      placeholder_key: '',
+      code: '',
+      description: ''
+    });
+    setIsCreating(false);
+    setEditingSnippet(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingSnippet) {
+        await updateCodeSnippet(editingSnippet.id, formData);
+      } else {
+        await createCodeSnippet(formData);
+      }
+      resetForm();
+    } catch (error) {
+      console.error('Error saving code snippet:', error);
+    }
+  };
+
+  const handleEdit = (snippet: any) => {
+    setEditingSnippet(snippet);
+    setFormData({
+      name: snippet.name,
+      placeholder_key: snippet.placeholder_key,
+      code: snippet.code,
+      description: snippet.description || ''
+    });
+    setIsCreating(true);
+  };
+
+  const handleDelete = async (snippetId: string) => {
+    if (window.confirm('Are you sure you want to delete this code snippet?')) {
+      try {
+        await deleteCodeSnippet(snippetId);
+      } catch (error) {
+        console.error('Error deleting code snippet:', error);
+      }
+    }
+  };
+
+  return (
+    <div className={`space-y-6 ${theme === 'dark' ? 'dark' : ''}`}>
+      {/* Create/Edit Form */}
+      {isCreating && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4">
+            {editingSnippet ? 'Edit Code Snippet' : 'Create New Code Snippet'}
+          </h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Snippet Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                  placeholder="Enter snippet name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Placeholder Key
+                </label>
+                <input
+                  type="text"
+                  value={formData.placeholder_key}
+                  onChange={(e) => setFormData({ ...formData, placeholder_key: e.target.value.toUpperCase() })}
+                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                  placeholder="PLACEHOLDER_NAME"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Description
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                placeholder="Enter snippet description"
+                rows={2}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Code
+              </label>
+              <textarea
+                value={formData.code}
+                onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 font-mono text-sm"
+                placeholder="Enter the code that will replace the placeholder"
+                rows={8}
+                required
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                type="submit"
+                variant="primary"
+                className="flex-1"
+              >
+                {editingSnippet ? 'Update Snippet' : 'Create Snippet'}
+              </Button>
+              <Button
+                type="button"
+                onClick={resetForm}
+                variant="secondary"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </motion.div>
+      )}
+
+      {/* Code Snippets List */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-white">
+            Code Snippets ({codeSnippets.length})
+          </h3>
+          <Button
+            onClick={() => setIsCreating(true)}
+            variant="primary"
+            size="sm"
+          >
+            Add New Snippet
+          </Button>
+        </div>
+
+        {false ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+          </div>
+        ) : codeSnippets.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            No code snippets created yet. Create your first snippet above.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {codeSnippets.map((snippet) => (
+              <motion.div
+                key={snippet.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-cyan-500/30 hover:border-cyan-400/50 transition-all"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4 className="font-semibold text-white">{snippet.name}</h4>
+                    <p className="text-sm text-cyan-300 font-mono">{snippet.name}</p>
+                    {snippet.description && (
+                      <p className="text-sm text-gray-300 mt-1">{snippet.description}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(snippet)}
+                      className="p-1 text-cyan-400 hover:text-cyan-300 transition-colors"
+                      title="Edit snippet"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDelete(snippet.id)}
+                      className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                      title="Delete snippet"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-gray-900/50 rounded p-2 max-h-32 overflow-y-auto">
+                  <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+                    {snippet.code.substring(0, 200)}
+                    {snippet.code.length > 200 && '...'}
+                  </pre>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Template Categories Management Component
+const TemplateCategoriesSection: React.FC = () => {
+  const { categories, createCategory, loadingCategories } = useTemplates();
+  const { theme } = useTheme();
+  const [isCreating, setIsCreating] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: ''
+  });
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: ''
+    });
+    setIsCreating(false);
+    setEditingCategory(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingCategory) {
+        await supabase
+          .from('categories')
+          .update(formData)
+          .eq('id', editingCategory.id);
+      } else {
+        await createCategory(formData);
+      }
+      resetForm();
+    } catch (error) {
+      console.error('Error saving category:', error);
+    }
+  };
+
+  const handleEdit = (category: any) => {
+    setEditingCategory(category);
+    setFormData({
+      name: category.name,
+      description: category.description || ''
+    });
+    setIsCreating(true);
+  };
+
+  const handleDelete = async (categoryId: string) => {
+    if (window.confirm('Are you sure you want to delete this category?')) {
+      try {
+        await deleteCategory(categoryId);
+      } catch (error) {
+        console.error('Error deleting category:', error);
+      }
+    }
+  };
+
+  return (
+    <div className={`space-y-6 ${theme === 'dark' ? 'dark' : ''}`}>
+      {/* Create/Edit Form */}
+      {isCreating && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4">
+            {editingCategory ? 'Edit Category' : 'Create New Category'}
+          </h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Category Name
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                placeholder="Enter category name"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Description
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                placeholder="Enter category description"
+                rows={3}
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                type="submit"
+                variant="primary"
+                className="flex-1"
+              >
+                {editingCategory ? 'Update Category' : 'Create Category'}
+              </Button>
+              <Button
+                type="button"
+                onClick={resetForm}
+                variant="secondary"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </motion.div>
+      )}
+
+      {/* Categories List */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-white">
+            Categories ({categories.length})
+          </h3>
+          <Button
+            onClick={() => setIsCreating(true)}
+            variant="primary"
+            size="sm"
+          >
+            Add New Category
+          </Button>
+        </div>
+
+        {loadingCategories ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+          </div>
+        ) : categories.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            No categories created yet. Create your first category above.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.map((category) => (
+              <motion.div
+                key={category.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-cyan-500/30 hover:border-cyan-400/50 transition-all"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4 className="font-semibold text-white">{category.name}</h4>
+                    {category.description && (
+                      <p className="text-sm text-gray-300 mt-1">{category.description}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(category)}
+                      className="p-1 text-cyan-400 hover:text-cyan-300 transition-colors"
+                      title="Edit category"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category.id)}
+                      className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                      title="Delete category"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-400">
+                  Created {new Date(category.created_at).toLocaleDateString()}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+function deleteCategory(categoryId: string) {
+  throw new Error('Function not implemented.');
+}
+

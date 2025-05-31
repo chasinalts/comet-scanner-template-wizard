@@ -118,6 +118,7 @@ const Home: React.FC = () => {
           <img src={fullscreenImage} alt="Fullscreen COMET" className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl" />
         </div>
       )}
+
       {/* Start Wizard Button */}
       <button
         className="mt-8 px-8 py-4 bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-bold text-xl rounded-full shadow-lg hover:scale-105 transition-transform"

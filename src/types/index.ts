@@ -42,14 +42,7 @@ export interface Section {
   isMandatory: boolean;
 }
 
-export interface StoredTemplate {
-  templateStructure: {
-    mode: 'sections' | 'full';
-    sections: Section[];
-    code: string;
-  };
-  baseTemplate: string; // compiled template
-}
+
 
 // Wizard State Types
 export interface WizardProgress {
@@ -64,6 +57,20 @@ export interface WizardSettings {
   autoSave: boolean;
   theme: 'light' | 'dark';
   notifications: boolean;
+}
+
+// Template Types
+export interface StoredTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  master_code: string;
+  category_id?: string;
+  is_active: boolean;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  version: number;
 }
 
 export interface WizardState {
@@ -91,7 +98,7 @@ export interface FileOperations {
   supportedFormats: ['.txt', '.js', '.jsx'];
   maxFileSize: number;
   parseFile: (content: string) => Section[];
-  exportTemplate: () => string;
+  exportTemplate: (template: StoredTemplate) => string;
 }
 
 // Mode Toggle
@@ -119,11 +126,11 @@ export interface ValidationRules {
 
 // Storage Keys
 export const STORAGE_KEYS = {
-  TEMPLATE_STRUCTURE: 'templateStructure',
-  BASE_TEMPLATE: 'baseTemplate',
-  QUESTIONS: 'templateQuestions',
   WIZARD_STATE: 'wizardState',
   USER_SETTINGS: 'userSettings',
+  TEMPLATE_STRUCTURE: 'templateStructure',
+  BASE_TEMPLATE: 'baseTemplate',
+  QUESTIONS: 'questions',
 } as const;
 
 // Wizard Actions

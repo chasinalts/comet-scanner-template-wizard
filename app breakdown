@@ -1,0 +1,60 @@
+
+# Comet Scanner Template Wizard - Project Description
+## What I Want to Build
+-A Scanner Template Builder Wizard for users to take any indicator and use said indicator to scan the logic against all the assets the user includes in the scanner. 
+
+### ONLY Owners/admins can add/remove/edit these things int eh Dashboard:
+- Template Builder Dashboard : Create interactive questionnaires that guide users through customizing Pine Script code
+- Visual Question Designer : Build questions with image previews showing how each choice affects the final indicator and assign a specific few lines of code depending the answer that was chosen in the wizard
+- Media Library : Upload and organize images that demonstrate different ways to visually represent the data thats output by the template builder wizard
+
+### For ALL users
+- Interactive Wizard : Answer questions to customize templates without coding knowledge
+- Live Preview : See real-time updates of the Pine Script code as questions are answered
+- Template Gallery : Browse and select from available scanner templates
+- Save & Export : Save customized templates and export ready-to-use Pine Script code
+
+## Core Functionality
+###Template Creation Workflow :
+1. Owners upload entire Pine Script code (the "Master Template" with every possible line of code that the app could add to a template for the users to pass through and build everything themselves rather than going through the wizard
+2. Owner will also add the code that would be included in every scanner template no matter how the questions were answered in the wizard. Before anything is added to the template, this code that was added by the owner will be the starting code in the floating window for every user. As users progress through different parts of the app (including what can be output by the AI, as well as what is output by the wizard) lines of code will be continuously added live to their custom scanner template in the floating window.
+3. The owner will also add all of the snippets of code that will be added to a users floating window scanner template while progressing through the wizard, depending on the answer provided by the user OR the TickerID string, nameID string, and/or custom function for the security function would be added by the app to the users template after going through all of the steps with the AI (unless the user already has this code in which they can just input it and the app... The app will use the Master Template to determine the location of any code that is determined to be used in the users template or provided by the user for their template.
+4. Create questions (text input, multiple choice, true/false) linked to code sections and images to visually represent the changes that will occur on the chart  depending on the response given by the user.
+5. Set question order and dependencies
+
+##User Experience ###Template Builder Flow: Users will witness their custom indicator built in real-time as they progress through all the parts of the app. - the Wizard will contain a checklist of all of the parts of the wizard that the user can go to if they only need to get the output of a specific part of the wizard, or they can progress through the entire wizard, which will provide a checklist through this progression to make forgotten about if not fully answered/skipped at the time  for whatever the reason.
+-there are 2 distinct parts of the wizard that differ in how the output that have two different backend flows: 	i)TickerID string and NameID string - the user inputs all of the assets that they would like to scan. This input is sent to an AI who will output the TickerID string and NameID string in the format that the scanner will accept and dependent on how the user responds to the Ai questions.  I'llneeding the AI and the part that can just be coded to assign code as determined by the users answer to those question: 
+￼
+1. They have the questions in the wizard that will have set lines of code assigned to each possible answer as selected by the user, as well as an image of how that answer will be represented on the chart, if selected by the user .
+2. Interact with the AI to have it output 3 possible parts of the Templates code:	a) to get the AI to format the single TickerID string  so that it can be used in the security function of the scanner and per the users needs as indicated by their responses to settings the user will set with the AI	b) to get the AI to format the single NameID string per the settings as decided by the user and  formatted specifically in a way that it can be used by the scanner to create asset labels for line plots and for alert labels	c) the user can either come from the start with an idea for an indicator that all of the assets will be scanned against where they will present. This idea to the AI and it will output a single or set of functions that will be used in the security function and also will include any inputs that are needed within this custom function code OR the user can provide to the AI an indicator coded in pinescript that they would like the AI to turn into a custom function, including needed inputs for the custom function or lastly the user can provide an entire code base and indicate to the AI what it is that they want to use from the code base in the AI wi and will create a custom function out of the poor out code that was provided by the user.
+
+4. Export the final Pine Script code for TradingView
+
+## Specific Database Requirements
+### User Management
+- User profiles with role-based permissions (template creators vs. users)
+- Authentication system with secure login/signup
+- Permission levels for content management, media uploads, and system access
+
+### Template System
+- Template storage for base Pine Script code and metadata
+- Question database supporting multiple question types with validation rules
+- Code sections that can be conditionally included based on answers
+- Answer tracking to save user progress and generate final templates
+
+### Media Management
+- Image storage for template previews, question illustrations, and gallery images
+- Organized file structure with folders for banners, gallery, and question-specific images
+- Image optimization and compression for fast loading
+
+### Content Organization
+- Template categorization and search functionality
+- Version control for template updates and iterations
+- User-generated content tracking and management
+- Template sharing and collaboration features
+
+### Performance & Scalability
+- Efficient querying for large numbers of templates and users
+- Real-time updates for live code preview functionality
+- Caching strategies for frequently accessed templates
+- Backup and recovery for user data and templates
