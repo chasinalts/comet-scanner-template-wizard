@@ -1,130 +1,79 @@
+import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import React, { useEffect } from 'react';
-const { lazy, Suspense } = React;
-import ErrorBoundary from './components/ErrorBoundary';
-// AuthProvider is already imported in main.tsx
-import { WizardProvider } from './contexts/WizardContext';
-import { ToastProvider } from './components/ui/Toast';
+import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import Layout from './components/layout/Layout';
-import SuspenseFallback from './components/ui/SuspenseFallback';
-import PerformanceMonitor from './components/dev/PerformanceMonitor';
-import UpdateNotification from './components/ui/UpdateNotification';
-import CacheDebugger from './components/dev/CacheDebugger';
-import { initializeStorage } from './supabaseConfig';
+import { ToastProvider } from './components/ui/Toast';
+// import ProtectedRoute from './components/ProtectedRoute';
+import { supabase } from './supabaseClient';
 
-// Lazy load page components
-const Login = lazy(() => import('./pages/Login'));
-const Signup = lazy(() => import('./pages/Signup'));
-const ScannerWizard = lazy(() => import('./pages/ScannerWizard'));
+// Lazy load components for better performance
+// const Login = lazy(() => import('./components/Login'));
+// const Signup = lazy(() => import('./components/Signup'));
+const Home = lazy(() => import('./pages/Home'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
-import Home from './pages/Home';
-
 function App() {
-  // Initialize Supabase storage when the app starts
   useEffect(() => {
-    const init = async () => {
+    const initializeStorage = async () => {
       try {
-        console.log('Initializing Supabase storage...');
-        const result = await initializeStorage();
-        console.log('Supabase storage initialization result:', result);
+        // Check if the 'images' bucket exists
+        const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+        
+        if (listError) {
+          console.error('Error listing buckets:', listError);
+          return;
+        }
+        
+        const imagesBucket = buckets?.find(bucket => bucket.name === 'images');
+        
+        if (!imagesBucket) {
+          console.log('Images bucket not found, creating...');
+          
+          const { data, error } = await supabase.storage.createBucket('images', {
+            public: true,
+            allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+            fileSizeLimit: 10485760 // 10MB
+          });
+          
+          if (error) {
+            console.error('Error creating storage bucket:', error);
+          } else {
+            console.log('Storage bucket created successfully:', data);
+          }
+        } else {
+          console.log('Images bucket already exists');
+        }
       } catch (error) {
-        console.error('Error initializing Supabase storage:', error);
+        console.error('Error initializing storage:', error);
       }
     };
-
-    init();
+    
+    initializeStorage();
   }, []);
 
   return (
-    <ErrorBoundary>
-      <Router>
-        <WizardProvider>
-          <ThemeProvider>
-            <ToastProvider>
-              {/* Performance monitor (only visible in development) */}
-              <PerformanceMonitor />
-              <UpdateNotification />
-              <CacheDebugger />
-              <Routes>
-                {/* Redirect root to login */}
-                <Route path="/" element={<Navigate to="/login" replace />} />
-
-                {/* Home Page Route - Protected */}
-                <Route
-                  path="/home"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Suspense fallback={<SuspenseFallback message='Loading home page...' />}>
-                          <Home />
-                        </Suspense>
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* Public Routes */}
-                <Route
-                  path="/login"
-                  element={
-                    <Layout>
-                      <Suspense fallback={<SuspenseFallback message="Loading login page..." />}>
-                        <Login />
-                      </Suspense>
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/signup"
-                  element={
-                    <Layout>
-                      <Suspense fallback={<SuspenseFallback message="Loading signup page..." />}>
-                        <Signup />
-                      </Suspense>
-                    </Layout>
-                  }
-                />
-                {/* Owner setup route removed - owner account already created */}
-
-                {/* Protected Routes */}
-                <Route
-                  path="/scanner"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Suspense fallback={<SuspenseFallback message="Loading scanner wizard..." />}>
-                          <ScannerWizard />
-                        </Suspense>
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* Protected Admin Dashboard Route */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <Suspense fallback={<SuspenseFallback message="Loading admin dashboard..." />}>
-                          <AdminDashboard />
-                        </Suspense>
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* Catch all route - redirect to login */}
-                <Route path="*" element={<Navigate to="/login" replace />} />
-              </Routes>
-            </ToastProvider>
-          </ThemeProvider>
-        </WizardProvider>
-      </Router>
-    </ErrorBoundary>
+    <ThemeProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <Router>
+            <div className="App">
+              <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
+                  {/* COMMENTED OUT AUTH ROUTES */}
+                  {/* <Route path="/login" element={<Login />} /> */}
+                  {/* <Route path="/signup" element={<Signup />} /> */}
+                  
+                  {/* SIMPLIFIED ROUTES - NO PROTECTION */}
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/" element={<Navigate to="/home" replace />} />
+                </Routes>
+              </Suspense>
+            </div>
+          </Router>
+        </AuthProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 

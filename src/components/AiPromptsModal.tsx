@@ -1,9 +1,8 @@
-
-AI PROMPT
 import React from 'react';
-import Modal from '../ui/Modal';
-import HolographicText from '../ui/HolographicText';
-import Button from '../ui/Button';
+import Modal from './ui/Modal';
+import HolographicText from './ui/HolographicText';
+import Button from './ui/Button';
+import { useToast } from './ui/Toast';
 
 // Export the prompts and guide text
 export const PROMPT_TICKERID_NAMEID = `
@@ -51,12 +50,9 @@ Based on my asset list and my answers to your preference questions, you will gen
          - Base Symbol: Always included.
          - Exchange Prefix: Added if I answered "Yes" to Preference Question 1. (e.g., "BINANCE:" + symbol)
          - Quote Asset Suffix: Added if I answered "Yes" to Preference Question 2. (e.g., symbol + "USDT")
-         - Suffixes like "PERP": If a common suffix like "PERP" or ".P" was part of my input symbol (e.g., BTCUSDTPERP), it should generally be included in the nameID if the quote asset is also included, or if it's part of the base symbol when no quote is explicitly included. Use your best judgment to make it look like a typical chart label.
-         - Casing: Applied as per my answer to Preference Question 3. For "As Entered", try to preserve the casing of the base symbol and quote asset as I provided them; the exchange part can be uppercased as is conventional.
+         - Casing: Applied as per my answer to Preference Question 3.
       - The individual nameIDs must be comma-separated WITHOUT ANY SPACES after the commas.
       - Example (assuming defaults: No exchange, No quote, Lowercase): "btcusdt,aapl,eurusd,solusdtperp"
-      - Example (Yes exchange, Yes quote, Uppercase for KRAKEN:SOLUSDTPERP): "...KRAKEN:SOLUSDTPERP..."
-      - Example (No exchange, Yes quote, As Entered for EurUsd): "...eurusd..." (if I typed EurUsd)
 
 Step 4: Provide an Important Reminder
 After generating the strings, please remind me: "For cleaner charts, especially with many assets, consider using minimalist labels. You can achieve this by choosing not to include the exchange or quote asset in the nameID if they are not essential for you to identify the asset on your chart."
@@ -111,7 +107,7 @@ It's crucial that the assets in both strings are in the **exact same order**.
     *   **Preference 3: Label Casing?** (Uppercase, Lowercase, As Entered)
         *   **Why:** Controls the text case of your labels.
         *   **AI Default:** Lowercase.
-        *   **"As Entered" Behavior:** This option tries to keep the casing of the base symbol and quote asset as you typed them. For example, if you input \`EurUsd\`, with "As Entered" and "Include Quote", the \`nameID\` would be \`EurUsd\`. The exchange part, if included, is typically uppercased by convention (e.g., \`NYSE:aApL\` would become \`NYSE:aApL\` if exchange is included and "As Entered" is chosen for casing).
+        *   **"As Entered" Behavior:** This option tries to keep the casing of the base symbol and quote asset as you typed them.
 
 **4. Understanding the AI's Output:**
 
@@ -125,17 +121,13 @@ It's crucial that the assets in both strings are in the **exact same order**.
     *   Assets will be in the **same order** as the \`tickerID\` string.
     *   Items are comma-separated **without spaces**.
 
-*   **Minimalist Reminder:** The AI will remind you that for cleaner charts, especially with many assets, minimalist labels (omitting exchange/quote if not crucial) are often better.
-
-*   **Error Notifications:** If the AI has trouble parsing some of your asset inputs, it will notify you and process the entries it could understand.
-
 **5. Tips and Troubleshooting:**
 
-*   **AI is a Tool:** While powerful, AIs aren't perfect. Review the generated strings. If something is not as expected, you can re-prompt, perhaps with a more specific list or by clarifying one asset at a time if you have a problematic entry.
+*   **AI is a Tool:** While powerful, AIs aren't perfect. Review the generated strings.
 *   **Clear Input is Key:** The more precise your asset list, the better the results.
 *   **No Spaces After Commas:** For both generated strings, ensure there are no spaces after the commas when you copy them into your PineScript code.
 
-**Compatible AIs:** This prompt is designed to work well with advanced conversational AIs like ChatGPT (GPT-3.5 Turbo or GPT-4), Claude (v2 or v3), Gemini, and similar models that can follow multi-step instructions.
+**Compatible AIs:** This prompt is designed to work well with advanced conversational AIs like ChatGPT, Claude, Gemini, and similar models.
 `.trim();
 
 export const PROMPT_PINESCRIPT_LOGIC_TO_FUNCTION = `
@@ -159,130 +151,88 @@ Step 4: Create PineScript Function(s)
    - Based on the processed logic, generate one or more reusable PineScript functions that are compatible with the PineScript version I specified.
    - Function Design Requirements:
       - The function(s) should be suitable for use within TradingView's \`request.security()\` function to query data for multiple symbols.
-      - The function(s) MUST return boolean signal(s) (e.g., \`isLongEntry\`, \`isShortEntry\`) AND/OR numeric value(s) (e.g., an oscillator value, a specific price level) that can be plotted or used in further analysis. It can return one or multiple values.
+      - The function(s) MUST return boolean signal(s) (e.g., \`isLongEntry\`, \`isShortEntry\`) AND/OR numeric value(s) (e.g., an oscillator value, a specific price level) that can be plotted or used in further analysis.
       - The code should be well-commented, explaining the purpose of the function and its parameters.
 
 Step 5: Identify and List Required Function Inputs
-   - Analyze the generated function(s) and identify all parameters that should be user-configurable (e.g., indicator lengths, price sources like \`close\`, \`hlc3\`, specific thresholds).
-   - List these inputs clearly for me. For common parameters (like EMA length, RSI length), suggest typical default values.
+   - Analyze the generated function(s) and identify all parameters that should be user-configurable (e.g., indicator lengths, price sources, specific thresholds).
+   - List these inputs clearly for me. For common parameters, suggest typical default values.
 
 Step 6: Present Results Clearly
    - Provide the complete, generated PineScript function(s).
    - Provide the identified list of required inputs and their suggested defaults.
-   - Optionally, you can also offer a brief explanation of the function's logic if it's complex.
+   - Optionally, offer a brief explanation of the function's logic if it's complex.
 
 Error Handling/Clarification:
    - If my initial description or code is unclear, too complex for a single pass, or ambiguous, please ask me clarifying questions before proceeding with function generation.
 
-Example Scenario (Illustrative):
-   - User: "Natural Language"
-   - AI: "Okay, PineScript version?"
-   - User: "v5"
-   - AI: "Please describe your trading logic."
-   - User: "I want a buy signal when the 10-period EMA crosses above the 20-period EMA, and a sell signal when the 10-period EMA crosses below the 20-period EMA. I also want to know the value of the 10-period EMA."
-   - AI (after processing):
-      Function:
-      \`\`\`pinescript
-      //@version=5
-      f_ema_cross_signal(simple int len1, simple int len2, series float src) =>
-          ema1 = ta.ema(src, len1)
-          ema2 = ta.ema(src, len2)
-          isLongEntry = ta.crossunder(ema1, ema2) // Corrected: User said 10 above 20 is buy, so this should be ta.crossover
-          // AI: "My apologies, I've corrected the crossover logic based on your description. 'ta.crossover(ema1, ema2)' indicates ema1 crossed above ema2."
-          // isLongEntry = ta.crossover(ema1, ema2) // Corrected version
-          // isShortEntry = ta.crossunder(ema1, ema2)
-          // [AI would then provide the corrected full function]
-          [ema1, isLongEntry, isShortEntry] // Example, AI will generate the corrected logic.
-      \`\`\`
-      Required Inputs:
-      - len1 (Length for first EMA, e.g., 10)
-      - len2 (Length for second EMA, e.g., 20)
-      - src (Source price, e.g., \`close\`)
-      Output Values:
-      - Value of the 10-period EMA.
-      - Boolean buy signal.
-      - Boolean sell signal.
-
-Please start with Step 1.
+Please start with Step 1 now.
 `.trim();
 
-const GUIDE_PINESCRIPT_LOGIC_TO_FUNCTION = `
-## User Guide: Generating PineScript Scanner Functions with AI
+export const GUIDE_PINESCRIPT_LOGIC_TO_FUNCTION = `
+## User Guide: Converting Trading Logic to PineScript Functions
 
-This guide helps you use the AI Assistant Prompt to convert your trading ideas or existing PineScript snippets into reusable PineScript functions, perfect for multi-asset scanners in TradingView.
+This guide explains how to use the AI Assistant Prompt to convert your trading logic into reusable PineScript functions for TradingView scanners.
 
 **1. Purpose of the Prompt:**
-The AI will help you create well-structured PineScript functions that:
-*   Encapsulate your specific trading logic.
-*   Can return boolean buy/sell signals (\`true\`/\`false\`).
-*   Can return numeric values (e.g., indicator readings, price levels) for plotting or further analysis.
-*   Are designed to be easily integrated into a scanner using TradingView's \`request.security()\` function.
-*   The AI will also identify and list the necessary inputs (parameters) for your function, making it configurable.
+The goal is to create custom PineScript functions from your trading logic that can be used in multi-asset scanners. These functions will:
+*   Return boolean signals (buy/sell) or numeric values (oscillator readings, price levels)
+*   Work with TradingView's \`request.security()\` function
+*   Be reusable across different symbols and timeframes
 
 **2. How to Use the Prompt:**
-*   Copy the entire "Prompt for your AI" text from the modal.
-*   Paste it into your AI chat interface (e.g., ChatGPT, Claude).
-*   The AI will start by asking you two questions:
-    1.  Whether your input logic will be in natural language or existing PineScript code.
-    2.  Your target PineScript version (v5 or v6 - it defaults to v6 if you don't specify).
+*   Copy the entire "Prompt for your AI" text provided in the modal.
+*   Paste it into your preferred AI chat interface (e.g., ChatGPT, Claude, Gemini).
+*   The AI will guide you through the conversion process step by step.
 
-**3. Providing Your Logic Information:**
+**3. Preparing Your Trading Logic:**
 
-*   **A. If you choose "Natural Language":**
-    *   **Be Specific:** Describe your strategy as clearly and detailed as possible.
-        *   **Good Example:** "A buy signal occurs if: the 14-period RSI is below 30, AND the 9-period EMA is above the 21-period SMA. Also, I want the current RSI value."
-        *   **Vague Example (Avoid):** "Buy when oversold and trend is up." (This is too open to interpretation).
-    *   **Mention Indicators:** Name the indicators involved (e.g., EMA, RSI, MACD, Bollinger Bands).
-    *   **Conditions:** Clearly state the conditions for entry/exit signals or for calculating specific values (e.g., "RSI crosses above 70", "close price is greater than the upper Bollinger Band").
-    *   **Outputs:** Specify what the function should return (e.g., "a buy signal", "a sell signal", "the MACD histogram value").
+*   **Option 1: Natural Language Description**
+    *   Describe your trading strategy in detail
+    *   Include specific indicators (RSI, EMA, MACD, etc.)
+    *   Specify entry/exit conditions
+    *   Mention any thresholds or parameters
+    *   Example: "I want a buy signal when the 10-period EMA crosses above the 20-period EMA and RSI is below 70"
 
-*   **B. If you choose "Existing PineScript Code":**
-    *   **Provide the Code:** Paste your existing PineScript snippet.
-    *   **Specify Core Logic:** Crucially, tell the AI *which part* of your code represents the core logic you want to turn into a function. For example, "Focus on the part where \`longCondition\` and \`shortCondition\` are calculated."
-    *   **Identify Key Outputs:** Let the AI know what variables or signals from your snippet are the important results you want the function to return.
+*   **Option 2: Existing PineScript Code**
+    *   Provide your current PineScript code
+    *   Identify which parts contain the core logic
+    *   Specify what outputs you want from the function
+    *   The AI will extract and refactor the logic into reusable functions
 
-**4. Understanding the AI's Output:**
+**4. What the AI Will Provide:**
 
-The AI will provide you with:
-*   **Generated PineScript Function(s):** This is the code you'll use. It will be commented to explain its parts.
-*   **Required Inputs List:** A list of parameters the function needs (e.g., \`length\`, \`source\`, \`threshold\`). The AI will suggest common default values.
-*   **Optional Explanation:** A brief description of how the generated function works.
+*   **Custom PineScript Function(s):**
+    *   Well-commented code compatible with your specified PineScript version
+    *   Functions designed to work with \`request.security()\`
+    *   Proper return values (boolean signals or numeric values)
 
-**5. How to Use the Generated Code in Your TradingView Scanner Script:**
+*   **Input Parameters List:**
+    *   All configurable parameters identified
+    *   Suggested default values for common indicators
+    *   Clear descriptions of what each parameter controls
 
-*   **A. Placement:** Copy the generated function(s) and paste it usually near the top of your PineScript editor in TradingView, typically before the main part of your script that uses \`indicator()\` or \`strategy()\`.
+*   **Usage Instructions:**
+    *   How to integrate the function into your scanner
+    *   Examples of how to call the function
+    *   Tips for optimization and customization
 
-*   **B. Define Inputs:** Use the "Required Inputs List" provided by the AI to create user-configurable inputs in your script using PineScript's \`input.*()\` functions.
-    *   **Example:** If the AI says an input is \`len (Length for EMA, e.g., 14)\`, you'd add to your script:
-        \`emaLength = input.int(14, title="EMA Length")\`
+**5. Best Practices:**
 
-*   **C. Call within \`request.security()\`:** To use your new function across multiple symbols in a scanner, you'll typically call it inside \`request.security()\`.
-    *   **Example:**
-        \`\`\`pinescript
-        // Assume AI generated: f_my_signal(simple int rsiLen, series float src) => [rsiValue, isBuySignal]
-        // And AI listed inputs: rsiLen (e.g., 14), src (e.g., close)
+*   **Be Specific:** The more detailed your logic description, the better the AI can help
+*   **Test Incrementally:** Start with simple logic and build complexity gradually
+*   **Review Output:** Always review the generated code for accuracy
+*   **Optimize Parameters:** Adjust the suggested defaults based on your trading style
 
-        // In your main script:
-        rsiLengthInput = input.int(14, title="RSI Length")
-        priceSourceInput = input.source(close, title="Source")
+**6. Common Use Cases:**
 
-        // Inside your loop or for a specific symbol:
-        [currentRsiValue, isBuy] = request.security(symInfo.tickerid, timeframe.period,
-                                     f_my_signal(rsiLengthInput, priceSourceInput))
-        // Now 'currentRsiValue' and 'isBuy' hold the results for the symbol 'symInfo.tickerid'
-        \`\`\`
+*   Converting indicator-based strategies to functions
+*   Creating custom oscillators or momentum indicators
+*   Building multi-condition entry/exit signals
+*   Extracting reusable logic from complex scripts
 
-**6. Important Considerations & Troubleshooting:**
-
-*   **Review and Test:** AI-generated code is a fantastic starting point but ALWAYS needs careful review and thorough testing on historical data and paper trading before live use.
-*   **Start Simple:** If you have very complex logic, try breaking it down and prompting the AI for smaller functional pieces first.
-*   **AI Limitations:** Extremely intricate, proprietary, or poorly explained logic might be challenging for the AI.
-*   **Iterate:** If the first result isn't perfect, don't hesitate to re-prompt the AI with clarifications or refinements to your description.
-*   **PineScript Version:** Ensure the AI generates code for your intended PineScript version (v5 or v6). Issues can arise if there's a mismatch.
-
-**Compatible AIs:** This prompt is designed for advanced conversational AIs like ChatGPT (GPT-3.5 Turbo or GPT-4), Claude (v2 or v3), Gemini, etc., which are good at understanding context and generating code.
+**Compatible AIs:** This prompt works well with ChatGPT, Claude, Gemini, and other advanced AI models that understand programming concepts.
 `.trim();
-
 
 interface AiPromptsModalProps {
   isOpen: boolean;
@@ -290,13 +240,15 @@ interface AiPromptsModalProps {
 }
 
 const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
-  const handleCopy = async (textToCopy: string, type: string) => {
+  const { showToast } = useToast();
+
+  const handleCopy = async (text: string, promptName: string) => {
     try {
-      await navigator.clipboard.writeText(textToCopy);
-      alert(type + " copied to clipboard!");
+      await navigator.clipboard.writeText(text);
+      showToast(`${promptName} copied to clipboard!`, 'success');
     } catch (err) {
       console.error('Failed to copy text: ', err);
-      alert('Failed to copy text.');
+      showToast('Failed to copy to clipboard', 'error');
     }
   };
 
@@ -326,13 +278,12 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
     return html;
   };
 
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="" size="4xl" hideTitle={true}>
-      <div className="p-1 futuristic-container text-gray-200"> {/* Added text-gray-200 for base text color */}
+      <div className="p-1 futuristic-container text-gray-200">
         <HolographicText text="AI Assistant Prompts & User Guides" as="h1" variant="title" className="text-center mb-6 text-3xl" />
 
-        <div className="space-y-8 max-h-[80vh] overflow-y-auto p-4 custom-scrollbar"> {/* Added custom-scrollbar if defined elsewhere */}
+        <div className="space-y-8 max-h-[80vh] overflow-y-auto p-4 custom-scrollbar">
 
           {/* Section 1: TickerID & NameID Generation */}
           <section className="p-4 rounded-lg border border-cyan-600/50 bg-gray-800/30 shadow-lg futuristic-container has-scanline">
@@ -346,7 +297,7 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
                   onClick={() => handleCopy(PROMPT_TICKERID_NAMEID, "TickerID/NameID Prompt")}
                   variant="secondary"
                   size="sm"
-                  className="absolute top-2 right-2 btn-accent !py-1 !px-2 text-xs" // Use btn-accent, ensure high specificity
+                  className="absolute top-2 right-2 btn-accent !py-1 !px-2 text-xs"
                 >
                   Copy Prompt
                 </Button>
@@ -367,16 +318,14 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
             <HolographicText text="Prompt & Guide for PineScript Logic-to-Function" as="h2" variant="subtitle" className="text-2xl mb-4 text-purple-300" />
 
             <div className="mb-6">
-              <label className="block text-sm font-mediu
-              
-              m text-purple-400 mb-1">Prompt for your AI:</label>
+              <label className="block text-sm font-medium text-purple-400 mb-1">Prompt for your AI:</label>
               <div className="relative bg-gray-900/80 border border-gray-700 p-3 rounded-md max-h-72 overflow-y-auto custom-scrollbar">
                 <pre className="text-xs text-gray-300 whitespace-pre-wrap break-words">{PROMPT_PINESCRIPT_LOGIC_TO_FUNCTION}</pre>
                 <Button
                   onClick={() => handleCopy(PROMPT_PINESCRIPT_LOGIC_TO_FUNCTION, "PineScript Logic-to-Function Prompt")}
                   variant="secondary"
                   size="sm"
-                  className="absolute top-2 right-2 btn-accent !py-1 !px-2 text-xs" // Use btn-accent
+                  className="absolute top-2 right-2 btn-accent !py-1 !px-2 text-xs"
                 >
                   Copy Prompt
                 </Button>

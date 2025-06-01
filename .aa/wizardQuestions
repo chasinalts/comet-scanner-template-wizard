@@ -1,0 +1,34 @@
+QUESTIONS WITHIN WIZARD
+(1) Do you want the full template in its entirety (contains every possible line of code that could be added by the app) for you to filter/parse-out what you need and what you do not (comments/descriptions are provided with every bit of code to help you to better understand what you're looking at.
+
+(2) Do you want the COMET Scanner overlaid on the chart or in a separate window?
+DETERMINES IF OVERLAID SHOULD BE TRUE OR FALSE IN INDICATOR() FUNCTION
+
+(3) Provide a name for scanner used when searching for indicator 
+DETERMINES NAME OF COMET SCANNER AS SHOWN WHEN SEARCHING FOR THE NAME OF THE INDICATOR AMONGST ALL THE OTHERS 
+
+(4) Provide a Shorthand (abbreviated) name for COMET Scanner that will appear on the chart (keep it super short for a clean chart)
+DETERMINES NAME OF COMET SCANNER AS SHOWN FOR THE INDICATOR'S NAME ON THE CHART
+
+
+(5) Will you be using LINE PLOTS WITH NAME LABELS at the ends of them(example...like if you are wanting to scan for/view a specific oscillator but for every asset) or simply just ALERT TRIGGER LABELS with the asset name in the Alert Labels?
+DETERMINES: 
+	1) IF PLOT() FUNCTIONS WILL BE USED 
+	2) IF DIFFERENT ASSET COLORS ARE USED 
+	3) IF COLORID WILL BE IN MAIN() FUNCTION CALL
+	4) IF THE MAIN() FUNCTION CAN BE CALLED DIRECTLY WITHIN THE PLOT() FUNCTION OR IF MAIN() FUNCTION CALL SHOULD PRODUCE AN OUTPUT VARIABLE AND THAT USED IN PLOT() FUNCTION.
+	5) IF THE INPUTS "PLOT01_10" AND OTHER 3 ARE NEEDED AS INPUTS.
+
+(6) Do you need stationary horizontal lines (ex. If using line plots that will be plotting an oscillator value)? If so, input the Lowest Line, the Mid Line, and the Highest Line of the oscillator on the appropriate lines?
+DETERMINES IF HLINE() PLOTS ARE NEEDED
+
+(7) Are you in need of a "Signal Cool-Down" function in your script?
+(ex. This could be desired in a situation such as if you were signals were produced from the RSI crossing the 70/30 level. This would produce entirely too many signals. By using Signal Cool-Downs it would only produce the first signal and a user defined amount of bars must go by before another signal can be generated from the same level being crossed).
+DETERMINES:
+	1) IF INPUT NEEDED
+	2) IF LOGIC NEEDED
+
+(8) Do you want a Bullish/Bearish Alert to trigger as soon as the alert condition is met (this can send an alert before the candle closes) OR do you want the candle to close before an alert is triggered to prevent possible repainting? Repainting can occur if a signal is triggered as soon as the Alert Trigger condition has been met.*** this can occur before a bar closes and if the condition ends up undoing itself before the candle closes, then the previous Alert Label that has already been triggered, will then erase itself causing a repaint of the signal but it's too late for the alert as it has already been sent (but ONLY can occur if you allow your alert to trigger before the candle closes)
+
+
+

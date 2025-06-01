@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, useEffect } from '../utils/react-imports';
 
 import { motion, Reorder, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+// import { useAuth } from '../contexts/AuthContext'; // COMMENTED OUT - NO AUTH
 import { useToast } from '../components/ui/Toast';
 import Button from '../components/ui/Button';
 import DragDropUpload from '../components/ui/DragDropUpload';
@@ -22,6 +22,8 @@ import ImageThumbnail from '../components/ui/ImageThumbnail';
 import HolographicText from '../components/ui/HolographicText';
 import { isOwner } from '../utils/permissionChecks';
 import supabase from '@/supabaseConfig';
+import WizardQuestionsManager from '../components/WizardQuestionsManager';
+import AiPromptsModal from '../components/AiPromptsModal';
 
 interface UploadingState {
   questionId?: string;
@@ -30,20 +32,20 @@ interface UploadingState {
 }
 
 export default function AdminDashboard() {
-  const { currentUser } = useAuth();
+  // const { currentUser } = useAuth(); // COMMENTED OUT - NO AUTH
   const { showToast } = useToast();
   const { theme } = useTheme();
-  const [canUpload, setCanUpload] = useState<boolean>(false);
+  const [canUpload, setCanUpload] = useState<boolean>(true); // ALWAYS TRUE - NO AUTH
 
-  // Check if the user is an owner
-  useEffect(() => {
-    const checkOwnerStatus = async () => {
-      const ownerStatus = await isOwner();
-      setCanUpload(ownerStatus);
-    };
-
-    checkOwnerStatus();
-  }, [currentUser]);
+  // BYPASS OWNER CHECK - ALL USERS ARE ADMINS NOW
+  // useEffect(() => {
+  //   const checkOwnerStatus = async () => {
+  //     const ownerStatus = await isOwner();
+  //     setCanUpload(ownerStatus);
+  //   };
+  //
+  //   checkOwnerStatus();
+  // }, [currentUser]);
   const {
     questions,
     addQuestion,
@@ -76,6 +78,8 @@ export default function AdminDashboard() {
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [scannerImagesPage, setScannerImagesPage] = useState<number>(1);
   const IMAGES_PER_PAGE = 9; // Show 9 images per page (3x3 grid)
+  const [showWizardManager, setShowWizardManager] = useState(false);
+  const [showAiPromptsModal, setShowAiPromptsModal] = useState(false);
 
   const handleAddOption = (questionId: string) => {
     const currentQuestion = questions.find((q: Question) => q.id === questionId);
@@ -294,25 +298,35 @@ export default function AdminDashboard() {
     setScannerImagesPage(newPage);
   };
 
-  if (!currentUser?.is_owner) {
-    return <div className="p-8 text-center">
-      <HolographicText
-        text="You don't have permission to access this page."
-        as="p"
-        variant="subtitle"
-        className="text-center"
-      />
-    </div>;
-  }
+  // BYPASS PERMISSION CHECK - NO AUTH
+  // if (!currentUser?.is_owner) {
+  //   return <div className="p-8 text-center">
+  //     <HolographicText
+  //       text="You don't have permission to access this page."
+  //       as="p"
+  //       variant="subtitle"
+  //       className="text-center"
+  //     />
+  //   </div>;
+  // }
 
   return (
     <div className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''} futuristic-grid-bg`}>
-      <HolographicText
-        text="Admin Dashboard"
-        as="h1"
-        variant="title"
-        className="text-3xl font-bold mb-8"
-      />
+      {/* Header with Exit Button */}
+      <div className="flex justify-between items-center mb-8">
+        <HolographicText
+          text="Admin Dashboard"
+          as="h1"
+          variant="title"
+          className="text-3xl font-bold"
+        />
+        <Button
+          onClick={() => window.location.href = '/home'}
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          Exit Dashboard
+        </Button>
+      </div>
 
       {/* Image Management Section */}
       <section className="space-y-8">
@@ -334,19 +348,22 @@ export default function AdminDashboard() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
-                {/* Banner Image Preview */}
+                {/* Banner Image Preview - Resizable Window */}
                 <div className="mb-4">
                   {getBannerImage() ? (
-                    <div className="relative aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                    <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden resize border-2 border-dashed border-gray-400 min-w-[200px] min-h-[150px] max-w-full" style={{width: '400px', height: '300px'}}>
                       <img
                         src={getBannerImage()?.src}
                         alt={getBannerImage()?.alt || 'Banner image'}
                         className="w-full h-full object-contain"
                         style={{ transform: `scale(${getBannerImage()?.scale || 1})` }}
                       />
+                      <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                        Resize to set display size
+                      </div>
                     </div>
                   ) : (
-                    <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center resize border-2 border-dashed border-gray-400 min-w-[200px] min-h-[150px]" style={{width: '400px', height: '300px'}}>
                       <HolographicText
                         text="No banner image uploaded"
                         as="p"
@@ -468,21 +485,26 @@ export default function AdminDashboard() {
                 }}
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
-                {/* Existing Scanner Images */}
+                {/* Existing Scanner Images - Resizable Windows */}
                 {getPaginatedScannerImages().map((image: ImageContent) => (
                   <Reorder.Item
                     key={image.id}
                     value={image}
                     className="cursor-move"
                   >
-                    <ImageThumbnail
-                      id={image.id}
-                      src={image.src}
-                      alt={image.alt}
-                      scale={image.scale || 1}
-                      onScaleChange={(id: string, scale: number) => updateImageScale(id, scale)}
-                      onDelete={handleDeleteImage}
-                    />
+                    <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden resize border-2 border-dashed border-gray-400 min-w-[150px] min-h-[150px] max-w-full" style={{width: '300px', height: '250px'}}>
+                      <ImageThumbnail
+                        id={image.id}
+                        src={image.src}
+                        alt={image.alt}
+                        scale={image.scale || 1}
+                        onScaleChange={(id: string, scale: number) => updateImageScale(id, scale)}
+                        onDelete={handleDeleteImage}
+                      />
+                      <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                        Resize to set gallery size
+                      </div>
+                    </div>
                   </Reorder.Item>
                 ))}
               </Reorder.Group>
@@ -562,14 +584,20 @@ export default function AdminDashboard() {
               variant="subtitle"
               className="text-xl font-medium"
             />
-            <CheckboxField
-              label="Make Available to Users"
-              checked={localStorage.getItem('fullTemplateEnabled') === 'true'}
-              onChange={(e) => {
-                localStorage.setItem('fullTemplateEnabled', e.target.checked.toString());
-                showToast('success', `Full template ${e.target.checked ? 'enabled' : 'disabled'} for users`);
-              }}
-            />
+            <div className="bg-yellow-100 dark:bg-yellow-900 border-2 border-yellow-400 rounded-lg p-4 mb-4">
+              <CheckboxField
+                label="Make Available to Users"
+                checked={localStorage.getItem('fullTemplateEnabled') === 'true'}
+                onChange={(e) => {
+                  localStorage.setItem('fullTemplateEnabled', e.target.checked.toString());
+                  showToast('success', `Full template ${e.target.checked ? 'enabled' : 'disabled'} for users`);
+                }}
+                className="text-lg font-semibold text-yellow-800 dark:text-yellow-200"
+              />
+              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                ⚠️ This controls whether users can access the full template
+              </p>
+            </div>
           </div>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             This is the complete template code that will be provided to users who choose the "Full Template" option.
@@ -806,6 +834,57 @@ export default function AdminDashboard() {
         <CodeSnippetsSection />
       </section>
 
+      {/* Wizard Questions Management */}
+      <section className="mb-12">
+        <div className="flex justify-between items-center mb-6">
+          <HolographicText
+            text="Wizard Questions"
+            as="h2"
+            variant="subtitle"
+            className="text-2xl font-bold"
+          />
+          <Button
+            onClick={() => setShowWizardManager(!showWizardManager)}
+            variant="primary"
+            className="bg-cyan-600 hover:bg-cyan-700"
+          >
+            {showWizardManager ? 'Hide' : 'Manage'} Wizard Questions
+          </Button>
+        </div>
+        {showWizardManager && (
+          <WizardQuestionsManager onClose={() => setShowWizardManager(false)} />
+        )}
+      </section>
+
+      {/* AI Prompts Management */}
+      <section className="mb-12">
+        <div className="flex justify-between items-center mb-6">
+          <HolographicText
+            text="AI Assistant Prompts"
+            as="h2"
+            variant="subtitle"
+            className="text-2xl font-bold"
+          />
+          <Button
+            onClick={() => setShowAiPromptsModal(true)}
+            variant="primary"
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            Open AI Prompts
+          </Button>
+        </div>
+        <div className="bg-gray-800/30 rounded-lg border border-purple-600/50 p-4">
+          <p className="text-gray-300 text-sm leading-relaxed">
+            Access AI assistant prompts for TickerID & NameID generation and PineScript logic-to-function conversion. 
+            These prompts can be copied and used with external AI assistants to maintain consistency with the app's AI functionality.
+          </p>
+        </div>
+      </section>
+
+      {/* AI Prompts Modal */}
+      {showAiPromptsModal && (
+        <AiPromptsModal onClose={() => setShowAiPromptsModal(false)} />
+      )}
 
     </div>
   );
@@ -814,7 +893,7 @@ export default function AdminDashboard() {
 // Master Templates Management Component
 const MasterTemplatesSection: React.FC = () => {
   const { templates, categories, createTemplate, updateTemplate, deleteTemplate, loadingTemplates } = useTemplates();
-  const { currentUser } = useAuth();
+  // const { currentUser } = useAuth(); // COMMENTED OUT - NO AUTH
   const { theme } = useTheme();
   const [isCreating, setIsCreating] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<any>(null);
