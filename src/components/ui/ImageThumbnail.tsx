@@ -36,10 +36,10 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
 
   return (
     <div
-      className={`group border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200 ${className}`}
+      className={`group border dark:border-gray-600 rounded-lg bg-gray-800 dark:bg-gray-900 shadow-lg hover:shadow-xl transition-all duration-200 ${className}`}
     >
       <div className="p-4 space-y-4">
-        <div className="relative aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+        <div className="relative aspect-video bg-gray-900 dark:bg-black rounded-lg overflow-hidden border border-gray-700">
           <img
             src={src}
             alt={alt}
@@ -62,10 +62,10 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
 
           {/* Resize controls - always visible */}
           <div
-            className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-2"
+            className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm p-2 border-t border-gray-600"
           >
             <div className="flex items-center space-x-2">
-              <span className="text-white text-xs">Small</span>
+              <span className="text-cyan-300 text-xs font-medium">Small</span>
               <input
                 type="range"
                 min="0.5"
@@ -73,11 +73,11 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
                 step="0.1"
                 value={localScale}
                 onChange={handleScaleChange}
-                className="flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                className="flex-grow h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer dark:bg-gray-900 accent-cyan-400"
               />
-              <span className="text-white text-xs">Large</span>
+              <span className="text-cyan-300 text-xs font-medium">Large</span>
             </div>
-            <div className="text-center text-white text-xs mt-1">
+            <div className="text-center text-cyan-300 text-xs mt-1 font-medium">
               {Math.round(localScale * 100)}%
             </div>
           </div>

@@ -24,6 +24,7 @@ import { isOwner } from '../utils/permissionChecks';
 import supabase from '@/supabaseConfig';
 import WizardQuestionsManager from '../components/WizardQuestionsManager';
 import AiPromptsModal from '../components/AiPromptsModal';
+import ColorWheel from '../components/ui/ColorWheel';
 
 interface UploadingState {
   questionId?: string;
@@ -80,6 +81,7 @@ export default function AdminDashboard() {
   const IMAGES_PER_PAGE = 9; // Show 9 images per page (3x3 grid)
   const [showWizardManager, setShowWizardManager] = useState(false);
   const [showAiPromptsModal, setShowAiPromptsModal] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState('#1f2937');
 
   const handleAddOption = (questionId: string) => {
     const currentQuestion = questions.find((q: Question) => q.id === questionId);
@@ -311,8 +313,11 @@ export default function AdminDashboard() {
   // }
 
   return (
-    <div className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''} futuristic-grid-bg`}>
-      {/* Header with Exit Button */}
+    <div 
+      className={`max-w-7xl mx-auto p-6 space-y-12 ${theme === 'dark' ? 'dark' : ''} futuristic-grid-bg`}
+      style={{ backgroundColor }}
+    >
+      {/* Header with Exit Button and Color Wheel */}
       <div className="flex justify-between items-center mb-8">
         <HolographicText
           text="Admin Dashboard"
@@ -320,12 +325,18 @@ export default function AdminDashboard() {
           variant="title"
           className="text-3xl font-bold"
         />
-        <Button
-          onClick={() => window.location.href = '/home'}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          Exit Dashboard
-        </Button>
+        <div className="flex items-center gap-4">
+          <ColorWheel 
+            onColorChange={setBackgroundColor}
+            initialColor={backgroundColor}
+          />
+          <Button
+            onClick={() => window.location.href = '/home'}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Exit Dashboard
+          </Button>
+        </div>
       </div>
 
       {/* Image Management Section */}
@@ -349,26 +360,32 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 {/* Banner Image Preview - Resizable Window */}
-                <div className="mb-4">
-                  {getBannerImage() ? (
-                    <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden resize border-2 border-dashed border-gray-400 min-w-[200px] min-h-[150px] max-w-full" style={{width: '400px', height: '300px'}}>
+ background on every page                <div className="mb-4">
+ of the                  {getBannerImage() ? (
+                    <div className="relative bg-gray-800 dark:bg-gray-900 rounded-lg overflow-hidden resize both border-2 border-dashed border-cyan-400 min-w-[200px] min-h-[150px] max-w-full" style={{width: '400px', height: '300px'}}>
                       <img
                         src={getBannerImage()?.src}
                         alt={getBannerImage()?.alt || 'Banner image'}
                         className="w-full h-full object-contain"
                         style={{ transform: `scale(${getBannerImage()?.scale || 1})` }}
                       />
-                      <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                        Resize to set display size
+                      <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-cyan-300 text-xs px-2 py-1 rounded border border-cyan-500">
+                        ↘ Drag to resize banner display
+                      </div>
+                      <div className="absolute top-2 left-2 bg-black bg-opacity-75 text-cyan-300 text-xs px-2 py-1 rounded border border-cyan-500">
+                        Banner Image
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center resize border-2 border-dashed border-gray-400 min-w-[200px] min-h-[150px]" style={{width: '400px', height: '300px'}}>
+                    <div className="bg-gray-800 dark:bg-gray-900 rounded-lg flex items-center justify-center resize both border-2 border-dashed border-cyan-400 min-w-[200px] min-h-[150px]" style={{width: '400px', height: '300px'}}>
                       <HolographicText
                         text="No banner image uploaded"
                         as="p"
-                        className="text-gray-500 dark:text-gray-400"
+                        className="text-gray-400 dark:text-gray-500"
                       />
+                      <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-cyan-300 text-xs px-2 py-1 rounded border border-cyan-500">
+                        ↘ Drag to resize
+                      </div>
                     </div>
                   )}
                 </div>
@@ -492,7 +509,7 @@ export default function AdminDashboard() {
                     value={image}
                     className="cursor-move"
                   >
-                    <div className="relative bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden resize border-2 border-dashed border-gray-400 min-w-[150px] min-h-[150px] max-w-full" style={{width: '300px', height: '250px'}}>
+                    <div className="relative bg-gray-800 dark:bg-gray-900 rounded-lg overflow-hidden resize both border-2 border-dashed border-purple-400 min-w-[150px] min-h-[150px] max-w-full" style={{width: '300px', height: '250px'}}>
                       <ImageThumbnail
                         id={image.id}
                         src={image.src}
@@ -500,9 +517,12 @@ export default function AdminDashboard() {
                         scale={image.scale || 1}
                         onScaleChange={(id: string, scale: number) => updateImageScale(id, scale)}
                         onDelete={handleDeleteImage}
-                      />
-                      <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                        Resize to set gallery size
+background color change                      />
+                      <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-purple-300 text-xs px-2 py-1 rounded border border-purple-500">
+                        ↘ Drag to resize gallery
+                      </div>
+                      <div className="absolute top-2 left-2 bg-black bg-opacity-75 text-purple-300 text-xs px-2 py-1 rounded border border-purple-500">
+                        Gallery #{getPaginatedScannerImages().indexOf(image) + 1}
                       </div>
                     </div>
                   </Reorder.Item>

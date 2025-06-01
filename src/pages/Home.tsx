@@ -4,6 +4,8 @@ import HolographicText from '../components/ui/HolographicText';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseConfig';
 import VirtualizedImageGallery from '../components/ui/VirtualizedImageGallery';
+import { useAdminContent } from '../hooks/useAdminContent';
+import EditableSection from '../components/ui/EditableSection';
 
 const COMET_EXPLANATION = `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
 
@@ -78,13 +80,31 @@ const Home: React.FC = () => {
       }
     };
 
+    const loadCometExplanation = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('site_content')
+          .select('content')
+          .eq('key', 'comet_explanation')
+          .single();
+
+        if (data && !error) {
+          setCometExplanation(data.content);
+        }
+      } catch (error) {
+        console.error('Error loading COMET explanation:', error);
+      }
+    };
+
     fetchImages();
+    loadCometExplanation();
   }, []);
 
 
 
   // Clicking gallery image expands it fullscreen
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [cometExplanation, setCometExplanation] = useState(COMET_EXPLANATION);
   
   // ADMIN PASSWORD HANDLING
   const handleAdminButtonClick = () => {
@@ -173,11 +193,13 @@ const Home: React.FC = () => {
         )}
         {error && <div className="text-red-400 mt-2">{error}</div>}
       </div>
-      {/* COMET Explanation */}
-      <section className="max-w-2xl bg-white/10 rounded-lg p-6 mb-8 shadow-lg">
-        <HolographicText text="What is COMET?" as="h2" variant="subtitle" className="text-2xl font-bold text-cyan-200 mb-2 text-center" />
-        <pre className="whitespace-pre-line text-white text-lg font-mono leading-snug">{COMET_EXPLANATION}</pre>
-      </section>
+      {/* COMET Explanation - Editable and Collapsible */}
+      <EditableSection
+        title="What is COMET?"
+        content={cometExplanation}
+        onContentChange={setCometExplanation}
+        className="mb-8"
+      />
       {/* Image Gallery */}
       <section className="w-full max-w-5xl mb-8">
         <HolographicText text="COMET Scanner Possibilities" as="h2" variant="subtitle" className="text-xl font-semibold text-cyan-100 mb-4 text-center" />
