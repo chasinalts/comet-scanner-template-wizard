@@ -1,5 +1,6 @@
 // React imports helper
-import React, {
+import * as React from 'react';
+import {
   useState,
   useEffect,
   useRef,
@@ -11,13 +12,13 @@ import React, {
   forwardRef,
   Fragment,
   Component,
-  type ReactNode,
-  type RefObject,
-  type ChangeEvent,
-  type FormEvent,
-  type ErrorInfo,
-  type InputHTMLAttributes,
-  type SelectHTMLAttributes,
+  ReactNode,
+  RefObject,
+  ChangeEvent,
+  FormEvent,
+  ErrorInfo,
+  InputHTMLAttributes,
+  SelectHTMLAttributes,
   type DragEvent,
   type JSX
 } from 'react';
@@ -52,3 +53,4 @@ export type {
   DragEvent,
   JSX
 };
+
