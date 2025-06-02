@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useRef, useCallback, useEffect } from 'react';
 
 export function useAbortController() {

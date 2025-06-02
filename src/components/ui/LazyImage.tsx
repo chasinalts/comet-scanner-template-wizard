@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { useLazyLoading } from '../../hooks/useLazyLoading';
 import { resizeImage } from '../../utils/imageHandlers';
 import { getProxiedImageUrl } from '../../supabaseConfig';

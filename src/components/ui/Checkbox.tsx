@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { forwardRef, InputHTMLAttributes, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 

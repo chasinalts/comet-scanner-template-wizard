@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import LazyImage from './LazyImage';
 import type { ImageContent } from '../../hooks/useAdminContent';
 

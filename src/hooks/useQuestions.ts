@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState, useEffect } from 'react';
 import type { Question, QuestionOption } from '../types/questions.ts';
 import { cleanupImageUrl } from '../utils/imageHandlers';

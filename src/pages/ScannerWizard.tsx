@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Modal from '../components/ui/Modal';
 import { useAdminContent } from '../hooks/useAdminContent';

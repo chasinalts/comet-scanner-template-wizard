@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useEffect, useRef, useState, RefObject } from 'react';
 
 interface UseLazyLoadingOptions {

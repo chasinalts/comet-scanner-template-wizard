@@ -1,6 +1,5 @@
 // React imports helper
-import * as React from 'react';
-import {
+import React, {
   useState,
   useEffect,
   useRef,
@@ -12,13 +11,13 @@ import {
   forwardRef,
   Fragment,
   Component,
-  ReactNode,
-  RefObject,
-  ChangeEvent,
-  FormEvent,
-  ErrorInfo,
-  InputHTMLAttributes,
-  SelectHTMLAttributes,
+  type ReactNode,
+  type RefObject,
+  type ChangeEvent,
+  type FormEvent,
+  type ErrorInfo,
+  type InputHTMLAttributes,
+  type SelectHTMLAttributes,
   type DragEvent,
   type JSX
 } from 'react';

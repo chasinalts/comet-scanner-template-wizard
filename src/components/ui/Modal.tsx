@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Fragment, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 

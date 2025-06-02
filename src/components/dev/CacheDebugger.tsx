@@ -1,4 +1,4 @@
-import { useState } from '../../utils/react-imports';
+import { useState } from 'react';
 // Service worker and cache clearing logic is now inline below, since serviceWorkerRegistration no longer exists.
 
 const CacheDebugger = () => {
