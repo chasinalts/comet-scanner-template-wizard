@@ -21,7 +21,7 @@ import ImageThumbnail from '../components/ui/ImageThumbnail';
 
 import HolographicText from '../components/ui/HolographicText';
 import { isOwner } from '../utils/permissionChecks';
-import supabase from '@/supabaseConfig';
+import { supabase } from '../supabaseConfig';
 import WizardQuestionsManager from '../components/WizardQuestionsManager';
 import AiPromptsModal from '../components/AiPromptsModal';
 import ColorWheel from '../components/ui/ColorWheel';
