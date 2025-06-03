@@ -1,7 +1,8 @@
 [build]
   base = "." # Use current directory as base
   publish = "dist"
-  command = "npm install && npm run build"
+  command = "bash netlify-build.sh"
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18"  # Use a more stable version
@@ -9,6 +10,21 @@
 # Production context: all deploys from the main branch
 [context.production]
   command = "npm run netlify:clean-build"
+
+# Deploy settings - automatically deploy from main branch
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
 
 # Redirects and headers are GLOBAL for all builds
 [[redirects]]
