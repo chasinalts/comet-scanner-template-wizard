@@ -12,11 +12,13 @@ export default [
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       parser: tsParser,
       sourceType: 'module',
-      globals: Object.fromEntries(Object.entries(globals.browser).map(([k, v]) => [k.trim(), v])),
-
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      },
     },
     plugins: {
       '@typescript-eslint': tseslint,

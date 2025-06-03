@@ -1,4 +1,8 @@
-// React imports helper
+/**
+ * Centralized React imports for consistent usage across the project
+ * Optimized for Node.js v18+ and modern React patterns
+ * This helps with tree-shaking and ensures consistent React usage patterns
+ */
 import React, {
   useState,
   useEffect,
@@ -11,6 +15,12 @@ import React, {
   forwardRef,
   Fragment,
   Component,
+  Suspense,
+  lazy,
+  startTransition,
+  useDeferredValue,
+  useId,
+  useTransition,
   type ReactNode,
   type RefObject,
   type ChangeEvent,
@@ -25,7 +35,7 @@ import React, {
 // Re-export React
 export default React;
 
-// Re-export commonly used hooks
+// Re-export commonly used hooks and React 18+ features
 export {
   useState,
   useEffect,
@@ -37,7 +47,13 @@ export {
   createContext,
   forwardRef,
   Fragment,
-  Component
+  Component,
+  Suspense,
+  lazy,
+  startTransition,
+  useDeferredValue,
+  useId,
+  useTransition
 };
 
 // Re-export types
