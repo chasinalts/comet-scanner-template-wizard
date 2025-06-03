@@ -13,30 +13,6 @@ interface ImportMeta {
 
 // This file ensures TypeScript recognizes various module types
 
-// React module declaration
-declare module 'react' {
-  // Import all React types
-  import * as React from 'react';
-
-  // Re-export everything using ES module syntax
-  export = React;
-  export as namespace React;
-}
-
-// React DOM module declaration
-declare module 'react-dom' {
-  import * as ReactDOM from 'react-dom';
-  export = ReactDOM;
-  export as namespace ReactDOM;
-}
-
-// React JSX Runtime module declaration
-declare module 'react/jsx-runtime' {
-  export const jsx: any;
-  export const jsxs: any;
-  export const Fragment: any;
-}
-
 declare module '*.svg' {
   import * as React from 'react';
   export const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;

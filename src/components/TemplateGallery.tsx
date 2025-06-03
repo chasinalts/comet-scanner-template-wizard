@@ -115,12 +115,15 @@ const TemplateGallery: React.FC<TemplateGalleryProps> = ({ className = '' }) => 
               className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden border border-cyan-500/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 cursor-pointer"
               onClick={() => setFullscreenImage(imageUrl)}
             >
-              <img
-                src={imageUrl}
-                alt={`Gallery image ${index + 1}`}
-                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-200"
-                loading="lazy"
-              />
+<img
+                 src={imageUrl}
+                alt={`COMET Scanner gallery image ${index + 1}`}
+                 className="w-full h-48 object-cover hover:scale-105 transition-transform duration-200"
+                 loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+               />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -143,5 +146,7 @@ const TemplateGallery: React.FC<TemplateGalleryProps> = ({ className = '' }) => 
     </div>
   );
 };
+
+export default TemplateGallery;};
 
 export default TemplateGallery;

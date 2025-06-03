@@ -103,7 +103,7 @@ export const useAdminContent = (): AdminContentHook => {
     memoize((items: ContentItem[]): ImageContent[] =>
       items.map(item => ({
         id: item.id,
-        src: item.imageUrl || '',
+        ...(item.imageUrl ? { src: item.imageUrl } : {}),
         alt: item.title,
         scale: item.scale,
         displayText: item.displayText

@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-// Import types from Supabase // Import FirebaseError for better error handling
+// Import types from Supabase for better error handling
 import HolographicText from '../components/ui/HolographicText';
+import { useToast } from '../components/ui/Toast';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -13,11 +14,12 @@ const containerVariants = {
 };
 
 const Signup = () => {
-  // Firebase Auth uses email
+  // Authentication uses email
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   // Owner option removed - all regular signups are non-owners // Keep this for your application logic
+  const { showToast } = useToast();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,8 +39,7 @@ const Signup = () => {
       return;
     }
 
-    // Firebase enforces minimum password length (usually 6 characters) automatically,
-    // but client-side check is still good UX.
+    // Enforce minimum password length (6 characters) for good UX.
     if (password.length < 6) {
       setError('Password must be at least 6 characters long');
       return;
@@ -71,9 +72,9 @@ const Signup = () => {
         errorMessage = error.message;
       }
     }
-    // Show the error in an alert for debugging
+    // Show the error in a toast for better UX
     if (errorMessage) {
-      alert(`Signup Error: ${errorMessage}`);
+      showToast(`Signup Error: ${errorMessage}`, 'error');
     }
     setError(errorMessage);
   } finally {
@@ -149,7 +150,8 @@ const Signup = () => {
               />
               <div className="mt-1">
                 <input
-                  id="email" // Change id to email
+                  /* id */ 
+  id="email"
                   name="email" // Change name to email
                   type="email" // Change type to email
                   autoComplete="email"

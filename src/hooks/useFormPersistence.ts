@@ -3,13 +3,13 @@ import { useEffect, useCallback } from 'react';
 import { debounce } from '../utils/debounce';
 
 interface PersistenceOptions<T> {
-  key: string;
-  values: T;
-  onRestore?: (values: T) => void;
-  debounceMs?: number;
-  excludeFields?: (keyof T)[];
-  version?: string;
-}
+   key: string;
+   values: T;
+  onRestore?: (data: { savedState: T; clearStorage: () => void }) => void;
+   debounceMs?: number;
+   excludeFields?: (keyof T)[];
+   version?: string;
+ }
 
 interface StoredData<T> {
   values: T;
@@ -93,24 +93,35 @@ export function useFormPersistence<T extends Record<string, any>>({
     debouncedSave(values);
   }, [values, debouncedSave]);
 
-  // Load saved state on mount
-  useEffect(() => {
-    const savedState = loadFromStorage();
-    if (savedState && onRestore) {
-      const shouldRestore = window.confirm(
-        'We found a saved version of this form. Would you like to restore it?'
-      );
-      if (shouldRestore) {
-        onRestore(savedState);
-      } else {
-        clearStorage();
-      }
-    }
-  }, [loadFromStorage, onRestore, clearStorage]);
+  const restorationAttempted = React.useRef(false);
 
-  return {
-    clearStorage,
-    loadFromStorage,
-    hasSavedState: !!loadFromStorage()
-  };
+   // Load saved state on mount
+   useEffect(() => {
+    if (restorationAttempted.current) return;
+    
+     const savedState = loadFromStorage();
+     if (savedState && onRestore) {
+      restorationAttempted.current = true;
+       const shouldRestore = window.confirm(
+         'We found a saved version of this form. Would you like to restore it?'
+       );
+       if (shouldRestore) {
+         onRestore(savedState);
+       } else {
+         clearStorage();
+       }
+     }
+  }, []); // Run only on mount
+  const [hasSavedState, setHasSavedState] = React.useState(false);
+
+  // Check for saved state on mount
+  useEffect(() => {
+    setHasSavedState(!!loadFromStorage());
+  }, [loadFromStorage]);
+
+   return {
+     clearStorage,
+     loadFromStorage,
+    hasSavedState
+   };
 }

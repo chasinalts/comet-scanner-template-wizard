@@ -60,7 +60,7 @@ const StepThree: React.FC = () => {
 
     if (type === 'choice') {
       newQuestion = {
-        id: `question-${Date.now()}`,
+        id: crypto.randomUUID(),
         type: 'choice' as const,
         text: '',
         required: false,
@@ -69,7 +69,7 @@ const StepThree: React.FC = () => {
       } as ChoiceQuestion;
     } else if (type === 'boolean') {
       newQuestion = {
-        id: `question-${Date.now()}`,
+        id: crypto.randomUUID(),
         type: 'boolean' as const,
         text: '',
         required: false,
@@ -78,7 +78,7 @@ const StepThree: React.FC = () => {
       } as BooleanQuestion;
     } else {
       newQuestion = {
-        id: `question-${Date.now()}`,
+        id: crypto.randomUUID(),
         type: 'text' as const,
         text: '',
         required: false,
@@ -132,7 +132,7 @@ const StepThree: React.FC = () => {
   const handleAddOption = (questionId: string) => {
     const question = state.questions.find((q: Question) => q.id === questionId) as any;
     if (question && question.type === 'choice') {
-      const newOption = { id: `option-${Date.now()}`, text: '', value: '' };
+      const newOption = { id: crypto.randomUUID(), text: '', value: '' };
       handleUpdateQuestion(questionId, { options: [...question.options, newOption] });
     }
   };

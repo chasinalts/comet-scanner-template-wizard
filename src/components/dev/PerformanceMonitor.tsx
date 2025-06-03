@@ -74,24 +74,35 @@ const PerformanceMonitor: React.FC = () => {
         }
       });
 
-      // Memory usage
-      if (performance.memory) {
-        const memoryUsage = (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) * 100;
-        newMetrics.push({
-          name: 'Memory',
-          value: memoryUsage,
-          unit: '%',
-          threshold: { good: 50, medium: 70 }
-        });
-      }
+// Memory usage
+ if (performance.memory) {
+  const { usedJSHeapSize, jsHeapSizeLimit } = performance.memory;
+  if (jsHeapSizeLimit > 0) {
+    const memoryUsage = (usedJSHeapSize / jsHeapSizeLimit) * 100;
+     newMetrics.push({
+       name: 'Memory',
+       value: memoryUsage,
+       unit: '%',
+       threshold: { good: 50, medium: 70 }
+     });
+  }
+ }
 
       setMetrics(newMetrics);
     };
 
-    // Collect metrics after page load
-    window.addEventListener('load', () => {
-      setTimeout(collectMetrics, 1000);
-    });
+// Collect metrics after page load
+const handleLoad = () => {
+  setTimeout(collectMetrics, 1000);
+};
+
+window.addEventListener('load', handleLoad);
+
+// Update cleanup to include load listener
+return () => {
+  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('load', handleLoad);
+};
 
     // Toggle visibility with keyboard shortcut (Alt+P)
     const handleKeyDown = (e: KeyboardEvent) => {

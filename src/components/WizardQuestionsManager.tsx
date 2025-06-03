@@ -242,7 +242,7 @@ interface WizardQuestionsManagerProps {
 }
 
 const WizardQuestionsManager: React.FC<WizardQuestionsManagerProps> = ({ onClose }) => {
-  const { questions, addQuestion, updateQuestion, deleteQuestion } = useQuestions();
+  const { questions, setQuestions, addQuestion, updateQuestion, deleteQuestion } = useQuestions();
   const { sections, addSection } = useSections();
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -267,9 +267,12 @@ const WizardQuestionsManager: React.FC<WizardQuestionsManagerProps> = ({ onClose
       for (const questionData of WIZARD_QUESTIONS_DATA) {
         const existingQuestion = questions.find(q => q.id === questionData.id);
         if (!existingQuestion) {
-          await addQuestion(questionData.type);
-          // Update the question with the predefined data
-          await updateQuestion(questionData.id, questionData);
+          // Create the question with the predefined ID and data
+          const newQuestion: Question = {
+            ...questionData,
+            id: questionData.id // Use the predefined ID
+          };
+          setQuestions(prev => [...prev, newQuestion]);
         }
       }
 

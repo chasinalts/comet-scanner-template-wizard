@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Fragment, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  children: ReactNode;
-  footer?: ReactNode;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   showCloseButton?: boolean;
 }
@@ -62,7 +61,7 @@ const Modal = ({
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
-        <Fragment>
+        <React.Fragment>
           {/* Backdrop */}
           <motion.div
             variants={overlayVariants}
@@ -119,7 +118,7 @@ const Modal = ({
               )}
             </motion.div>
           </div>
-        </Fragment>
+        </React.Fragment>
       )}
     </AnimatePresence>
   );

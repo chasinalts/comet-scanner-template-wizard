@@ -56,6 +56,7 @@ export interface UseTemplatesReturn {
   categories: TemplateCategory[];
   loadingCategories: boolean;
   createCategory: (category: Omit<TemplateCategory, 'id' | 'created_at'>) => Promise<TemplateCategory | null>;
+  deleteCategory: (id: string) => Promise<boolean>;
   
   // Utility functions
   refreshData: () => Promise<void>;
@@ -142,29 +143,33 @@ export const useTemplates = (): UseTemplatesReturn => {
     } finally {
       setLoadingCategories(false);
     }
-  }, []);
+  }, [currentUser]);
 
-  // Create new template
+  // Create new template (now returns template data without database storage)
   const createTemplate = useCallback(async (templateData: Omit<Template, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'version'>): Promise<Template | null> => {
-    if (!currentUser) {
-      setError('User must be authenticated');
+    // Validate required fields
+    if (!templateData.name?.trim()) {
+      setError('Template name is required');
+      return null;
+    }
+    
+    if (!templateData.master_code?.trim()) {
+      setError('Template master code is required');
       return null;
     }
     
     try {
-      const { data, error: supabaseError } = await supabase
-        .from('templates')
-        .insert({
-          ...templateData,
-          created_by: currentUser.id,
-          version: 1
-        })
-        .select()
-        .single();
+      // Create template object without saving to database
+      const newTemplate: Template = {
+        ...templateData,
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        created_by: currentUser?.id || 'anonymous',
+        version: 1
+      };
       
-      if (supabaseError) throw supabaseError;
-      
-      const newTemplate = data as Template;
+      // Add to local state for display purposes
       setTemplates(prev => [newTemplate, ...prev]);
       return newTemplate;
     } catch (err: any) {
@@ -197,7 +202,7 @@ export const useTemplates = (): UseTemplatesReturn => {
       setError(err.message || 'Failed to update template');
       return false;
     }
-  }, []);
+  }, [currentUser]);
 
   // Delete template (soft delete)
   const deleteTemplate = useCallback(async (id: string): Promise<boolean> => {
@@ -312,6 +317,25 @@ export const useTemplates = (): UseTemplatesReturn => {
     }
   }, []);
 
+  // Delete category (soft delete)
+  const deleteCategory = useCallback(async (id: string): Promise<boolean> => {
+    try {
+      const { error: supabaseError } = await supabase
+        .from('categories')
+        .update({ is_active: false })
+        .eq('id', id);
+      
+      if (supabaseError) throw supabaseError;
+      
+      setCategories(prev => prev.filter(category => category.id !== id));
+      return true;
+    } catch (err: any) {
+      console.error('Error deleting category:', err);
+      setError(err.message || 'Failed to delete category');
+      return false;
+    }
+  }, []);}]}}}
+
   // Get template by ID
   const getTemplateById = useCallback((id: string): Template | null => {
     return templates.find(template => template.id === id) || null;
@@ -332,9 +356,9 @@ export const useTemplates = (): UseTemplatesReturn => {
   }, [loadTemplates, loadCodeSnippets, loadCategories]);
 
   // Load data on mount and when user changes
-  useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+useEffect(() => {
+   refreshData();
+}, [currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Memoize the return value to prevent unnecessary re-renders
   const result = useMemo(() => ({
@@ -355,6 +379,7 @@ export const useTemplates = (): UseTemplatesReturn => {
     categories,
     loadingCategories,
     createCategory,
+    deleteCategory,
     
     refreshData,
     error
@@ -376,6 +401,7 @@ export const useTemplates = (): UseTemplatesReturn => {
     categories,
     loadingCategories,
     createCategory,
+    deleteCategory,
     
     refreshData,
     error

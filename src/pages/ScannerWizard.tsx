@@ -1,10 +1,11 @@
-import * as React from 'react';
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Modal from '../components/ui/Modal';
 import { useAdminContent } from '../hooks/useAdminContent';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useToast } from '../components/ui/Toast';
 import ResponsiveImageWithPlaceholder from '../components/ui/ResponsiveImageWithPlaceholder';
 import LiveCodePreview from '../components/LiveCodePreview';
 import LiveFloatingPreview from '../components/LiveFloatingPreview';
@@ -18,6 +19,9 @@ import { TextField, CheckboxField } from '../components/ui/FormField';
 import HolographicText from '../components/ui/HolographicText';
 import Button from '../components/ui/Button';
 import InitialUserChoice from '../components/InitialUserChoice';
+import { SessionProvider } from '../contexts/SessionContext';
+import SessionControls from '../components/SessionControls';
+import Checklist from '../components/Checklist';
 
 const containerVariants = {
   initial: { opacity: 0, y: 20 },
@@ -36,7 +40,6 @@ const itemVariants = {
 const ScannerWizard = () => {
   const { getBannerImage, getScannerImages, getTemplates, getFullTemplate } = useAdminContent();
   const { currentUser } = useAuth();
-  const { theme } = useTheme();
   const { state: wizardState, dispatch: wizardDispatch } = useWizard();
   const { questions } = useQuestions(); // Load questions managed by admin
   const { sections } = useSections(); // Load sections managed by admin
@@ -95,10 +98,10 @@ const ScannerWizard = () => {
       // Also load saved templates for the current user
       // This would typically come from a database call
       // For now, we'll use localStorage as a placeholder
-      const userTemplates = localStorage.getItem(`user_templates_${currentUser?.id}`);
-      if (userTemplates) {
-        setSavedTemplates(JSON.parse(userTemplates));
-      }
+if (currentUser?.id) {
+  const raw = localStorage.getItem(`user_templates_${currentUser.id}`);
+  if (raw) setSavedTemplates(JSON.parse(raw));
+}
     } catch (error) {
       console.error('Error loading templates:', error);
     }
@@ -131,67 +134,21 @@ const ScannerWizard = () => {
     }
   };
 
+  const { showToast } = useToast();
+
   // Template management functions
+  // Template saving is now handled by the session export/import system
+  // This function is kept for backward compatibility but redirects to session export
   const saveTemplate = () => {
     if (!templateName.trim()) {
-      alert('Please enter a template name');
+      showToast('Please enter a template name and use the Export Session feature above', 'info');
       return;
     }
-
-    const newTemplate = {
-      id: `template-${Date.now()}`,
-      name: templateName,
-      code: wizardMode === 'fullTemplate' ? fullTemplateCode : '', // For full template mode
-      answers: wizardState.answers, // For wizard mode
-      skippedQuestions: Array.from(skippedQuestions),
-      createdAt: new Date().toISOString(),
-      userId: currentUser?.id
-    };
-
-    const updatedTemplates = [...savedTemplates, newTemplate];
-    setSavedTemplates(updatedTemplates);
-
-    // Save to localStorage (in a real app, this would be a database call)
-    if (currentUser?.id) {
-      localStorage.setItem(`user_templates_${currentUser.id}`, JSON.stringify(updatedTemplates));
-    }
-
-    setTemplateName('');
-    alert('Template saved successfully!');
+    showToast('Use the Export Session feature above to save your progress', 'info');
   };
 
-  const deleteTemplate = (templateId: string) => {
-    const updatedTemplates = savedTemplates.filter(t => t.id !== templateId);
-    setSavedTemplates(updatedTemplates);
-
-    // Update localStorage
-    if (currentUser?.id) {
-      localStorage.setItem(`user_templates_${currentUser.id}`, JSON.stringify(updatedTemplates));
-    }
-
-    if (selectedTemplateId === templateId) {
-      setSelectedTemplateId(null);
-    }
-  };
-
-  const loadTemplate = (templateId: string) => {
-    const template = savedTemplates.find(t => t.id === templateId);
-    if (template) {
-      setSelectedTemplateId(templateId);
-
-      // If it's a full template, just set the mode
-      if (template.code) {
-        setWizardMode('fullTemplate');
-        setFullTemplateCode(template.code);
-      }
-      // If it's a wizard template, restore answers and skipped questions
-      else if (template.answers) {
-        setWizardMode('wizard');
-        wizardDispatch({ type: 'SET_ANSWERS', payload: template.answers });
-        setSkippedQuestions(new Set(template.skippedQuestions || []));
-      }
-    }
-  };
+  // Template loading/deleting is now handled by the session import/export system
+  // These functions are removed as they're replaced by SessionControls
 
   const handleAnswerChange = (questionId: string, value: any) => {
     wizardDispatch({ type: 'SET_ANSWER', payload: { questionId, value } });
@@ -267,8 +224,9 @@ const ScannerWizard = () => {
   };
 
   return (
-    <div className="dark">
-      <div className="min-h-screen bg-gray-900 transition-colors duration-200 futuristic-grid-bg">
+    <SessionProvider>
+      <div className="dark">
+        <div className="min-h-screen bg-gray-900 transition-colors duration-200 futuristic-grid-bg">
         <motion.div
           variants={containerVariants}
           initial="initial"
@@ -348,6 +306,11 @@ const ScannerWizard = () => {
               />
             </motion.div>
           )}
+
+          {/* Session Controls */}
+          <motion.div variants={itemVariants} className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <SessionControls />
+          </motion.div>
 
           {/* Main Content Area */}
           <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -564,8 +527,11 @@ const ScannerWizard = () => {
             </div>
           </Modal>
         )}
+        
+        {/* Checklist Component */}
+        <Checklist />
       </div>
-    </div>
+    </SessionProvider>
   );
 };
 

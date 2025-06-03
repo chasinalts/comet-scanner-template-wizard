@@ -38,7 +38,7 @@ const EditableSection: React.FC<EditableSectionProps> = ({
       const { error } = await supabase
         .from('site_content')
         .upsert({
-          key: 'comet_explanation',
+          key: title.toLowerCase().replace(/\s+/g, '_'), // or accept `contentKey` prop
           content: editContent.trim(),
           updated_at: new Date().toISOString()
         }, {

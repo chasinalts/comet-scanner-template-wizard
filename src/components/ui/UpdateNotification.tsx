@@ -18,19 +18,29 @@ const UpdateNotification: React.FC = () => {
     };
   }, []);
 
-  const handleUpdate = () => {
-    // Unregister all service workers and reload
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(reg => reg.unregister());
+const handleUpdate = () => {
+   // Unregister all service workers and reload
+   if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations()
+      .then(registrations => {
+        const unregisterPromises = registrations.map(reg => reg.unregister());
+        return Promise.all(unregisterPromises);
+      })
+      .then(() => {
+        setShowUpdateNotification(false);
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error('Failed to unregister service workers:', error);
+        // Still reload in case of error to ensure update
         setShowUpdateNotification(false);
         window.location.reload();
       });
-    } else {
-      setShowUpdateNotification(false);
-      window.location.reload();
-    }
-  };
+   } else {
+     setShowUpdateNotification(false);
+     window.location.reload();
+   }
+ };
 
   if (!showUpdateNotification) return null;
 

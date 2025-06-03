@@ -117,19 +117,26 @@ const ProfileForm: React.FC = () => {
     } catch (error) {
       if ((error as ApiErrorType).type === 'abort') {
         showToast('info', 'Operation canceled');
-        const currentStep = submissionSteps.find(step => step.status === 'processing');
-        if (currentStep) {
-          updateStep(currentStep.id, { status: 'pending', message: 'Canceled' });
-        }
+        setSubmissionSteps(prev => {
+          const idx = prev.findIndex(s => s.status === 'processing');
+          if (idx !== -1) {
+            const updated = [...prev];
+            updated[idx] = { ...updated[idx], status: 'pending', message: 'Canceled' };
+            return updated;
+          }
+          return prev;
+        });
       } else {
         showToast('error', `Failed to update profile: ${(error as Error).message}`);
-        const currentStep = submissionSteps.find(step => step.status === 'processing');
-        if (currentStep) {
-          updateStep(currentStep.id, {
-            status: 'error',
-            message: `Error: ${(error as ApiErrorType).message}`
-          });
-        }
+        setSubmissionSteps(prev => {
+          const idx = prev.findIndex(s => s.status === 'processing');
+          if (idx !== -1) {
+            const updated = [...prev];
+            updated[idx] = { ...updated[idx], status: 'error', message: `Error: ${(error as ApiErrorType).message}` };
+            return updated;
+          }
+          return prev;
+        });
       }
     } finally {
       setIsSubmitting(false);

@@ -245,37 +245,76 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
   const handleCopy = async (text: string, promptName: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      showToast(`${promptName} copied to clipboard!`, 'success');
+ showToast(`${promptName} copied to clipboard!`, 'success');
     } catch (err) {
       console.error('Failed to copy text: ', err);
       showToast('Failed to copy to clipboard', 'error');
     }
   };
 
-  // More sophisticated formatting for guides if they contain markdown-like elements
-  const formatGuideWithMarkdown = (text: string) => {
-    let html = text;
-    // Titles (## and ###)
-    html = html.replace(/^## (.*$)/gim, '<h3 class="text-xl font-semibold text-cyan-300 mt-4 mb-2">$1</h3>');
-    html = html.replace(/^### (.*$)/gim, '<h4 class="text-lg font-semibold text-cyan-400 mt-3 mb-1">$1</h4>');
-
-    // Bold (**text** or __text__)
-    html = html.replace(/\*\*(.*?)\*\*|__(.*?)__/gim, '<strong>$1$2</strong>');
-
-    // Italic (*text* or _text_)
-    html = html.replace(/\*(.*?)\*|_(.*?)_/gim, '<em>$1$2</em>');
-
-    // Inline code (`code`)
-    html = html.replace(/`(.*?)`/gm, '<code class="bg-gray-700 text-yellow-300 px-1 py-0.5 rounded text-sm">$1</code>');
-
-    // Lists (- item or * item) - basic handling
-    html = html.replace(/^\s*[-*]\s+(.*$)/gm, '<li class="ml-4">$1</li>');
-    html = html.replace(/(li.*?li)+/gm, '<ul class="list-disc list-inside mb-2">$1</ul>');
-
-    // Paragraphs (split by double newline, then wrap single newlines in <br>)
-    html = html.split('\n\n').map(p => "<p class=\"mb-2\">" + p.replace(/\n/g, '<br />') + "</p>").join('');
-
-    return html;
+  // Safe markdown-like formatting component
+  const SafeFormattedText: React.FC<{ text: string }> = ({ text }) => {
+    const formatText = (content: string) => {
+      // Split into paragraphs
+      const paragraphs = content.split('\n\n');
+      
+      return paragraphs.map((paragraph, pIndex) => {
+        const lines = paragraph.split('\n');
+        
+        return (
+          <div key={pIndex} className="mb-2">
+            {lines.map((line, lIndex) => {
+              // Handle headers
+              if (line.startsWith('## ')) {
+                return <h3 key={lIndex} className="text-xl font-semibold text-cyan-300 mt-4 mb-2">{line.substring(3)}</h3>;
+              }
+              if (line.startsWith('### ')) {
+                return <h4 key={lIndex} className="text-lg font-semibold text-cyan-400 mt-3 mb-1">{line.substring(4)}</h4>;
+              }
+              
+              // Handle list items
+              if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+                return <li key={lIndex} className="ml-4 list-disc list-inside">{line.trim().substring(2)}</li>;
+              }
+              
+              // Handle regular text with basic formatting
+              const processInlineFormatting = (text: string) => {
+                const parts = [];
+                let currentIndex = 0;
+                
+                // Simple bold and code detection
+                const boldRegex = /\*\*(.*?)\*\*/g;
+                const codeRegex = /`(.*?)`/g;
+                
+                let match;
+                while ((match = boldRegex.exec(text)) !== null) {
+                  if (match.index > currentIndex) {
+                    parts.push(text.substring(currentIndex, match.index));
+                  }
+                  parts.push(<strong key={`bold-${match.index}`}>{match[1]}</strong>);
+                  currentIndex = match.index + match[0].length;
+                }
+                
+                if (currentIndex < text.length) {
+                  parts.push(text.substring(currentIndex));
+                }
+                
+                return parts.length > 0 ? parts : text;
+              };
+              
+              return (
+                <span key={lIndex}>
+                  {processInlineFormatting(line)}
+                  {lIndex < lines.length - 1 && <br />}
+                </span>
+              );
+            })}
+          </div>
+        );
+      });
+    };
+    
+    return <div className="text-sm text-gray-300 leading-relaxed">{formatText(text)}</div>;
   };
 
   return (
@@ -306,10 +345,9 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
 
             <div>
               <label className="block text-sm font-medium text-cyan-400 mb-1">How to use this prompt (User Guide):</label>
-              <div
-                className="text-sm text-gray-300 leading-relaxed p-3 border border-gray-700 rounded-md bg-gray-900/50 max-h-72 overflow-y-auto custom-scrollbar"
-                dangerouslySetInnerHTML={{ __html: formatGuideWithMarkdown(GUIDE_TICKERID_NAMEID) }}
-              />
+              <div className="p-3 border border-gray-700 rounded-md bg-gray-900/50 max-h-72 overflow-y-auto custom-scrollbar">
+                <SafeFormattedText text={GUIDE_TICKERID_NAMEID} />
+              </div>
             </div>
           </section>
 
@@ -334,10 +372,9 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
 
             <div>
               <label className="block text-sm font-medium text-purple-400 mb-1">How to use this prompt (User Guide):</label>
-              <div
-                className="text-sm text-gray-300 leading-relaxed p-3 border border-gray-700 rounded-md bg-gray-900/50 max-h-72 overflow-y-auto custom-scrollbar"
-                dangerouslySetInnerHTML={{ __html: formatGuideWithMarkdown(GUIDE_PINESCRIPT_LOGIC_TO_FUNCTION) }}
-              />
+              <div className="p-3 border border-gray-700 rounded-md bg-gray-900/50 max-h-72 overflow-y-auto custom-scrollbar">
+                <SafeFormattedText text={GUIDE_PINESCRIPT_LOGIC_TO_FUNCTION} />
+              </div>
             </div>
           </section>
 

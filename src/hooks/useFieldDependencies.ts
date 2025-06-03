@@ -39,10 +39,17 @@ export function useFieldDependencies<T extends Record<string, any>>({
     // Process all rules
     rules.forEach(rule => {
       if (rule.when(values)) {
-        // Handle value updates
-        if (rule.then) {
-          updates = { ...updates, ...rule.then(values) };
-        }
+// Handle value updates
+ if (rule.then) {
+  const ruleUpdates = rule.then(values);
+  // Check for conflicts and merge appropriately
+  Object.keys(ruleUpdates).forEach(key => {
+    if (updates[key] !== undefined && updates[key] !== ruleUpdates[key]) {
+      console.warn(`Field dependency conflict for ${key}: ${updates[key]} vs ${ruleUpdates[key]}`);
+    }
+    updates[key] = ruleUpdates[key];
+  });
+ }
 
         // Handle field visibility
         if (rule.hide) {

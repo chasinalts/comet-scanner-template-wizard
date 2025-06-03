@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import HolographicText from '../components/ui/HolographicText';
 // import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseConfig';
 import VirtualizedImageGallery from '../components/ui/VirtualizedImageGallery';
 import { useAdminContent } from '../hooks/useAdminContent';
-import EditableSection from '../components/ui/EditableSection';
 
 const COMET_EXPLANATION = `COMET = Co-integrated Observational Market Evaluation Tool.\n\nA COMET Scanner journeys a few steps farther using the data from a traditional scanner by using them with different visualization techniques and often at very extreme settings to produce very revealing and predictable patterns and similarities in the edge cases of the price action. These \"edge case\" signals may be very far and few between for a single asset, but in my case, the Alert Signals start stacking up when I start to screen all 400+ futures assets on the Blofin Exchange (by having 10 copies of the COMET Scanner on the chart with a different 40 assets selected to be screened for each copy....each copy can screen up to 40 assets max).`;
 
@@ -21,8 +21,9 @@ const Home: React.FC = () => {
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState('');
   
-  // HIDDEN ADMIN PASSWORD (obfuscated)
-  const adminPassword = atob('ODU2MkpUSHlLIQ=='); // Base64 encoded '8562JTHyK!'
+  // TODO: SECURITY - Replace with server-side authentication
+  // Current implementation is insecure - password is visible in client code
+  // Should use Supabase RPC/Edge Function for proper admin verification
 
   // Fetch banner and gallery images from Supabase Storage
   React.useEffect(() => {
@@ -105,6 +106,7 @@ const Home: React.FC = () => {
   // Clicking gallery image expands it fullscreen
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [cometExplanation, setCometExplanation] = useState(COMET_EXPLANATION);
+  const [isExplanationCollapsed, setIsExplanationCollapsed] = useState(false);
   
   // ADMIN PASSWORD HANDLING
   const handleAdminButtonClick = () => {
@@ -113,9 +115,17 @@ const Home: React.FC = () => {
     setPasswordError('');
   };
   
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === adminPassword) {
+    
+    // TODO: Replace with proper server-side authentication
+    // Example: const { data, error } = await supabase.rpc('verify_admin_password', { password: passwordInput });
+    
+    // TEMPORARY: Quick-and-dirty client-side check (INSECURE)
+    // This should be replaced with server-side verification
+    const tempPassword = '8562JTHyK!'; // Move this to server-side
+    
+    if (passwordInput === tempPassword) {
       navigate('/admin');
     } else {
       setPasswordError('Incorrect password');
@@ -193,13 +203,50 @@ const Home: React.FC = () => {
         )}
         {error && <div className="text-red-400 mt-2">{error}</div>}
       </div>
-      {/* COMET Explanation - Editable and Collapsible */}
-      <EditableSection
-        title="What is COMET?"
-        content={cometExplanation}
-        onContentChange={setCometExplanation}
-        className="mb-8"
-      />
+      {/* COMET Explanation - Read-only for users */}
+      <section className="max-w-2xl bg-white/10 rounded-lg shadow-lg mb-8">
+        <div className="flex items-center justify-between p-4 border-b border-white/20">
+          <button
+            onClick={() => setIsExplanationCollapsed(!isExplanationCollapsed)}
+            className="flex items-center gap-2 text-left flex-1 hover:text-cyan-200 transition-colors"
+          >
+            <HolographicText 
+              text="What is COMET?" 
+              as="h2" 
+              variant="subtitle" 
+              className="text-2xl font-bold text-cyan-200" 
+            />
+            <motion.svg
+              animate={{ rotate: isExplanationCollapsed ? -90 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="w-5 h-5 text-cyan-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </motion.svg>
+          </button>
+        </div>
+        
+        <AnimatePresence>
+          {!isExplanationCollapsed && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="p-6">
+                <pre className="whitespace-pre-line text-white text-lg font-mono leading-snug">
+                  {cometExplanation}
+                </pre>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
       {/* Image Gallery */}
       <section className="w-full max-w-5xl mb-8">
         <HolographicText text="COMET Scanner Possibilities" as="h2" variant="subtitle" className="text-xl font-semibold text-cyan-100 mb-4 text-center" />

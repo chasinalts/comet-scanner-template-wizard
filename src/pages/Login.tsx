@@ -12,7 +12,7 @@ const containerVariants = {
 };
 
 const Login = () => {
-  // Firebase Auth uses email, so let's rename the state variable
+  // Authentication uses email
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -51,7 +51,7 @@ const Login = () => {
       // Provide more specific feedback for common Supabase errors
       if (error.message) {
         // Handle specific Supabase errors
-        if (error.message === 'Invalid login credentials' || error.message === 'Email not confirmed') {
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-disabled') {
           errorMessage = 'Invalid email or password.';
         }
         // Add more Supabase-specific error handling here if needed

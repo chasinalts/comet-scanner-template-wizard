@@ -1,5 +1,4 @@
 
-AI PROMPT
 import React from 'react';
 import Modal from '../ui/Modal';
 import HolographicText from '../ui/HolographicText';
@@ -290,42 +289,86 @@ interface AiPromptsModalProps {
 }
 
 const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
-  const handleCopy = async (textToCopy: string, type: string) => {
+const handleCopy = async (textToCopy: string, type: string) => {
     try {
       await navigator.clipboard.writeText(textToCopy);
-      alert(type + " copied to clipboard!");
+     // Use a toast notification or better UX feedback
+     console.log(`${type} copied to clipboard!`);
+     // Consider adding a toast library or custom notification component
     } catch (err) {
       console.error('Failed to copy text: ', err);
-      alert('Failed to copy text.');
+     // Provide better error feedback to user
+     console.error('Failed to copy text');
+    }
+  };
+     console.error('Failed to copy text');
     }
   };
 
-  // More sophisticated formatting for guides if they contain markdown-like elements
-  const formatGuideWithMarkdown = (text: string) => {
-    let html = text;
-    // Titles (## and ###)
-    html = html.replace(/^## (.*$)/gim, '<h3 class="text-xl font-semibold text-cyan-300 mt-4 mb-2">$1</h3>');
-    html = html.replace(/^### (.*$)/gim, '<h4 class="text-lg font-semibold text-cyan-400 mt-3 mb-1">$1</h4>');
-
-    // Bold (**text** or __text__)
-    html = html.replace(/\*\*(.*?)\*\*|__(.*?)__/gim, '<strong>$1$2</strong>');
-
-    // Italic (*text* or _text_)
-    html = html.replace(/\*(.*?)\*|_(.*?)_/gim, '<em>$1$2</em>');
-
-    // Inline code (`code`)
-    html = html.replace(/`(.*?)`/gm, '<code class="bg-gray-700 text-yellow-300 px-1 py-0.5 rounded text-sm">$1</code>');
-
-    // Lists (- item or * item) - basic handling
-    html = html.replace(/^\s*[-*]\s+(.*$)/gm, '<li class="ml-4">$1</li>');
-    html = html.replace(/(li.*?li)+/gm, '<ul class="list-disc list-inside mb-2">$1</ul>');
-
-    // Paragraphs (split by double newline, then wrap single newlines in <br>)
-    html = html.split('\n\n').map(p => "<p class=\"mb-2\">" + p.replace(/\n/g, '<br />') + "</p>").join('');
-
-    return html;
+  // Safe markdown-like formatting component
+  const SafeFormattedText: React.FC<{ text: string }> = ({ text }) => {
+    const formatText = (content: string) => {
+      // Split into paragraphs
+      const paragraphs = content.split('\n\n');
+      
+      return paragraphs.map((paragraph, pIndex) => {
+        const lines = paragraph.split('\n');
+        
+        return (
+          <div key={pIndex} className="mb-2">
+            {lines.map((line, lIndex) => {
+              // Handle headers
+              if (line.startsWith('## ')) {
+                return <h3 key={lIndex} className="text-xl font-semibold text-cyan-300 mt-4 mb-2">{line.substring(3)}</h3>;
+              }
+              if (line.startsWith('### ')) {
+                return <h4 key={lIndex} className="text-lg font-semibold text-cyan-400 mt-3 mb-1">{line.substring(4)}</h4>;
+              }
+              
+              // Handle list items
+              if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+                return <li key={lIndex} className="ml-4 list-disc list-inside">{line.trim().substring(2)}</li>;
+              }
+              
+              // Handle regular text with basic formatting
+              const processInlineFormatting = (text: string) => {
+                const parts = [];
+                let currentIndex = 0;
+                
+                // Simple bold and code detection
+                const boldRegex = /\*\*(.*?)\*\*/g;
+                const codeRegex = /`(.*?)`/g;
+                
+                let match;
+                while ((match = boldRegex.exec(text)) !== null) {
+                  if (match.index > currentIndex) {
+                    parts.push(text.substring(currentIndex, match.index));
+                  }
+                  parts.push(<strong key={`bold-${match.index}`}>{match[1]}</strong>);
+                  currentIndex = match.index + match[0].length;
+                }
+                
+                if (currentIndex < text.length) {
+                  parts.push(text.substring(currentIndex));
+                }
+                
+                return parts.length > 0 ? parts : text;
+              };
+              
+              return (
+                <span key={lIndex}>
+                  {processInlineFormatting(line)}
+                  {lIndex < lines.length - 1 && <br />}
+                </span>
+              );
+            })}
+          </div>
+        );
+      });
+    };
+    
+    return <div className="text-sm text-gray-300 leading-relaxed">{formatText(text)}</div>;
   };
-
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="" size="4xl" hideTitle={true}>
@@ -337,9 +380,7 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
           {/* Section 1: TickerID & NameID Generation */}
           <section className="p-4 rounded-lg border border-cyan-600/50 bg-gray-800/30 shadow-lg futuristic-container has-scanline">
             <HolographicText text="Prompt & Guide for TickerID/NameID String Generation" as="h2" variant="subtitle" className="text-2xl mb-4 text-cyan-300" />
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-cyan-400 mb-1">Prompt for your AI:</label>
+              <label className="block text-sm font-medium text-purple-400 mb-1">Prompt for your AI:</label>
               <div className="relative bg-gray-900/80 border border-gray-700 p-3 rounded-md max-h-72 overflow-y-auto custom-scrollbar">
                 <pre className="text-xs text-gray-300 whitespace-pre-wrap break-words">{PROMPT_TICKERID_NAMEID}</pre>
                 <Button
@@ -355,21 +396,16 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
 
             <div>
               <label className="block text-sm font-medium text-cyan-400 mb-1">How to use this prompt (User Guide):</label>
-              <div
-                className="text-sm text-gray-300 leading-relaxed p-3 border border-gray-700 rounded-md bg-gray-900/50 max-h-72 overflow-y-auto custom-scrollbar"
-                dangerouslySetInnerHTML={{ __html: formatGuideWithMarkdown(GUIDE_TICKERID_NAMEID) }}
-              />
+              <div className="p-3 border border-gray-700 rounded-md bg-gray-900/50 max-h-72 overflow-y-auto custom-scrollbar">
+                <SafeFormattedText text={GUIDE_TICKERID_NAMEID} />
+              </div>
             </div>
           </section>
 
           {/* Section 2: PineScript Logic-to-Function Conversion */}
           <section className="p-4 rounded-lg border border-purple-600/50 bg-gray-800/30 shadow-lg futuristic-container has-scanline">
             <HolographicText text="Prompt & Guide for PineScript Logic-to-Function" as="h2" variant="subtitle" className="text-2xl mb-4 text-purple-300" />
-
-            <div className="mb-6">
-              <label className="block text-sm font-mediu
-              
-              m text-purple-400 mb-1">Prompt for your AI:</label>
+              <label className="block text-sm font-medium text-purple-400 mb-1">Prompt for your AI:</label>
               <div className="relative bg-gray-900/80 border border-gray-700 p-3 rounded-md max-h-72 overflow-y-auto custom-scrollbar">
                 <pre className="text-xs text-gray-300 whitespace-pre-wrap break-words">{PROMPT_PINESCRIPT_LOGIC_TO_FUNCTION}</pre>
                 <Button
@@ -385,10 +421,9 @@ const AiPromptsModal: React.FC<AiPromptsModalProps> = ({ isOpen, onClose }) => {
 
             <div>
               <label className="block text-sm font-medium text-purple-400 mb-1">How to use this prompt (User Guide):</label>
-              <div
-                className="text-sm text-gray-300 leading-relaxed p-3 border border-gray-700 rounded-md bg-gray-900/50 max-h-72 overflow-y-auto custom-scrollbar"
-                dangerouslySetInnerHTML={{ __html: formatGuideWithMarkdown(GUIDE_PINESCRIPT_LOGIC_TO_FUNCTION) }}
-              />
+              <div className="p-3 border border-gray-700 rounded-md bg-gray-900/50 max-h-72 overflow-y-auto custom-scrollbar">
+                <SafeFormattedText text={GUIDE_PINESCRIPT_LOGIC_TO_FUNCTION} />
+              </div>
             </div>
           </section>
 

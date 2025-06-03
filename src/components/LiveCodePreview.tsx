@@ -60,7 +60,7 @@ const LiveCodePreview: React.FC<LiveCodePreviewProps> = ({
   }, []);
 
   const processAnswers = useCallback((
-    answersObj: Record<string, any>,
+    answersObj: Record<string, string | number | boolean | string[]>,
     questionList: Question[],
     sectionList: Section[],
     includedIds: Set<string>,

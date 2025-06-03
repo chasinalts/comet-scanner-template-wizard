@@ -70,11 +70,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading] = useState(false); // Never loading in bypass mode
 
   // SIMPLIFIED AUTH METHODS - NO REAL AUTHENTICATION
-  const login = async (email: string, password: string): Promise<{ session: any } | undefined> => {
-    // Always return success in bypass mode
-    console.log('Bypass login for:', email);
-    return { session };
-  };
+const login = async (email: string, password: string): Promise<{ session: any } | undefined> => {
+  // Basic validation even in bypass mode
+  if (!email || !password) {
+    console.error('Bypass login failed: Missing credentials');
+    throw new Error('Email and password are required');
+  }
+  
+   // Always return success in bypass mode
+   console.log('Bypass login for:', email);
+   return { session };
+ };
 
   const signup = async (email: string, password: string, isOwner: boolean): Promise<void> => {
     // Always succeed in bypass mode

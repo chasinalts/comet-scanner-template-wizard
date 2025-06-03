@@ -30,12 +30,12 @@ export const useContentManager = (): ContentManagerHook => {
     return () => {
       contents.forEach((content) => {
         if (content.imageUrl) {
-          const isFirebaseUrl = content.imageUrl.includes('firebasestorage.googleapis.com');
-          cleanupImageUrl(content.imageUrl, isFirebaseUrl);
+          const isSupabaseUrl = content.imageUrl.includes('supabase');
+          cleanupImageUrl(content.imageUrl, isSupabaseUrl);
         }
       });
     };
-  }, []);
+  }, [contents]);
 
   const addContent = useCallback((content: Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>): string => {
     const id = `content-${Date.now()}`;
@@ -50,7 +50,7 @@ export const useContentManager = (): ContentManagerHook => {
 
     setContents(prev => [...prev, newContent]);
     return id;
-  }, []);
+  }, [contents]);
 
   const updateContent = useCallback((id: string, updates: Partial<Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>>) => {
     setContents(prev =>
@@ -60,7 +60,7 @@ export const useContentManager = (): ContentManagerHook => {
           : item
       )
     );
-  }, []);
+  }, [contents]);
 
   const deleteContent = useCallback((id: string) => {
     setContents(prev => {
@@ -74,7 +74,7 @@ export const useContentManager = (): ContentManagerHook => {
 
       return prev.filter(item => item.id !== id);
     });
-  }, []);
+  }, [contents]);
 
   const uploadImage = useCallback((file: File, type: 'banner' | 'scanner', title = 'Uploaded Image'): Promise<string> => {
     console.log(`Starting upload of ${type} image:`, { fileName: file.name, fileSize: file.size, fileType: file.type });

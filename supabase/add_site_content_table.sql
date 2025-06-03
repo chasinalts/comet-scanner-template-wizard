@@ -12,8 +12,7 @@ CREATE TABLE IF NOT EXISTS public.site_content (
 -- Add primary key constraint
 ALTER TABLE public.site_content ADD CONSTRAINT site_content_pkey PRIMARY KEY (id);
 
--- Add unique constraint on key
-ALTER TABLE public.site_content ADD CONSTRAINT site_content_key_unique UNIQUE (key);
+-- Note: UNIQUE constraint on 'key' column is already defined in table creation above
 
 -- Set table owner
 ALTER TABLE public.site_content OWNER TO postgres;

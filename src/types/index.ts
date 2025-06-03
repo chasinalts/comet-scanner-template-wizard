@@ -94,8 +94,10 @@ export interface SectionOperations {
 }
 
 // File Operations
+export type SupportedFormat = '.txt' | '.js' | '.jsx';
+
 export interface FileOperations {
-  supportedFormats: ['.txt', '.js', '.jsx'];
+  supportedFormats: SupportedFormat[];
   maxFileSize: number;
   parseFile: (content: string) => Section[];
   exportTemplate: (template: StoredTemplate) => string;

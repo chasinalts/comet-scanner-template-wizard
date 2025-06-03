@@ -143,54 +143,25 @@ VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 5. The application will automatically create a storage bucket named `images` when it starts
 
-#### Firebase Storage CORS Configuration
+#### Supabase Storage Configuration
 
-If you encounter CORS errors when uploading images to Firebase Storage, you need to configure CORS for your Firebase Storage bucket:
+The application uses Supabase Storage for image uploads. CORS is automatically configured for Supabase Storage buckets. If you encounter any storage issues:
 
-1. **Using Firebase Console (Recommended)**:
-   - Go to the Firebase Console: https://console.firebase.google.com/
-   - Select your project
-   - Go to "Storage" in the left sidebar
-   - Click on the "Rules" tab
-   - Update your rules to include CORS configuration:
+1. **Check Supabase Dashboard**:
+   - Go to your Supabase project dashboard
+   - Navigate to Storage section
+   - Ensure the `images` bucket exists and has proper policies
 
-   ```
-   service firebase.storage {
-     match /b/{bucket}/o {
-       match /{allPaths=**} {
-         allow read, write: if request.auth != null;
-
-         // CORS configuration
-         options {
-           cors {
-             origin: ["https://cometscanners.netlify.app", "http://localhost:3000"];
-             method: ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"];
-             maxAgeSeconds: 3600;
-             responseHeader: ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition"];
-           }
-         }
-       }
-     }
-   }
-   ```
-
-2. **Using Firebase CLI**:
-   - Create a `cors.json` file with the following content:
-   ```json
-   [
-     {
-       "origin": ["https://cometscanners.netlify.app", "http://localhost:3000"],
-       "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
-       "maxAgeSeconds": 3600,
-       "responseHeader": ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition"]
-     }
-   ]
-   ```
-   - Run the following commands:
-   ```bash
-   firebase login
-   firebase use your-project-id
-   firebase storage:cors update cors.json
+2. **Storage Policies**:
+   The application requires the following RLS policies on the `images` bucket:
+   ```sql
+   -- Allow authenticated users to upload images
+   CREATE POLICY "Allow authenticated uploads" ON storage.objects
+   FOR INSERT WITH CHECK (bucket_id = 'images' AND auth.role() = 'authenticated');
+   
+   -- Allow public read access to images
+   CREATE POLICY "Allow public downloads" ON storage.objects
+   FOR SELECT USING (bucket_id = 'images');
    ```
 
 ### Resetting User Data
@@ -209,11 +180,10 @@ Resetting user data requires administrator credentials. Only administrators can 
    ```
    This will prompt for administrator credentials before providing instructions.
 
-3. For Firebase data (administrator access required):
-   - Go to the Firebase Console (https://console.firebase.google.com/)
-   - Select your project
-   - Go to Authentication > Users and delete any users
-   - Go to Firestore Database and delete any user-related documents
+3. For Supabase data (administrator access required):
+   - Go to your Supabase project dashboard
+   - Navigate to Authentication > Users to manage user accounts
+   - Use the Database section to manage any user-related data in tables
 
 ### TypeScript Errors
 

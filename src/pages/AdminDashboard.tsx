@@ -88,7 +88,7 @@ export default function AdminDashboard() {
     if (!currentQuestion) return;
 
     const newOption: QuestionOption = {
-      id: `option-${Date.now()}`,
+      id: crypto.randomUUID(),
       text: '',
       value: '',
       scale: 1
@@ -360,8 +360,8 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 {/* Banner Image Preview - Resizable Window */}
- background on every page                <div className="mb-4">
- of the                  {getBannerImage() ? (
+                <div className="mb-4">
+                  {getBannerImage() ? (
                     <div className="relative bg-gray-800 dark:bg-gray-900 rounded-lg overflow-hidden resize both border-2 border-dashed border-cyan-400 min-w-[200px] min-h-[150px] max-w-full" style={{width: '400px', height: '300px'}}>
                       <img
                         src={getBannerImage()?.src}
@@ -517,7 +517,7 @@ export default function AdminDashboard() {
                         scale={image.scale || 1}
                         onScaleChange={(id: string, scale: number) => updateImageScale(id, scale)}
                         onDelete={handleDeleteImage}
-background color change                      />
+                      />
                       <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-purple-300 text-xs px-2 py-1 rounded border border-purple-500">
                         ↘ Drag to resize gallery
                       </div>
@@ -936,8 +936,11 @@ background color change                      />
 
       {/* AI Prompts Modal */}
       {showAiPromptsModal && (
-        <AiPromptsModal onClose={() => setShowAiPromptsModal(false)} />
-      )}
+          <AiPromptsModal
+            isOpen={showAiPromptsModal}
+            onClose={() => setShowAiPromptsModal(false)}
+          />
+        )}
 
     </div>
   );
@@ -1405,6 +1408,115 @@ const CodeSnippetsSection: React.FC = () => {
   );
 };
 
+// Category Info Popup Component
+const CategoryInfoPopup: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { theme } = useTheme();
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-1 text-cyan-400 hover:text-cyan-300 transition-colors"
+        title="Category Usage Guide"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
+      
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setIsOpen(false)}
+          />
+          
+          {/* Popup */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+            className="absolute top-8 left-0 z-50 w-96 bg-gray-900/95 backdrop-blur-sm border border-cyan-500/30 rounded-xl p-6 shadow-2xl"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-semibold text-white">Category Usage Guide</h4>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="text-sm text-gray-300 space-y-3">
+                <p className="text-cyan-200 font-medium">
+                  Categories help organize your templates and code snippets for better user experience. They are optional but highly recommended.
+                </p>
+                
+                <div className="space-y-3">
+                  <div>
+                    <h5 className="text-white font-medium mb-1">🎯 Trading Strategies</h5>
+                    <p className="text-xs text-gray-400 ml-4">
+                      "Momentum", "Mean Reversion", "Breakout", "Scalping", "Swing Trading", "Position Trading"
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-white font-medium mb-1">📊 Indicator Types</h5>
+                    <p className="text-xs text-gray-400 ml-4">
+                      "Oscillators", "Trend Following", "Volume Based", "Support/Resistance", "Moving Averages"
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-white font-medium mb-1">📈 Complexity Levels</h5>
+                    <p className="text-xs text-gray-400 ml-4">
+                      "Beginner", "Intermediate", "Advanced", "Expert", "Professional"
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-white font-medium mb-1">💹 Market Types</h5>
+                    <p className="text-xs text-gray-400 ml-4">
+                      "Stocks", "Forex", "Crypto", "Futures", "Options", "Commodities", "Indices"
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-white font-medium mb-1">⏰ Time Frames</h5>
+                    <p className="text-xs text-gray-400 ml-4">
+                      "Intraday", "Daily", "Weekly", "Monthly", "Multi-Timeframe"
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-white font-medium mb-1">🎨 Visual Styles</h5>
+                    <p className="text-xs text-gray-400 ml-4">
+                      "Minimalist", "Detailed", "Color-Coded", "High Contrast", "Dashboard Style"
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="border-t border-gray-700 pt-3 mt-4">
+                  <p className="text-xs text-gray-400">
+                    💡 <strong>Pro Tip:</strong> Use descriptive category names that your users will easily understand. 
+                    Categories make it easier for users to find the right template for their trading style.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </div>
+  );
+};
+
 // Template Categories Management Component
 const TemplateCategoriesSection: React.FC = () => {
   const { categories, createCategory, loadingCategories } = useTemplates();
@@ -1524,9 +1636,12 @@ const TemplateCategoriesSection: React.FC = () => {
       {/* Categories List */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-white">
-            Categories ({categories.length})
-          </h3>
+          <div className="flex items-center gap-3">
+            <h3 className="text-lg font-semibold text-white">
+              Categories ({categories.length})
+            </h3>
+            <CategoryInfoPopup />
+          </div>
           <Button
             onClick={() => setIsCreating(true)}
             variant="primary"
@@ -1588,7 +1703,16 @@ const TemplateCategoriesSection: React.FC = () => {
     </div>
   );
 };
-function deleteCategory(categoryId: string) {
-  throw new Error('Function not implemented.');
-}
+async function deleteCategory(categoryId: string) {
+    try {
+      const success = await templatesHook.deleteCategory(categoryId);
+      if (success) {
+        console.log('Category deleted successfully');
+      } else {
+        console.error('Failed to delete category');
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
+    }
+  }
 

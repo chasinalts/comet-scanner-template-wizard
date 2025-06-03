@@ -97,10 +97,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
 
               if (isMounted) {
                 setImageSrc(proxiedUrl);
-                if (!gallerySize) {
-                  setIsLoaded(true);
-                  return;
-                }
+                setIsLoaded(true);
+                return;          // prevents fall-though into resize block
               }
             }
           } catch (error) {
