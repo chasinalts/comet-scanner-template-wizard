@@ -18,12 +18,10 @@ ALTER TABLE public.site_content ADD CONSTRAINT site_content_key_unique UNIQUE (k
 -- Set table owner
 ALTER TABLE public.site_content OWNER TO postgres;
 
--- Enable Row Level Security
-ALTER TABLE public.site_content ENABLE ROW LEVEL SECURITY;
-
--- Create policy to allow all operations for authenticated users
-CREATE POLICY "Allow all operations for authenticated users" ON public.site_content
-    FOR ALL USING (auth.role() = 'authenticated');
+-- Row Level Security disabled since admin functionality is password-protected
+-- ALTER TABLE public.site_content ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "Allow all operations for authenticated users" ON public.site_content
+--     FOR ALL USING (auth.role() = 'authenticated');
 
 -- Insert initial content for COMET explanation
 INSERT INTO public.site_content (key, content) VALUES (
