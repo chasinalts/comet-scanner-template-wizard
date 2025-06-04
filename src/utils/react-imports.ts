@@ -10,29 +10,36 @@
  * - ESM-compatible structure for Node.js v22+
  */
 
-// Core React import - using default import as recommended for React 18+
-import React from 'react';
-
 // Named imports for hooks and utilities - optimal for tree-shaking in Node.js v22
 import {
   useState,
   useEffect,
-  useRef,
   useCallback,
   useMemo,
+  useRef,
   useContext,
   useReducer,
-  createContext,
+  useLayoutEffect,
+  useImperativeHandle,
   forwardRef,
+  memo,
+  createContext,
   Fragment,
   Component,
+  StrictMode,
   Suspense,
   lazy,
   startTransition,
+  useTransition,
   useDeferredValue,
   useId,
-  useTransition,
+  useSyncExternalStore,
+  useInsertionEffect,
+  createElement,
+  cloneElement,
+  isValidElement
 } from 'react';
+import * as React from 'react';
 
 // Type imports - separated for clarity and better TypeScript performance
 import type {
@@ -50,26 +57,34 @@ import type {
 // Re-export React
 export default React;
 
-// Re-export commonly used hooks and React 18+ features
-export {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-  useContext,
-  useReducer,
-  createContext,
-  forwardRef,
-  Fragment,
-  Component,
-  Suspense,
-  lazy,
-  startTransition,
-  useDeferredValue,
-  useId,
-  useTransition
-};
+// Re-export everything for centralized access
+  export {
+    useState,
+    useEffect,
+    useCallback,
+    useMemo,
+    useRef,
+    useContext,
+    useReducer,
+    useLayoutEffect,
+    useImperativeHandle,
+    forwardRef,
+    memo,
+    createContext,
+    Fragment,
+    StrictMode,
+    Suspense,
+    lazy,
+    startTransition,
+    useTransition,
+    useDeferredValue,
+    useId,
+    useSyncExternalStore,
+    useInsertionEffect,
+    createElement,
+    cloneElement,
+    isValidElement
+  };
 
 // Re-export types
 export type {

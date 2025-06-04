@@ -254,7 +254,33 @@ const StepThree: React.FC = () => {
               value={(question as BooleanQuestion).trueLabel}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 const newTrueLabel = e.target.value;
+                handleUpdateQuestion(question.id, { trueLabel: newTrueLabel } as Partial<BooleanQuestion>);
+              }}
+              placeholder="Yes"
+            />
+            <TextField
+              label="Label for 'False'"
+              value={(question as BooleanQuestion).falseLabel}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                const newFalseLabel = e.target.value;
+                handleUpdateQuestion(question.id, { falseLabel: newFalseLabel } as Partial<BooleanQuestion>);
+              }}
+              placeholder="No"
+            />
+          </>
+        )}
+      </motion.div>
+    );
+  };
+
+  return (
     <motion.div
+      variants={containerVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="space-y-6"
+    >
       <motion.div variants={itemVariants}>
         <ButtonGroup>
           <Button onClick={() => handleAddQuestion('text')}>Add Text Question</Button>
