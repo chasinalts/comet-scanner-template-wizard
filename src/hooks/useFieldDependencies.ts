@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from '../utils/react-imports';
 
 type DependencyRule<T> = {
   when: (values: T) => boolean;

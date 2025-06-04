@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { ReactNode, createContext, useContext, useEffect, useState } from '../utils/react-imports';
 // COMMENTED OUT FOR SIMPLIFIED AUTH SYSTEM
 // import { supabase } from '../supabaseConfig'; // Import Supabase client
 // import {

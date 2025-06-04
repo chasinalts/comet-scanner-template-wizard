@@ -1,4 +1,5 @@
-import { useState, useRef, type FormEvent } from 'react';
+import { useRef, useState } from '../utils/react-imports';
+import type { FormEvent } from '../utils/react-imports';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';

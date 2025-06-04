@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState, useCallback } from 'react';
+import React, { useCallback, useState } from '../utils/react-imports';
 
 interface RetryOptions {
   maxAttempts?: number;

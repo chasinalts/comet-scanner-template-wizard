@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useCallback, useState, type DragEvent } from 'react';
+import React, { useCallback, useState, type DragEvent } from '../../utils/react-imports';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface DragDropUploadProps {

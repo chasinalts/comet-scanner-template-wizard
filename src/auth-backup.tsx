@@ -1,3 +1,4 @@
+import React, { ReactNode, createContext, useContext, useEffect, useState } from './utils/react-imports';
 // ========================================
 // AUTHENTICATION SYSTEM BACKUP
 // ========================================
@@ -10,7 +11,6 @@
 // AuthContext.tsx - ORIGINAL CONTENT
 // ========================================
 /*
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../supabaseConfig'; // Import Supabase client
 import {
   Session,
@@ -66,7 +66,6 @@ interface AuthContextType {
 // ProtectedRoute.tsx - ORIGINAL CONTENT
 // ========================================
 /*
-import React, { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 

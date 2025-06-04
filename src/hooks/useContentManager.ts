@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from '../utils/react-imports';
 import type { ContentItem } from './useAdminContent';
 import { handleImageUpload, handleSupabaseImageUpload, cleanupImageUrl } from '../utils/imageHandlers';
 

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from '../../utils/react-imports';
 import LazyImage from './LazyImage';
 
 interface ResponsiveImageWithPlaceholderProps {

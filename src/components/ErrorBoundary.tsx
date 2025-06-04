@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from '../utils/react-imports';
 import { motion } from 'framer-motion';
 
 interface Props {

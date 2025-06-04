@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useMemo, useCallback } from 'react';
+import React, { useCallback, useMemo } from '../utils/react-imports';
 import { useWizard } from '../contexts/WizardContext';
 import type { Question, QuestionOption } from '../types/questions';
 import type { Section } from '../hooks/useSections';

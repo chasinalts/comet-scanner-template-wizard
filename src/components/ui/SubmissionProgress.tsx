@@ -1,6 +1,5 @@
+import React, { ReactNode } from '../../utils/react-imports';
 import { motion, AnimatePresence } from 'framer-motion';
-import * as React from 'react';
-import { ReactNode } from 'react';
 
 export interface SubmissionStep {
   id: string;

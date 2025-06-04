@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from '../../utils/react-imports';
 import HolographicText from '../../components/ui/HolographicText';
 import { motion } from 'framer-motion';
 import Modal from '../../components/ui/Modal';

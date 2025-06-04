@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useRef, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from '../utils/react-imports';
 
 export function useAbortController() {
   const abortControllerRef = useRef<AbortController | null>(null);

@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from '../utils/react-imports';
 import { Rnd } from 'react-rnd';
 
 interface LiveFloatingPreviewProps {

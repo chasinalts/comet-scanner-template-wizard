@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from '../../utils/react-imports';
 import { motion } from 'framer-motion';
 
 interface HolographicTextProps {

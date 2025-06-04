@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { forwardRef, SelectHTMLAttributes, ReactNode } from 'react';
+import React, { ReactNode, SelectHTMLAttributes, forwardRef } from '../../utils/react-imports';
 import { motion } from 'framer-motion';
 
 interface Option {

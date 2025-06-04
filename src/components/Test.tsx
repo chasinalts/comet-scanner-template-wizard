@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from '../utils/react-imports';
 
 const Test: React.FC = () => {
   return (

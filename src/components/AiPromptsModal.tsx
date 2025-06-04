@@ -1,4 +1,4 @@
-import React from 'react';
+import React from '../utils/react-imports';
 import Modal from './ui/Modal';
 import HolographicText from './ui/HolographicText';
 import Button from './ui/Button';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from '../utils/react-imports';
+import React, { useEffect, useState } from '../utils/react-imports';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../supabaseConfig';
 import HolographicText from './ui/HolographicText';

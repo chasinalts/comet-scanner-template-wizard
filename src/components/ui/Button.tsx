@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { forwardRef, ReactNode } from 'react';
+import React, { ReactNode, forwardRef } from '../../utils/react-imports';
 import { motion, HTMLMotionProps } from 'framer-motion';
 import LoadingSpinner from './LoadingSpinner';
 

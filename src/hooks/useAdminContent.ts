@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from '../utils/react-imports';
 import { memoize } from '../utils/memoization';
 
 export interface ContentItem {

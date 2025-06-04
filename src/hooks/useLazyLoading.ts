@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect, useRef, useState, RefObject } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from '../utils/react-imports';
 
 interface UseLazyLoadingOptions {
   rootMargin?: string;

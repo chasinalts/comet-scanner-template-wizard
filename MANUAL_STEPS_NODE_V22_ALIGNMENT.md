@@ -1,15 +1,15 @@
-# Manual Steps for Node.js v18 Alignment
+# Manual Steps for Node.js v22 Alignment
 
 ## Overview
-This document outlines the manual steps you need to perform to align your project with Node.js v18 requirements before automated code changes can begin.
+This document outlines the manual steps you need to perform to align your project with Node.js v22 requirements before automated code changes can begin.
 
 ## Current Status Analysis
-✅ **Good News**: Your project is already well-configured for Node.js v18:
-- `.node-version`: Set to `18`
-- `.nvmrc`: Set to `18`
-- `package.json` engines: `>=18.0.0 <19.0.0`
-- `netlify.toml`: `NODE_VERSION = "18"`
-- Native `fetch()` and `AbortController` are already in use (Node.js v18+ features)
+✅ **Good News**: Your project is now configured for Node.js v22:
+- `.node-version`: Set to `22`
+- `.nvmrc`: Set to `22`
+- `package.json` engines: `>=22.0.0 <23.0.0`
+- `netlify.toml`: `NODE_VERSION = "22"`
+- Enhanced `fetch()` and `AbortController` support with Node.js v22+ performance improvements
 
 ## Required Manual Steps
 
@@ -18,11 +18,11 @@ This document outlines the manual steps you need to perform to align your projec
 # Check your current Node.js version
 node --version
 
-# If not v18.x, switch using nvm
-nvm use 18
+# If not v22.x, switch using nvm
+nvm use 22
 # or install if not available
-nvm install 18
-nvm use 18
+nvm install 22
+nvm use 22
 ```
 
 ### Step 2: Clean Dependencies

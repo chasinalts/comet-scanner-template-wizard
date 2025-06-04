@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from '../utils/react-imports';
 import { supabase } from '../supabaseConfig';
 import { useAuth } from '../contexts/AuthContext';
 

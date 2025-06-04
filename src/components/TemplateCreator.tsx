@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from '../utils/react-imports';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../supabaseConfig';
 

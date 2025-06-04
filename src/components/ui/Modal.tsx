@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Fragment, ReactNode } from 'react';
+import React, { Fragment, ReactNode } from '../../utils/react-imports';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ModalProps {

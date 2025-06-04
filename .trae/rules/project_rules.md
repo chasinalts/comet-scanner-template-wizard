@@ -1,43 +1,45 @@
 # Project Development Rules
 
 ## RULE: Node.js Version Management
-**MANDATORY: This project MUST use Node.js v18.x**
+**MANDATORY: This project MUST use Node.js v22.x**
 
 ### Version Requirements
-- **Node.js**: `>=18.0.0 <19.0.0` (strictly v18)
-- **npm**: Compatible with Node.js v18
-- **Deployment**: Netlify configured for Node.js v18
+- **Node.js**: `>=22.0.0 <23.0.0` (strictly v22)
+- **npm**: Compatible with Node.js v22
+- **Deployment**: Netlify configured for Node.js v22
 
-### Why Node.js v18 is Required
-- Native `fetch()` API support (stable in v18+)
-- `AbortController` compatibility throughout codebase
-- ES modules (`"type": "module"`) optimization
-- Vite, Vitest, TypeScript dependencies require v18+
-- Supabase JS client compatibility
-- Production deployment consistency
+### Why Node.js v22 is Required
+- Enhanced native `fetch()` API support with improved performance
+- Advanced `AbortController` compatibility throughout codebase
+- Optimized ES modules (`"type": "module"`) support
+- Latest Vite, Vitest, TypeScript dependencies fully compatible with v22+
+- Enhanced Supabase JS client compatibility and performance
+- Modern production deployment consistency
+- Better memory management and performance optimizations
+- Latest security patches and stability improvements
 
 ### Version Alignment Checklist
-✅ `.node-version` file contains `18`
-✅ `package.json` engines field: `"node": ">=18.0.0 <19.0.0"`
-✅ `netlify.toml` specifies `NODE_VERSION = "18"`
-✅ Local development uses Node.js v18
+✅ `.node-version` file contains `22`
+✅ `package.json` engines field: `"node": ">=22.0.0 <23.0.0"`
+✅ `netlify.toml` specifies `NODE_VERSION = "22"`
+✅ Local development uses Node.js v22
 
 ### Setup Commands
 ```bash
 # Set Node version
-echo "18" > .node-version
-nvm use 18
+echo "22" > .node-version
+nvm use 22
 
 # Verify version
-node --version  # Should show v18.x.x
+node --version  # Should show v22.x.x
 ```
 
-### Node.js v18 Documentation Rule
-**MANDATORY: AI must ONLY use Node.js v18 documentation and examples**
-- When providing Node.js guidance, reference ONLY v18 features and APIs
+### Node.js v22 Documentation Rule
+**MANDATORY: AI must ONLY use Node.js v22 documentation and examples**
+- When providing Node.js guidance, reference ONLY v22 features and APIs
 - Do NOT use examples from other Node.js versions
-- All Node.js code examples must be compatible with v18.x
-- When in doubt about Node.js functionality, verify against v18 documentation
+- All Node.js code examples must be compatible with v22.x
+- When in doubt about Node.js functionality, verify against v22 documentation
 
 ---
 
@@ -60,7 +62,7 @@ Never ignore TypeScript configuration when debugging import errors
 
 IMPORT SYNTAX VALIDATION
 
-For React hooks: ALWAYS use import React, { useEffect, useState } from 'react'
+For React hooks: ALWAYS use import React, { useEffect, useState } from '../utils/react-imports' (or appropriate relative path to utils/react-imports)
 NEVER suggest import { React, useEffect } from 'react' (incorrect)
 For utility modules without default exports: Use import * as moduleName from './module'
 For modules with default exports: Use import moduleName from './module'
@@ -184,7 +186,7 @@ npm install @types/react@latest @types/react-dom@latest
 ```
 
 ### Forbidden Actions
-❌ DO NOT install packages without checking Node.js v18 compatibility
+❌ DO NOT install packages without checking Node.js v22 compatibility
 ❌ DO NOT ignore `package-lock.json` conflicts
 ❌ DO NOT mix package managers (stick to npm)
 
@@ -194,14 +196,14 @@ npm install @types/react@latest @types/react-dom@latest
 **Ensure consistent development setup**
 
 ### Required Tools
-- Node.js v18.x (via nvm recommended)
+- Node.js v22.x (via nvm recommended)
 - npm (bundled with Node.js)
 - VS Code with recommended extensions
 - Git for version control
 
 ### Environment Setup
 1. Clone repository
-2. Set Node.js version: `nvm use 18`
+2. Set Node.js version: `nvm use 22`
 3. Install dependencies: `npm install`
 4. Copy environment: `cp .env.example .env`
 5. Start development: `npm run dev`
@@ -224,7 +226,7 @@ npm install @types/react@latest @types/react-dom@latest
 - Source maps generated for debugging
 
 ### Deployment Checklist
-✅ Node.js v18 specified in deployment config
+✅ Node.js v22 specified in deployment config
 ✅ Environment variables properly configured
 ✅ Build artifacts optimized and compressed
 ✅ CORS headers configured correctly

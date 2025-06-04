@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from '../../utils/react-imports';
 
 interface ColorWheelProps {
   onColorChange: (color: string) => void;

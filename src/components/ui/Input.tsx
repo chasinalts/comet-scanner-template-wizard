@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { forwardRef, InputHTMLAttributes, ReactNode, useState } from 'react';
+import React, { InputHTMLAttributes, ReactNode, forwardRef, useState } from '../../utils/react-imports';
 import { motion } from 'framer-motion';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
