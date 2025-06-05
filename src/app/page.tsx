@@ -22,32 +22,32 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen futuristic-grid-bg" data-oid="k_pwnoq">
+    <div className="min-h-screen futuristic-grid-bg" data-oid="9.bprl4">
       {/* Header */}
       <header
         className="bg-slate-900 bg-opacity-50 backdrop-blur-md border-b border-cyan-500/30"
-        data-oid="44pwg:n"
+        data-oid="u62xoae"
       >
-        <div className="container mx-auto px-6 py-4" data-oid="84b_b95">
-          <div className="flex items-center justify-between" data-oid="s-9-rtb">
+        <div className="container mx-auto px-6 py-4" data-oid="zb:5i3m">
+          <div className="flex items-center justify-between" data-oid="tzcr2d7">
             <h1
               className="holographic-title text-3xl"
               data-text="COMET SCANNER TEMPLATE WIZARD"
-              data-oid="gi5274g"
+              data-oid="438wv0r"
             >
               COMET SCANNER TEMPLATE WIZARD
             </h1>
-            <div className="flex items-center space-x-4" data-oid="y_c8d..">
+            <div className="flex items-center space-x-4" data-oid=".cbsggj">
               <span
                 className="holographic-text"
                 data-text="Owner: chasecambre@gmail.com"
-                data-oid=".wu3:1z"
+                data-oid="8_.u45d"
               >
                 Owner: chasecambre@gmail.com
               </span>
               <button
                 className="futuristic-button px-4 py-2"
-                data-oid="azzpq-2"
+                data-oid="_f7m37_"
               >
                 Logout
               </button>
@@ -59,10 +59,10 @@ export default function HomePage() {
       {/* Navigation */}
       <nav
         className="bg-slate-800 bg-opacity-40 backdrop-blur-sm border-b border-cyan-500/20"
-        data-oid=".9765zv"
+        data-oid="vv5fxal"
       >
-        <div className="container mx-auto px-6 py-3" data-oid="0ryuz1a">
-          <div className="flex space-x-6" data-oid="h59k0qf">
+        <div className="container mx-auto px-6 py-3" data-oid="-ngd6f6">
+          <div className="flex space-x-6" data-oid="omplw0s">
             <button
               onClick={() => setCurrentView("gallery")}
               className={`px-4 py-2 rounded transition-all ${
@@ -70,7 +70,7 @@ export default function HomePage() {
                   ? "bg-cyan-500/30 text-cyan-300 border border-cyan-500/50"
                   : "text-gray-300 hover:text-cyan-300"
               }`}
-              data-oid="0rawix."
+              data-oid="dwcyxcl"
             >
               Home Screen
             </button>
@@ -81,7 +81,7 @@ export default function HomePage() {
                   ? "bg-cyan-500/30 text-cyan-300 border border-cyan-500/50"
                   : "text-gray-300 hover:text-cyan-300"
               }`}
-              data-oid="kov9asg"
+              data-oid="cm-sjwx"
             >
               Template Wizard
             </button>
@@ -90,30 +90,30 @@ export default function HomePage() {
       </nav>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8" data-oid="0j3rbqs">
+      <main className="container mx-auto px-6 py-8" data-oid="cpt9-ut">
         <div
           className="grid grid-cols-1 lg:grid-cols-3 gap-8"
-          data-oid="zpv992o"
+          data-oid="bdn3c:y"
         >
           {/* Main Content Area */}
-          <div className="lg:col-span-2" data-oid="ete0.87">
+          <div className="lg:col-span-2" data-oid=".:b88ym">
             {currentView === "gallery" ? (
               <TemplateGallery
                 onStartWizard={handleStartWizard}
-                data-oid="eo:sgqn"
+                data-oid="fdn7uqn"
               />
             ) : (
               <TemplateWizard
                 template={selectedTemplate}
                 onCodeUpdate={handleCodeUpdate}
-                data-oid="54qg04x"
+                data-oid="o4w3g3y"
               />
             )}
           </div>
 
           {/* Live Code Preview Sidebar */}
-          <div className="lg:col-span-1" data-oid="91ggetv">
-            <LiveCodePreview code={generatedCode} data-oid="t8jzzx2" />
+          <div className="lg:col-span-1" data-oid="mx5-g71">
+            <LiveCodePreview code={generatedCode} data-oid="81a97y:" />
           </div>
         </div>
       </main>
@@ -121,13 +121,13 @@ export default function HomePage() {
       {/* Footer */}
       <footer
         className="bg-slate-900 bg-opacity-50 border-t border-cyan-500/30 mt-16"
-        data-oid="t6f6-lr"
+        data-oid="7p2f515"
       >
         <div
           className="container mx-auto px-6 py-4 text-center"
-          data-oid="nq7nab8"
+          data-oid="q8d_gu3"
         >
-          <p className="text-gray-400" data-oid="r97egtg">
+          <p className="text-gray-400" data-oid="iomta5o">
             © 2025 COMET Scanner Wizard | Version 1.0.0
           </p>
         </div>

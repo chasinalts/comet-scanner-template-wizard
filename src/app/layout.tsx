@@ -23,10 +23,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-oid="oos-h7h">
+    <html lang="en" data-oid="_a0-v3y">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased futuristic-theme`}
-        data-oid="051c22g"
+        data-oid="wsf0fzu"
       >
         {children}
       </body>
