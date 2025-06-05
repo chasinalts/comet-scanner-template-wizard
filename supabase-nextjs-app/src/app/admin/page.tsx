@@ -31,25 +31,25 @@ export default function AdminPage() {
     return (
       <main
         className="flex flex-col items-center justify-center min-h-screen p-24 futuristic-grid-bg"
-        data-oid=":bavo.t"
+        data-oid="ttzjavb"
       >
         <div
           className="p-8 futuristic-container w-auto max-w-md"
-          data-oid=":etilcn"
+          data-oid="peocy11"
         >
           <h1
             className="mb-6 holographic-title text-center"
             data-text="Admin Access"
-            data-oid="z5c.:5h"
+            data-oid="scsy6bj"
           >
             Admin Access
           </h1>
 
-          <form onSubmit={handleLogin} className="space-y-6" data-oid="f9yeo31">
-            <div data-oid="ghn96mw">
+          <form onSubmit={handleLogin} className="space-y-6" data-oid="1fik:lz">
+            <div data-oid="hufmwt8">
               <label
                 className="block text-cyan-300 font-semibold mb-2"
-                data-oid="9zk1jhn"
+                data-oid="tne9xy1"
               >
                 Password
               </label>
@@ -60,14 +60,14 @@ export default function AdminPage() {
                 className="futuristic-input w-full"
                 placeholder="Enter admin password"
                 required
-                data-oid="g-q.6d5"
+                data-oid="p:_473s"
               />
             </div>
 
             {error && (
               <p
                 className="text-red-400 text-sm text-center"
-                data-oid="i7s2n2x"
+                data-oid="0r_1fit"
               >
                 {error}
               </p>
@@ -76,17 +76,17 @@ export default function AdminPage() {
             <button
               type="submit"
               className="futuristic-button w-full px-6 py-3"
-              data-oid="okfg3x9"
+              data-oid="gmks-kf"
             >
               Access Dashboard
             </button>
           </form>
 
-          <div className="mt-8 text-center" data-oid="ma321p6">
+          <div className="mt-8 text-center" data-oid="91mvzo-">
             <a
               href="/"
               className="text-cyan-400 hover:text-cyan-300 transition-colors"
-              data-oid="br8b9r:"
+              data-oid="ss.vfiv"
             >
               ← Back to Home
             </a>
@@ -97,33 +97,33 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen futuristic-grid-bg" data-oid="kn4ist1">
+    <div className="min-h-screen futuristic-grid-bg" data-oid="m_crcs3">
       {/* Admin Header */}
       <header
         className="bg-slate-900 bg-opacity-50 backdrop-blur-md border-b border-cyan-500/30"
-        data-oid="shzyp:g"
+        data-oid="ofvmu:3"
       >
-        <div className="container mx-auto px-6 py-4" data-oid="kb:ef5m">
-          <div className="flex items-center justify-between" data-oid="pw9709_">
+        <div className="container mx-auto px-6 py-4" data-oid="r9w30lt">
+          <div className="flex items-center justify-between" data-oid="bkw89qx">
             <h1
               className="holographic-title text-2xl"
               data-text="COMET Scanner Admin Dashboard"
-              data-oid="tzmqfho"
+              data-oid="gvz013e"
             >
               COMET Scanner Admin Dashboard
             </h1>
-            <div className="flex items-center space-x-4" data-oid="u.:w3zt">
+            <div className="flex items-center space-x-4" data-oid="ifqlgcv">
               <span
                 className="holographic-text"
                 data-text="Admin Mode"
-                data-oid=":x5qgyq"
+                data-oid="aeqs8r3"
               >
                 Admin Mode
               </span>
               <button
                 onClick={handleLogout}
                 className="futuristic-button px-4 py-2"
-                data-oid="4udekj8"
+                data-oid="yb1qjd6"
               >
                 Logout
               </button>
@@ -132,7 +132,7 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <AdminDashboard data-oid="5j0d:fw" />
+      <AdminDashboard data-oid="c7e-fpu" />
     </div>
   );
 }
