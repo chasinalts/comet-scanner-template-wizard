@@ -1,6 +1,6 @@
 {
-  "name": "supabase-nextjs-app",
-  "version": "0.1.0",
+  "name": "comet-scanner-wizard",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
