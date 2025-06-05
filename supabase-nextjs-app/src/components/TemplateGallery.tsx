@@ -86,16 +86,16 @@ export default function TemplateGallery({
       : templates.filter((template) => template.category === selectedCategory);
 
   return (
-    <div className="space-y-8" data-oid="5o8j3_g">
+    <div className="space-y-8" data-oid=".mp8988">
       {/* Hero Section */}
       <div
         className="text-center py-12 futuristic-container"
-        data-oid="47b5e4k"
+        data-oid="x.-rpro"
       >
         <h1
           className="holographic-title text-4xl mb-6"
           data-text="COMET SCANNER TEMPLATE WIZARD"
-          data-oid="o7v_una"
+          data-oid=".1ff4la"
         >
           COMET SCANNER TEMPLATE WIZARD
         </h1>
@@ -103,37 +103,37 @@ export default function TemplateGallery({
         {/* A_Traders EDGE Banner */}
         <div
           className="relative max-w-4xl mx-auto mb-8 rounded-lg overflow-hidden border border-cyan-500/30"
-          data-oid="lg8fc7-"
+          data-oid="n86dk0y"
         >
           <div
             className="bg-gradient-to-r from-red-600 via-black to-cyan-400 p-8 text-center"
-            data-oid="gbewhhb"
+            data-oid="i16na2m"
           >
             <div
               className="flex items-center justify-center space-x-8"
-              data-oid="xwxn6zi"
+              data-oid="33as9m9"
             >
               <div
                 className="text-red-400 font-bold text-6xl italic"
-                data-oid="lxglqdp"
+                data-oid="c_m58xg"
               >
                 A_Traders
               </div>
               <div
                 className="text-cyan-400 font-bold text-6xl"
-                data-oid="vo80kez"
+                data-oid="zu:6wcw"
               >
                 EDGE
               </div>
             </div>
-            <div className="mt-4 space-y-2 text-white" data-oid="alcjaym">
-              <p className="text-xl" data-oid="w.nvalm">
+            <div className="mt-4 space-y-2 text-white" data-oid="cj8_vno">
+              <p className="text-xl" data-oid="fm66wlb">
                 Find your EDGE
               </p>
-              <p className="text-xl" data-oid="nv0bswq">
+              <p className="text-xl" data-oid="kplitqm">
                 Build your EDGE
               </p>
-              <p className="text-xl" data-oid="u.sm0l3">
+              <p className="text-xl" data-oid="zzequx2">
                 Trade your EDGE
               </p>
             </div>
@@ -143,22 +143,22 @@ export default function TemplateGallery({
         <button
           className="futuristic-button px-8 py-4 text-xl"
           onClick={() => onStartWizard(templates[0])}
-          data-oid="b90cn2_"
+          data-oid="y85:w9f"
         >
           START THE TEMPLATE WIZARD
         </button>
       </div>
 
       {/* Category Filter */}
-      <div className="futuristic-container p-6" data-oid="fkbh4h8">
+      <div className="futuristic-container p-6" data-oid="excfp-l">
         <h3
           className="holographic-subtitle text-xl mb-4"
           data-text="Filter by Category"
-          data-oid="c4aj8jc"
+          data-oid="g1emdpt"
         >
           Filter by Category
         </h3>
-        <div className="flex flex-wrap gap-3" data-oid="404xm58">
+        <div className="flex flex-wrap gap-3" data-oid="2xotx3p">
           {categories.map((category) => (
             <button
               key={category}
@@ -168,7 +168,7 @@ export default function TemplateGallery({
                   ? "bg-cyan-500/30 text-cyan-300 border border-cyan-500/50"
                   : "bg-slate-700/50 text-gray-300 hover:text-cyan-300 border border-slate-600"
               }`}
-              data-oid=".un9di3"
+              data-oid="rg6:paf"
             >
               {category}
             </button>
@@ -177,36 +177,36 @@ export default function TemplateGallery({
       </div>
 
       {/* COMET Scanner Gallery */}
-      <div className="futuristic-container p-6" data-oid="o2l4dtc">
+      <div className="futuristic-container p-6" data-oid="vd0ec2o">
         <h2
           className="holographic-subtitle text-2xl mb-6"
           data-text="COMET Scanner Gallery"
-          data-oid="ocmri_h"
+          data-oid="6h6ud-_"
         >
           COMET Scanner Gallery
         </h2>
 
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          data-oid="0.mgwap"
+          data-oid="ekxa6kb"
         >
           {filteredTemplates.map((template) => (
             <div
               key={template.id}
               className="bg-slate-800/50 rounded-lg border border-cyan-500/30 overflow-hidden hover:border-cyan-400/50 transition-all duration-300 holo-glow"
-              data-oid="_ldqsy7"
+              data-oid="e95egz6"
             >
               <div
                 className="relative h-48 bg-gradient-to-br from-slate-700 to-slate-900"
-                data-oid="67lz.gk"
+                data-oid="i.q.k5u"
               >
                 <div
                   className="absolute inset-0 flex items-center justify-center"
-                  data-oid="u6ksnak"
+                  data-oid="4.u73a8"
                 >
                   <div
                     className="text-cyan-400 text-lg font-semibold"
-                    data-oid="ab_oc6p"
+                    data-oid="nfovo8w"
                   >
                     {template.name}
                   </div>
@@ -219,36 +219,36 @@ export default function TemplateGallery({
                         ? "bg-yellow-500/30 text-yellow-300"
                         : "bg-red-500/30 text-red-300"
                   }`}
-                  data-oid="x75:vyg"
+                  data-oid="-bh6yia"
                 >
                   {template.difficulty}
                 </div>
               </div>
 
-              <div className="p-4" data-oid="ukkm7-9">
+              <div className="p-4" data-oid="v_z3f3v">
                 <h3
                   className="text-lg font-semibold text-cyan-300 mb-2"
-                  data-oid="ys1vp:k"
+                  data-oid="dw5c.nq"
                 >
                   {template.name}
                 </h3>
-                <p className="text-gray-400 text-sm mb-4" data-oid="z8:mnsf">
+                <p className="text-gray-400 text-sm mb-4" data-oid="2qwuzeq">
                   {template.description}
                 </p>
                 <div
                   className="flex justify-between items-center"
-                  data-oid="inz6ylc"
+                  data-oid="zvh8h.o"
                 >
                   <span
                     className="text-xs text-cyan-400 bg-cyan-500/20 px-2 py-1 rounded"
-                    data-oid="bjya40j"
+                    data-oid=":x_bd6y"
                   >
                     {template.category}
                   </span>
                   <button
                     className="futuristic-button px-4 py-2 text-sm"
                     onClick={() => onStartWizard(template)}
-                    data-oid="cybto5o"
+                    data-oid="yl7fmco"
                   >
                     Use Template
                   </button>
@@ -260,24 +260,24 @@ export default function TemplateGallery({
       </div>
 
       {/* What is COMET? Section */}
-      <div className="futuristic-container p-8" data-oid="86.upy8">
+      <div className="futuristic-container p-8" data-oid="xv_amj4">
         <h2
           className="holographic-subtitle text-2xl mb-6"
           data-text="What is COMET?"
-          data-oid="lyw7jxc"
+          data-oid="lep9x_n"
         >
           What is COMET?
         </h2>
 
-        <div className="space-y-6 text-gray-300" data-oid="ysqm:ty">
-          <div data-oid="6v-8:27">
-            <p className="text-lg mb-4" data-oid="3k.679:">
-              <strong className="text-cyan-400" data-oid=":0dkiw_">
+        <div className="space-y-6 text-gray-300" data-oid="p3x2_au">
+          <div data-oid="3k99p87">
+            <p className="text-lg mb-4" data-oid="x.rp0s5">
+              <strong className="text-cyan-400" data-oid="2c780._">
                 COMET
               </strong>{" "}
               = Co-Integrated Observational Market Evaluation Tool
             </p>
-            <p className="leading-relaxed" data-oid="1ym4q-w">
+            <p className="leading-relaxed" data-oid="ciql0p9">
               A COMET Scanner journeys a few steps further using the data from a
               traditional scanner by using them with different visualization
               techniques and often at very extreme settings to produce very
@@ -292,15 +292,15 @@ export default function TemplateGallery({
             </p>
           </div>
 
-          <div data-oid="g3_63y-">
+          <div data-oid="6q9qdm.">
             <h3
               className="holographic-text text-xl mb-4"
               data-text="COMET Scanner Usage"
-              data-oid=".:8lf2l"
+              data-oid="36p79gt"
             >
               COMET Scanner Usage
             </h3>
-            <p className="leading-relaxed mb-4" data-oid="52i2-wv">
+            <p className="leading-relaxed mb-4" data-oid="a-9tj18">
               COMET Scanners are powerful tools for market analysis that help
               traders identify potential trading opportunities across multiple
               assets simultaneously. They work by applying custom filters and
@@ -308,36 +308,36 @@ export default function TemplateGallery({
               might be missed by traditional analysis methods.
             </p>
 
-            <div className="space-y-2 text-sm" data-oid="m.jjurh">
-              <p data-oid="s6omegb">
-                <strong className="text-cyan-400" data-oid="i0z-i06">
+            <div className="space-y-2 text-sm" data-oid="x6lo45f">
+              <p data-oid="o0c5exn">
+                <strong className="text-cyan-400" data-oid="z.q2csk">
                   Key features of COMET Scanners include:
                 </strong>
               </p>
               <ul
                 className="list-disc list-inside space-y-1 ml-4"
-                data-oid=":bjh:.f"
+                data-oid="n-3ewqu"
               >
-                <li data-oid="9nspirx">
+                <li data-oid="6kdbu3k">
                   Multi-asset screening capability (up to 40 assets per scanner
                   instance)
                 </li>
-                <li data-oid="vy6p.r:">
+                <li data-oid="-vipycs">
                   Custom visualization techniques for pattern recognition
                 </li>
-                <li data-oid="33be5d_">
+                <li data-oid="2-uc7yj">
                   Extreme parameter settings to identify edge cases
                 </li>
-                <li data-oid="wz2:0h_">
+                <li data-oid="604em0p">
                   Real-time alerts for potential trading opportunities
                 </li>
-                <li data-oid="g4d_m33">
+                <li data-oid="u7uo3x.">
                   Configurable filters to match your trading strategy
                 </li>
               </ul>
             </div>
 
-            <p className="mt-4 leading-relaxed" data-oid="pd9cpq.">
+            <p className="mt-4 leading-relaxed" data-oid="p.l_gvj">
               The COMET Scanner Template Wizard helps you create a customized
               scanner template tailored to your specific trading needs and
               preferences.
