@@ -20,17 +20,33 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-oid="6vt9iqt">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased futuristic-theme`}
+        data-oid="hbs14z7"
       >
-        <nav className="py-4 bg-slate-900 bg-opacity-50 text-center">
-          <a href="/" className="holographic-text px-4" data-text="Home">Home</a>
-          <a href="/admin" className="holographic-text px-4" data-text="Admin">Admin</a>
+        <nav
+          className="py-4 bg-slate-900 bg-opacity-50 text-center"
+          data-oid="l_dtzkc"
+        >
+          <a
+            href="/"
+            className="holographic-text px-4"
+            data-text="Home"
+            data-oid="ori62.4"
+          >
+            Home
+          </a>
+          <a
+            href="/admin"
+            className="holographic-text px-4"
+            data-text="Admin"
+            data-oid="26v6420"
+          >
+            Admin
+          </a>
         </nav>
         {children}
       </body>
