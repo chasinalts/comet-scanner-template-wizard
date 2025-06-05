@@ -1,13 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
-if (!supabaseUrl) {
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
   console.warn('Supabase URL is not set. Please check your .env.local file.');
 }
-if (!supabaseAnonKey) {
+if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   console.warn('Supabase Anon Key is not set. Please check your .env.local file.');
 }
 
