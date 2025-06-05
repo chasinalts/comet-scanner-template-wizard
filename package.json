@@ -2,6 +2,7 @@
   "name": "comet-scanner-wizard-root",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "npm@10.0.0",
   "scripts": {
     "dev": "cd supabase-nextjs-app && npm run dev",
     "build": "cd supabase-nextjs-app && npm run build",
