@@ -1,0 +1,13 @@
+{
+  "name": "comet-scanner-wizard-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd supabase-nextjs-app && npm run dev",
+    "build": "cd supabase-nextjs-app && npm run build",
+    "start": "cd supabase-nextjs-app && npm run start",
+    "lint": "cd supabase-nextjs-app && npm run lint",
+    "install-deps": "cd supabase-nextjs-app && npm install"
+  },
+  "description": "COMET Scanner Template Wizard - Root package.json for convenience scripts"
+}
