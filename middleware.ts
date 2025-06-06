@@ -1,21 +1,21 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
   try {
     // Create a Supabase client configured to use cookies
-    const supabase = createClient(request)
+    const { supabase, response } = createClient(request)
 
     // Refresh session if expired - required for Server Components
     await supabase.auth.getUser()
 
     // Return the response with updated cookies
-    return supabase
+    return response
   } catch (e) {
     // If you are here, a Supabase client could not be created!
     // This is likely because you have not set up environment variables.
     console.error('Middleware error:', e)
-    return
+    return NextResponse.next()
   }
 }
 

@@ -30,5 +30,8 @@ export const createClient = (request: NextRequest) => {
     },
   );
 
-  return supabaseResponse
+  return {
+    supabase,
+    response: supabaseResponse
+  }
 };
