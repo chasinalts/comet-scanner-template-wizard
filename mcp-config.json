@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/mcp_config_schema.json",
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/v1/schema/mcp_config_schema.json",
   "description": "MCP configuration for Netlify integration",
   "mcpServers": {
     "netlify": {
@@ -7,7 +7,7 @@
       "args": ["./mcp-server.js"],
       "env": {
         "NETLIFY_AUTH_TOKEN": "nfp_J3rfoaaCgJgYMYaZodLkJCSMXTDFjtk34080",
-        "NODE_ENV": "production"
+        "NODE_ENV": "development"
       },
       "disabled": false,
       "autoApprove": [
