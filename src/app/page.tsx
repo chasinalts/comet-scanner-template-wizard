@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import TemplateGallery from "@/components/TemplateGallery";
-import TemplateWizard from "@/components/TemplateWizard";
-import LiveCodePreview from "@/components/LiveCodePreview";
+import TemplateGallery from "@/components/user/TemplateGallery";
+import TemplateWizard from "@/components/user/TemplateWizard";
+import LiveCodePreview from "@/components/user/LiveCodePreview";
 
 export default function HomePage() {
   const [currentView, setCurrentView] = useState<"gallery" | "wizard">(

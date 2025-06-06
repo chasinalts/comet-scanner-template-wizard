@@ -157,3 +157,5 @@ this will be updated when i ask it to be updated or referenced.
 - When a task is blocked, add a ❌ in front of the task.
 - When a task is in progress, add a ⚙️ in front of the task.
 - When a task is not started, add a ⚠️ in front of the task.
+
+- using sequential thinking mcp please make a plan for implementation of recently rendered sections of code and proceed with it making sure to abide by Trae's project rules file making sure you test new parts of code when the implementstion of a section has been completed enough to be able to test it using whatver test you feel best would be appropriate with that new functionality whether it be to use browser mcp or something else. fix any issues as they arise through testing until your satisfied that it'll work in/on the web app as intended.
