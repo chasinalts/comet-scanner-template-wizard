@@ -7,6 +7,7 @@ interface ImportExportPanelProps {
   checklist?: ChecklistItem[];
   onChecklistUpdate?: (checklist: ChecklistItem[]) => void;
   progressData?: any;
+  onImport?: (data: ImportExportState) => void;
 }
 
 interface ChecklistItem {
@@ -18,7 +19,8 @@ interface ChecklistItem {
 export default function ImportExportPanel({ 
   checklist: initialChecklist = [], 
   onChecklistUpdate = () => {}, 
-  progressData = {} 
+  progressData = {},
+  onImport = () => {}
 }: ImportExportPanelProps = {}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistItem[]>(initialChecklist.length > 0 ? initialChecklist : [
