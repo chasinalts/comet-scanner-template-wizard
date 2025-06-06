@@ -5,8 +5,7 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  output: 'export',
-  trailingSlash: true,
+  // Removed static export for dynamic AI functionality
   images: {
     unoptimized: true,
   },

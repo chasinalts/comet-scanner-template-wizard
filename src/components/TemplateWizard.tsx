@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import LiveCodePreview from "./LiveCodePreview";
+import { AIProviderSelector } from "./AIProviderSelector";
+import { useAI } from "@/hooks/useAI";
+import { AIProvider } from "@/lib/aiService";
 
 interface Template {
   id: string;
@@ -636,24 +640,29 @@ function AITickerGenerationStep({
 }) {
   const [assets, setAssets] = useState<string>("");
   const [generatedCode, setGeneratedCode] = useState<string>("");
+  const [selectedProvider, setSelectedProvider] = useState<AIProvider>('openai');
+  
+  const { generateCode, isLoading, error } = useAI({
+    onSuccess: (code) => {
+      setGeneratedCode(code);
+      onCodeUpdate(code);
+    }
+  });
 
-  const handleGenerateTickerCode = () => {
-    // Simulate AI generation
-    const tickerCode = `
-// AI-Generated Ticker Configuration
-tickers = array.new<string>()
-${assets
-  .split("\n")
-  .filter((asset) => asset.trim())
-  .map((asset, index) => `array.push(tickers, "${asset.trim()}")`)
-  .join("\n")}
+  const handleGenerateTickerCode = async () => {
+    if (!assets.trim()) {
+      alert('Please enter some assets to scan');
+      return;
+    }
 
-// Security function for multi-asset scanning
-get_security_data(ticker) =>
-    request.security(ticker, timeframe.period, close)
-`;
-    setGeneratedCode(tickerCode);
-    onCodeUpdate(tickerCode);
+    const prompt = `Create a Pine Script ticker configuration for scanning these assets:\n${assets}\n\nGenerate code that:\n1. Creates an array of ticker symbols\n2. Includes a security function for multi-asset data retrieval\n3. Is optimized for scanner performance\n4. Handles the asset list properly`;
+
+    await generateCode({
+      prompt,
+      functionType: 'ticker',
+      userInput: assets,
+      provider: selectedProvider
+    });
   };
 
   return (
@@ -666,6 +675,12 @@ get_security_data(ticker) =>
         AI Ticker Generation
       </h2>
       <div className="space-y-6" data-oid="89t4h84">
+        <AIProviderSelector
+          selectedProvider={selectedProvider}
+          onProviderChange={setSelectedProvider}
+          disabled={isLoading}
+        />
+        
         <div className="space-y-4" data-oid="pepm__5">
           <label
             className="block text-cyan-300 font-semibold"
@@ -679,14 +694,30 @@ get_security_data(ticker) =>
             value={assets}
             onChange={(e) => setAssets(e.target.value)}
             data-oid="c..dtb:"
+            disabled={isLoading}
           />
         </div>
+        
+        {error && (
+          <div className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-300">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
+        
         <button
           onClick={handleGenerateTickerCode}
           className="futuristic-button px-6 py-3"
           data-oid="kw7lip0"
+          disabled={isLoading || !assets.trim()}
         >
-          🤖 Generate Ticker Code with AI
+          {isLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400 inline-block mr-2"></div>
+              Generating with {selectedProvider}...
+            </>
+          ) : (
+            '🤖 Generate Ticker Code with AI'
+          )}
         </button>
         {generatedCode && (
           <div className="space-y-4" data-oid="wmw7eis">
@@ -726,18 +757,24 @@ function AINameGenerationStep({
 }) {
   const [nameFormat, setNameFormat] = useState<string>("");
   const [generatedCode, setGeneratedCode] = useState<string>("");
+  const [selectedProvider, setSelectedProvider] = useState<AIProvider>('openai');
+  
+  const { generateCode, isLoading, error } = useAI({
+    onSuccess: (code) => {
+      setGeneratedCode(code);
+      onCodeUpdate(code);
+    }
+  });
 
-  const handleGenerateNameCode = () => {
-    const nameCode = `
-// AI-Generated Name Configuration
-generate_asset_label(ticker) =>
-    // Format: ${nameFormat || "Default format"}
-    label_text = str.replace(ticker, "USDT", "")
-    label_text := str.replace(label_text, "BUSD", "")
-    label_text
-`;
-    setGeneratedCode(nameCode);
-    onCodeUpdate(nameCode);
+  const handleGenerateNameCode = async () => {
+    const prompt = `Create a Pine Script function for generating clean asset labels/names.\n\nRequirements:\n- Format preference: ${nameFormat || 'Clean, readable format'}\n- Remove quote currencies (USDT, BUSD, etc.)\n- Handle various ticker formats\n- Return clean, display-friendly names\n\nGenerate a complete Pine Script function.`;
+
+    await generateCode({
+      prompt,
+      functionType: 'name',
+      userInput: nameFormat,
+      provider: selectedProvider
+    });
   };
 
   return (
@@ -750,6 +787,12 @@ generate_asset_label(ticker) =>
         AI Name Generation
       </h2>
       <div className="space-y-6" data-oid="sk-itgg">
+        <AIProviderSelector
+          selectedProvider={selectedProvider}
+          onProviderChange={setSelectedProvider}
+          disabled={isLoading}
+        />
+        
         <div className="space-y-4" data-oid="fui0l.t">
           <label
             className="block text-cyan-300 font-semibold"
@@ -764,14 +807,30 @@ generate_asset_label(ticker) =>
             value={nameFormat}
             onChange={(e) => setNameFormat(e.target.value)}
             data-oid="gpagm13"
+            disabled={isLoading}
           />
         </div>
+        
+        {error && (
+          <div className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-300">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
+        
         <button
           onClick={handleGenerateNameCode}
           className="futuristic-button px-6 py-3"
           data-oid="d8fdess"
+          disabled={isLoading}
         >
-          🤖 Generate Name Code with AI
+          {isLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400 inline-block mr-2"></div>
+              Generating with {selectedProvider}...
+            </>
+          ) : (
+            '🤖 Generate Name Code with AI'
+          )}
         </button>
         {generatedCode && (
           <div className="space-y-4" data-oid="-a8kya6">
@@ -814,50 +873,36 @@ function AIFunctionCreationStep({
   >("idea");
   const [userInput, setUserInput] = useState<string>("");
   const [generatedCode, setGeneratedCode] = useState<string>("");
+  const [selectedProvider, setSelectedProvider] = useState<AIProvider>('openai');
+  
+  const { generateCode, isLoading, error } = useAI({
+    onSuccess: (code) => {
+      setGeneratedCode(code);
+      onCodeUpdate(code);
+    }
+  });
 
-  const handleGenerateFunction = () => {
-    let functionCode = "";
+  const handleGenerateFunction = async () => {
+    let prompt = "";
 
     switch (functionType) {
       case "idea":
-        functionCode = `
-// AI-Generated Custom Function from Idea
-// Based on: ${userInput}
-custom_scanner_function() =>
-    // Implementation based on your idea
-    rsi_value = ta.rsi(close, 14)
-    volume_spike = volume > ta.sma(volume, 20) * 2
-    price_momentum = ta.change(close, 5) > 0
-    
-    // Combine conditions
-    signal = rsi_value < 30 and volume_spike and price_momentum
-    signal
-`;
+        prompt = `Create a Pine Script custom scanner function based on this idea:\n\n${userInput}\n\nRequirements:\n- Write complete Pine Script v5 code\n- Include proper technical indicators\n- Return boolean conditions for scanning\n- Add helpful comments\n- Make it optimized for scanner performance`;
         break;
       case "existing":
-        functionCode = `
-// AI-Generated Custom Function from Existing Indicator
-// Converted from: ${userInput.substring(0, 50)}...
-custom_scanner_function() =>
-    // Converted indicator logic
-    // [AI would analyze and convert the provided Pine Script]
-    true // Placeholder
-`;
+        prompt = `Convert this existing Pine Script indicator into a scanner function:\n\n${userInput}\n\nRequirements:\n- Extract the core logic\n- Optimize for scanner performance\n- Return boolean signals\n- Maintain the original indicator's purpose`;
         break;
       case "codebase":
-        functionCode = `
-// AI-Generated Custom Function from Codebase
-// Extracted from: ${userInput.substring(0, 50)}...
-custom_scanner_function() =>
-    // Extracted and optimized logic
-    // [AI would extract relevant parts from the codebase]
-    true // Placeholder
-`;
+        prompt = `Extract and create a scanner function from this codebase:\n\n${userInput}\n\nRequirements:\n- Identify the most relevant trading logic\n- Create a focused scanner function\n- Optimize for performance\n- Return clear boolean signals`;
         break;
     }
 
-    setGeneratedCode(functionCode);
-    onCodeUpdate(functionCode);
+    await generateCode({
+      prompt,
+      functionType: 'custom',
+      userInput,
+      provider: selectedProvider
+    });
   };
 
   return (
@@ -870,6 +915,12 @@ custom_scanner_function() =>
         AI Function Creation
       </h2>
       <div className="space-y-6" data-oid="hra3e4o">
+        <AIProviderSelector
+          selectedProvider={selectedProvider}
+          onProviderChange={setSelectedProvider}
+          disabled={isLoading}
+        />
+        
         <div className="space-y-4" data-oid="2u0qxj8">
           <label
             className="block text-cyan-300 font-semibold"
@@ -947,13 +998,26 @@ custom_scanner_function() =>
           />
         </div>
 
+        {error && (
+          <div className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-300">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
+        
         <button
           onClick={handleGenerateFunction}
           className="futuristic-button px-6 py-3"
-          disabled={!userInput.trim()}
+          disabled={!userInput.trim() || isLoading}
           data-oid="j0:77.v"
         >
-          🤖 Generate Custom Function with AI
+          {isLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400 inline-block mr-2"></div>
+              Generating with {selectedProvider}...
+            </>
+          ) : (
+            '🤖 Generate Custom Function with AI'
+          )}
         </button>
 
         {generatedCode && (

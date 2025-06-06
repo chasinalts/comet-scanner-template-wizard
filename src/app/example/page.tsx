@@ -1,9 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
-import { cookies } from 'next/headers'
 
 export default async function ExamplePage() {
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
+  const supabase = await createClient()
 
   // Example: Fetch data from a 'todos' table
   // Replace 'todos' with your actual table name

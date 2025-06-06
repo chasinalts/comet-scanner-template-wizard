@@ -1,6 +1,6 @@
-import { Anuphan } from "next/font/google";
-export const anuphan = Anuphan({
-  subsets: ["cyrillic-ext", "latin", "latin-ext", "thai", "vietnamese"],
+import { Inter } from "next/font/google";
+export const anuphan = Inter({
+  subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700"],
   style: ["normal"],
   variable: "--font-anuphan",
