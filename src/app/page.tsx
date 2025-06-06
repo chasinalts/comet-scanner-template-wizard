@@ -4,6 +4,10 @@ import { useState } from "react";
 import TemplateGallery from "@/components/user/TemplateGallery";
 import TemplateWizard from "@/components/user/TemplateWizard";
 import LiveCodePreview from "@/components/user/LiveCodePreview";
+import InvisibleAdminButton from "@/components/InvisibleAdminButton";
+import ImportExportPanel from "@/components/ImportExportPanel";
+import LivePreviewPanel from "@/components/LivePreviewPanel";
+import CacheClearButton from "@/components/CacheClearButton";
 
 export default function HomePage() {
   const [currentView, setCurrentView] = useState<"gallery" | "wizard">(
@@ -22,7 +26,12 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen futuristic-grid-bg" data-oid="9.bprl4">
+    <div className="min-h-screen futuristic-grid-bg">
+      {/* Invisible Admin Button */}
+      <InvisibleAdminButton />
+      <ImportExportPanel />
+      <LivePreviewPanel />
+      
       {/* Header */}
       <header
         className="bg-slate-900 bg-opacity-50 backdrop-blur-md border-b border-cyan-500/30"
@@ -45,6 +54,9 @@ export default function HomePage() {
               >
                 Owner: chasecambre@gmail.com
               </span>
+              <div className="w-80">
+                <CacheClearButton />
+              </div>
               <button
                 className="futuristic-button px-4 py-2"
                 data-oid="_f7m37_"
