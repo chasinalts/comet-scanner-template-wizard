@@ -14,8 +14,14 @@ interface Size {
 }
 
 export default function InvisibleAdminButton() {
-  const [position, setPosition] = useState<Position>({ x: window.innerWidth - 120, y: 20 });
+  const [position, setPosition] = useState<Position>({ x: 0, y: 20 });
   const [size, setSize] = useState<Size>({ width: 100, height: 40 });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setPosition({ x: window.innerWidth - 120, y: 20 });
+    }
+  }, []);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
