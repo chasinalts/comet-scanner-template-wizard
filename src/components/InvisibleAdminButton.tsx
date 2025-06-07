@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 interface Position {
   x: number;
@@ -14,7 +14,9 @@ interface Size {
 }
 
 export default function InvisibleAdminButton() {
-  const isDashboard = router.pathname.includes("dashboard");
+  const router = useRouter();
+  const pathname = usePathname();
+  const isDashboard = pathname.includes("dashboard");
 
   const [position, setPosition] = useState<Position>({ x: 0, y: 20 });
   const [size, setSize] = useState<Size>({ width: 100, height: 40 });
