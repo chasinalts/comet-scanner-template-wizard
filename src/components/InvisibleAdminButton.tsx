@@ -14,7 +14,7 @@ interface Size {
 }
 
 export default function InvisibleAdminButton() {
-  const router = useRouter();
+  
   const isDashboard = router.pathname.includes('dashboard');
   
   const [position, setPosition] = useState<Position>({ x: 0, y: 20 });
@@ -33,7 +33,7 @@ export default function InvisibleAdminButton() {
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
   
   const buttonRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
+  
   
   const ADMIN_PASSWORD = 'comet2025'; // Should match admin page password
 
