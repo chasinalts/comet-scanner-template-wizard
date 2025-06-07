@@ -48,91 +48,71 @@ export default function AdminPage() {
           <form onSubmit={handleLogin} className="space-y-6" data-oid="n5bzkb6">
             <div data-oid="ewt4gdc">
               <label
-                className="block text-cyan-300 font-semibold mb-2"
-                data-oid="2y25xhq"
+                htmlFor="password"
+                className="block text-sm font-medium text-cyan-300 mb-2"
+                data-oid="ej_ek8j"
               >
                 Password
               </label>
               <input
                 type="password"
+                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="futuristic-input w-full"
+                className="w-full px-4 py-3 bg-slate-800 border border-cyan-500/30 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 placeholder="Enter admin password"
                 required
-                data-oid="blo5l_6"
+                data-oid="cptdn9i"
               />
             </div>
 
             {error && (
-              <p
+              <div
                 className="text-red-400 text-sm text-center"
-                data-oid="leay_op"
+                data-oid="89ct92x"
               >
                 {error}
-              </p>
+              </div>
             )}
 
             <button
               type="submit"
-              className="futuristic-button w-full px-6 py-3"
-              data-oid="5a-rj18"
+              className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              data-oid="h.8th5t"
             >
-              Access Dashboard
+              Access Admin Panel
             </button>
           </form>
-
-          <div className="mt-8 text-center" data-oid="gjx34:z">
-            <a
-              href="/"
-              className="text-cyan-400 hover:text-cyan-300 transition-colors"
-              data-oid="inbs:cx"
-            >
-              ← Back to Home
-            </a>
-          </div>
         </div>
       </main>
     );
   }
 
   return (
-    <div className="min-h-screen futuristic-grid-bg" data-oid="b.tkzvx">
-      {/* Admin Header */}
-      <header
-        className="bg-slate-900 bg-opacity-50 backdrop-blur-md border-b border-cyan-500/30"
-        data-oid="z9mucmq"
-      >
-        <div className="container mx-auto px-6 py-4" data-oid="l7x6xfg">
-          <div className="flex items-center justify-between" data-oid="-f_pc00">
-            <h1
-              className="holographic-title text-2xl"
-              data-text="COMET Scanner Admin Dashboard"
-              data-oid="no7xfl1"
-            >
-              COMET Scanner Admin Dashboard
-            </h1>
-            <div className="flex items-center space-x-4" data-oid="9uhs2g1">
-              <span
-                className="holographic-text"
-                data-text="Admin Mode"
-                data-oid=":.9fpwy"
-              >
-                Admin Mode
-              </span>
-              <button
-                onClick={handleLogout}
-                className="futuristic-button px-4 py-2"
-                data-oid="jzha-3v"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
+    <main className="min-h-screen futuristic-grid-bg" data-oid="xt0ies8">
+      <div className="container mx-auto px-6 py-8" data-oid="p91g-sq">
+        <div
+          className="flex items-center justify-between mb-8"
+          data-oid="t2_c-l0"
+        >
+          <h1
+            className="holographic-title text-4xl font-bold"
+            data-text="Admin Dashboard"
+            data-oid="lq-3ul_"
+          >
+            Admin Dashboard
+          </h1>
+          <button
+            onClick={handleLogout}
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-300"
+            data-oid="j4ajrlw"
+          >
+            Logout
+          </button>
         </div>
-      </header>
 
-      <AdminDashboard data-oid="x1l79bg" />
-    </div>
+        <AdminDashboard data-oid="396njwm" />
+      </div>
+    </main>
   );
 }
