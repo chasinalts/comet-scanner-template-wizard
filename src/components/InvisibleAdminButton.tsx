@@ -14,6 +14,9 @@ interface Size {
 }
 
 export default function InvisibleAdminButton() {
+  const router = useRouter();
+  const isDashboard = router.pathname.includes('dashboard');
+  
   const [position, setPosition] = useState<Position>({ x: 0, y: 20 });
   const [size, setSize] = useState<Size>({ width: 100, height: 40 });
 
@@ -118,12 +121,13 @@ export default function InvisibleAdminButton() {
       {/* Invisible Admin Button */}
       <div
         ref={buttonRef}
-        className="fixed z-50 border-2 border-dashed border-cyan-500/30 bg-transparent hover:bg-cyan-500/10 cursor-move transition-all duration-200 group"
+        className={`fixed z-50 ${isDashboard ? 'border-2 border-dashed border-gray-400 bg-gray-900 bg-opacity-20 cursor-move' : 'border-2 border-dashed border-cyan-500/30 bg-transparent hover:bg-cyan-500/10'} transition-all duration-200 group`}
         style={{
           left: position.x,
           top: position.y,
           width: size.width,
           height: size.height,
+          opacity: isDashboard ? 1 : 0,
         }}
         onMouseDown={handleMouseDown}
         onClick={handleButtonClick}

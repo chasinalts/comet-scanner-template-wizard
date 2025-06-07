@@ -29,7 +29,7 @@ export default function ImportExportPanel({
     { id: 'display-options', title: 'Display Options', status: 'unopened' },
     { id: 'integration-settings', title: 'Integration Settings', status: 'unopened' },
     { id: 'advanced-features', title: 'Advanced Features', status: 'unopened' },
-  ]);
+  ].map(item => ({...item, title: item.title.replace(/\w+/g, match => match.charAt(0).toUpperCase() + match.slice(1))})));
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -148,17 +148,28 @@ export default function ImportExportPanel({
           
           {/* Panel */}
           <div className="fixed left-0 top-0 h-full w-1/3 bg-slate-900 border-r border-cyan-500/50 z-40 overflow-y-auto">
-            <div className="p-6">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-cyan-400">Import/Export</h2>
-                <button
-                  onClick={() => setIsExpanded(false)}
-                  className="text-gray-400 hover:text-white text-xl"
-                >
-                  ×
-                </button>
+            <div className="p-4 space-y-4 flex flex-col flex-grow">
+              <button 
+                onClick={handleImport}
+                className="w-full bg-[#00ff00] hover:bg-[#00cc00] text-black py-2 px-4 rounded font-bold mb-4"
+              >
+                Import
+              </button>
+              
+              <div className="flex-grow overflow-y-auto">
+                {checklist.map((item) => (
+                  <div key={item.id} className="text-center py-2">
+                    <span className="text-sm">{item.title}</span>
+                  </div>
+                ))}
               </div>
+              
+              <button 
+                onClick={handleExport}
+                className="w-full bg-[#ff0000] hover:bg-[#cc0000] text-white py-2 px-4 rounded font-bold"
+              >
+                Export
+              </button>
 
               {/* Checklist Section */}
               <div className="mb-8">

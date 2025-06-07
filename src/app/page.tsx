@@ -40,9 +40,10 @@ export default function HomePage() {
         <div className="container mx-auto px-6 py-4" data-oid="zb:5i3m">
           <div className="flex items-center justify-between" data-oid="tzcr2d7">
             <h1
-              className="holographic-title text-3xl"
+              className="holographic-title text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 font-mono tracking-wider"
               data-text="COMET SCANNER TEMPLATE WIZARD"
               data-oid="438wv0r"
+              style={{ textShadow: '0 0 10px rgba(34, 211, 238, 0.5)' }}
             >
               COMET SCANNER TEMPLATE WIZARD
             </h1>
