@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { LivePreviewState } from '@/types/supabaseDb';
+import { useState, useEffect } from "react";
+import { LivePreviewState } from "@/types/supabaseDb";
 
 interface LivePreviewPanelProps {
   masterCode?: string;
@@ -11,18 +11,18 @@ interface LivePreviewPanelProps {
 }
 
 export default function LivePreviewPanel({
-  masterCode = '',
+  masterCode = "",
   userAnswers = {},
   completedSections = [],
-  onCodeUpdate = () => {}
+  onCodeUpdate = () => {},
 }: LivePreviewPanelProps = {}) {
   const [isVisible, setIsVisible] = useState(true);
-  const [currentCode, setCurrentCode] = useState('');
+  const [currentCode, setCurrentCode] = useState("");
   const [previewState, setPreviewState] = useState<LivePreviewState>({
-    masterCode: '',
+    masterCode: "",
     completedSections: [],
     userAnswers: {},
-    currentCode: ''
+    currentCode: "",
   });
 
   // Base COMET Scanner code that every template starts with
@@ -122,42 +122,45 @@ if (typeof module !== 'undefined' && module.exports) {
   // Generate code based on user responses and master code
   const generateCode = () => {
     let code = masterCode || baseCode;
-    
+
     // Replace placeholders based on completed sections and user answers
-    completedSections.forEach(sectionId => {
+    completedSections.forEach((sectionId) => {
       const userAnswer = userAnswers[sectionId];
       if (!userAnswer) return;
-      
-      let sectionCode = '';
-      
+
+      let sectionCode = "";
+
       switch (sectionId) {
-        case 'image-management':
+        case "image-management":
           sectionCode = generateImageManagementCode(userAnswer);
-          code = code.replace('// {{IMAGE_MANAGEMENT_SECTION}}', sectionCode);
+          code = code.replace("// {{IMAGE_MANAGEMENT_SECTION}}", sectionCode);
           break;
-          
-        case 'scanner-variations':
+
+        case "scanner-variations":
           sectionCode = generateScannerVariationsCode(userAnswer);
-          code = code.replace('// {{SCANNER_VARIATIONS_SECTION}}', sectionCode);
+          code = code.replace("// {{SCANNER_VARIATIONS_SECTION}}", sectionCode);
           break;
-          
-        case 'display-options':
+
+        case "display-options":
           sectionCode = generateDisplayOptionsCode(userAnswer);
-          code = code.replace('// {{DISPLAY_OPTIONS_SECTION}}', sectionCode);
+          code = code.replace("// {{DISPLAY_OPTIONS_SECTION}}", sectionCode);
           break;
-          
-        case 'integration-settings':
+
+        case "integration-settings":
           sectionCode = generateIntegrationSettingsCode(userAnswer);
-          code = code.replace('// {{INTEGRATION_SETTINGS_SECTION}}', sectionCode);
+          code = code.replace(
+            "// {{INTEGRATION_SETTINGS_SECTION}}",
+            sectionCode,
+          );
           break;
-          
-        case 'advanced-features':
+
+        case "advanced-features":
           sectionCode = generateAdvancedFeaturesCode(userAnswer);
-          code = code.replace('// {{ADVANCED_FEATURES_SECTION}}', sectionCode);
+          code = code.replace("// {{ADVANCED_FEATURES_SECTION}}", sectionCode);
           break;
       }
     });
-    
+
     return code;
   };
 
@@ -168,9 +171,9 @@ if (typeof module !== 'undefined' && module.exports) {
   setupImageBanner() {
     this.bannerConfig = {
       enabled: ${answer.enableBanner || false},
-      position: '${answer.position || 'top'}',
-      imageUrl: '${answer.imageUrl || ''}',
-      altText: '${answer.altText || 'COMET Scanner Banner'}'
+      position: '${answer.position || "top"}',
+      imageUrl: '${answer.imageUrl || ""}',
+      altText: '${answer.altText || "COMET Scanner Banner"}'
     };
     
     if (this.bannerConfig.enabled) {
@@ -190,7 +193,7 @@ if (typeof module !== 'undefined' && module.exports) {
     return `
   // Scanner Variations Configuration
   configureScannerVariations() {
-    this.scannerType = '${answer.scannerType || 'standard'}';
+    this.scannerType = '${answer.scannerType || "standard"}';
     this.sensitivity = ${answer.sensitivity || 0.5};
     this.updateInterval = ${answer.updateInterval || 1000};
     
@@ -216,10 +219,10 @@ if (typeof module !== 'undefined' && module.exports) {
   // Display Options Configuration
   setupDisplayOptions() {
     this.displayConfig = {
-      theme: '${answer.theme || 'dark'}',
+      theme: '${answer.theme || "dark"}',
       showGrid: ${answer.showGrid || false},
       showLegend: ${answer.showLegend || true},
-      chartType: '${answer.chartType || 'line'}'
+      chartType: '${answer.chartType || "line"}'
     };
     
     this.applyDisplaySettings();
@@ -239,10 +242,10 @@ if (typeof module !== 'undefined' && module.exports) {
   // Integration Settings Configuration
   setupIntegrations() {
     this.integrations = {
-      apiEndpoint: '${answer.apiEndpoint || ''}',
-      webhookUrl: '${answer.webhookUrl || ''}',
+      apiEndpoint: '${answer.apiEndpoint || ""}',
+      webhookUrl: '${answer.webhookUrl || ""}',
       enableRealtime: ${answer.enableRealtime || false},
-      dataFormat: '${answer.dataFormat || 'json'}'
+      dataFormat: '${answer.dataFormat || "json"}'
     };
     
     if (this.integrations.enableRealtime) {
@@ -264,7 +267,7 @@ if (typeof module !== 'undefined' && module.exports) {
       enableAI: ${answer.enableAI || false},
       enablePredictions: ${answer.enablePredictions || false},
       enableAlerts: ${answer.enableAlerts || false},
-      customAlgorithm: '${answer.customAlgorithm || 'standard'}'
+      customAlgorithm: '${answer.customAlgorithm || "standard"}'
     };
     
     if (this.advancedConfig.enableAI) {
@@ -283,12 +286,12 @@ if (typeof module !== 'undefined' && module.exports) {
     const newCode = generateCode();
     setCurrentCode(newCode);
     onCodeUpdate(newCode);
-    
+
     setPreviewState({
       masterCode: masterCode || baseCode,
       completedSections,
       userAnswers,
-      currentCode: newCode
+      currentCode: newCode,
     });
   }, [masterCode, userAnswers, completedSections]);
 
@@ -298,9 +301,9 @@ if (typeof module !== 'undefined' && module.exports) {
   };
 
   const downloadCode = () => {
-    const blob = new Blob([currentCode], { type: 'text/javascript' });
+    const blob = new Blob([currentCode], { type: "text/javascript" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `comet-scanner-${Date.now()}.js`;
     document.body.appendChild(a);
@@ -311,11 +314,15 @@ if (typeof module !== 'undefined' && module.exports) {
 
   if (!isVisible) {
     return (
-      <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-40">
+      <div
+        className="fixed right-0 top-1/2 transform -translate-y-1/2 z-40"
+        data-oid="su9_844"
+      >
         <button
           onClick={() => setIsVisible(true)}
           className="bg-slate-800 border border-cyan-500/50 text-cyan-400 px-2 py-4 rounded-l-lg hover:bg-slate-700 transition-all duration-200 writing-mode-vertical"
-          style={{ writingMode: 'vertical-rl' }}
+          style={{ writingMode: "vertical-rl" }}
+          data-oid="r7_zz81"
         >
           Live Preview
         </button>
@@ -324,52 +331,80 @@ if (typeof module !== 'undefined' && module.exports) {
   }
 
   return (
-    <div className="fixed right-0 top-0 h-full w-1/3 bg-slate-900 border-l border-cyan-500/50 z-40 flex flex-col">
+    <div
+      className="fixed right-0 top-0 h-full w-1/3 bg-slate-900 border-l border-cyan-500/50 z-40 flex flex-col"
+      data-oid="9p0oufa"
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-cyan-500/30">
-        <h2 className="text-lg font-bold text-cyan-400">Live Preview</h2>
+      <div
+        className="flex items-center justify-between p-4 border-b border-cyan-500/30"
+        data-oid="a6q94u5"
+      >
+        <h2 className="text-lg font-bold text-cyan-400" data-oid="m6xh61x">
+          Live Preview
+        </h2>
         <button
           onClick={() => setIsVisible(false)}
           className="text-gray-400 hover:text-white text-xl"
+          data-oid="hau4c-c"
         >
           ×
         </button>
       </div>
 
       {/* Status */}
-      <div className="p-4 border-b border-slate-700">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-300">Sections Completed:</span>
-          <span className="text-cyan-400 font-medium">{completedSections.length}/5</span>
+      <div className="p-4 border-b border-slate-700" data-oid="1qb4qv3">
+        <div
+          className="flex items-center justify-between text-sm"
+          data-oid="e_ug-x4"
+        >
+          <span className="text-gray-300" data-oid="4y-vsso">
+            Sections Completed:
+          </span>
+          <span className="text-cyan-400 font-medium" data-oid="0.wgwf-">
+            {completedSections.length}/5
+          </span>
         </div>
-        <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
-          <div 
+        <div
+          className="w-full bg-slate-700 rounded-full h-2 mt-2"
+          data-oid="x4txhly"
+        >
+          <div
             className="bg-cyan-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${(completedSections.length / 5) * 100}%` }}
+            data-oid="qqu8bh8"
           />
         </div>
       </div>
 
       {/* Actions */}
-      <div className="p-4 border-b border-slate-700 flex space-x-2">
+      <div
+        className="p-4 border-b border-slate-700 flex space-x-2"
+        data-oid="hgh:a3r"
+      >
         <button
           onClick={copyToClipboard}
           className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded transition-colors"
+          data-oid="7fts-z-"
         >
           📋 Copy
         </button>
         <button
           onClick={downloadCode}
           className="flex-1 bg-green-500 hover:bg-green-600 text-white text-sm py-2 px-3 rounded transition-colors"
+          data-oid="abji_20"
         >
           💾 Download
         </button>
       </div>
 
       {/* Code Preview */}
-      <div className="flex-1 overflow-hidden">
-        <pre className="h-full overflow-auto p-4 text-sm text-gray-300 bg-slate-800 font-mono">
-          <code>{currentCode}</code>
+      <div className="flex-1 overflow-hidden" data-oid="nk977zm">
+        <pre
+          className="h-full overflow-auto p-4 text-sm text-gray-300 bg-slate-800 font-mono"
+          data-oid="iud4dkp"
+        >
+          <code data-oid="dtj55jz">{currentCode}</code>
         </pre>
       </div>
     </div>
