@@ -1,4 +1,4 @@
-# System Patterns - COMET Scanner Template Wizard
+CSTW SYSTEM PATTERNS
 
 ## High-Level Architecture
 
@@ -26,27 +26,27 @@ COMET Scanner Template Wizard
 ```
 
 #### Section Relationship
-- **Dashboard**: Where sections are created, edited, and configured
-- **Template Builder**: Where users interact with sections to assign specific code based on their responses
-- **Data Flow**: Dashboard creates → Template Builder implements → User assigns ### Import/Export Section (Template Builder)
-- **Collapsible Tab Interface**:
+- Dashboard: Where sections are created, edited, and configured
+- Template Builder: Where users interact with sections to assign specific code based on their responses
+- Data Flow: Dashboard creates → Template Builder implements → User assigns ### Import/Export Section (Template Builder)
+- Collapsible Tab Interface:
   - Small tab on left side with "Import/Export" text
   - Expands to 1/3 of page width when selected
   - Collapses when clicking outside the expanded area
-- **Progress Tracking Checklist**:
+- Progress Tracking Checklist:
   - Completed items (checked boxes)
   - Quit items (marked as abandoned)
   - Paused items (temporarily stopped)
   - Never opened items (not yet started)
-- **Export Functionality**:
+- Export Functionality:
   - Captures all step outputs and user answers
   - Includes complete COMET Scanner template state
   - Downloads file to user's device
-- **Import Functionality**:
+- Import Functionality:
   - Accepts exported files from other users
   - Clones exact environment state and template
   - Restores progress and configuration
-- **Live Preview Functionality:** A pull-out tab on the right side of the Template Builder page labeled "Live Preview" displays the COMET Scanner Template Live Preview. This tab pulls out and remains visible until the "X" button is pressed to hide it. The preview starts with the base "Master Code" (template code that the admin inputs in the Dashboard) and updates live as users complete sections. Each completed section adds code to the template in the correct location, determined by the Master Code template which contains every possible line of code in proper order relative to all other potential code additions. This ensures correct code placement even if users complete sections out of order.
+- Live Preview Functionality:** A pull-out tab on the right side of the Template Builder page labeled "Live Preview" displays the COMET Scanner Template Live Preview. This tab pulls out and remains visible until the "X" button is pressed to hide it. The preview starts with the base "Master Code" (template code that the admin inputs in the Dashboard) and updates live as users complete sections. Each completed section adds code to the template in the correct location, determined by the Master Code template which contains every possible line of code in proper order relative to all other potential code additions. This ensures correct code placement even if users complete sections out of order.
 
 ### Core Technical Patterns
 
@@ -77,9 +77,9 @@ src/
 ```
 
 ### Section Management Flow
-- **Dashboard Components**: Create and edit sections with configurable options
-- **Template Builder Components**: Display sections for user interaction and code assignment
-- **Shared Components**: Common UI elements used across both interfaces
+- Dashboard Components: Create and edit sections with configurable options
+- Template Builder Components: Display sections for user interaction and code assignment
+- Shared Components: Common UI elements used across both interfaces
 
 #### 2. Data Flow Architecture
 ```
@@ -104,10 +104,10 @@ Dashboard (Create/Edit) → Database (Store) → Template Builder (Display/Inter
 ```
 
 #### 3. State Management Pattern
-- **Local State**: React useState for component-specific state
-- **Shared State**: Context providers for cross-component data
-- **Server State**: Supabase real-time subscriptions
-- **AI State**: Custom hooks (useAI) for generation status
+- Local State: React useState for component-specific state
+- Shared State: Context providers for cross-component data
+- Server State: Supabase real-time subscriptions
+- AI State: Custom hooks (useAI) for generation status
 
 #### 4. Authentication Pattern
 ```
@@ -121,12 +121,12 @@ Protected Routes:
 ```
 
 ### Password Protection System
-- **No Row Level Security**: All database operations are password-protected at application level
-- **Invisible Password Button**: 
+- No Row Level Security: All database operations are password-protected at application level
+- Invisible Password Button: 
   - Initially positioned at top-right corner of screen
   - Owner can reposition through dashboard at any time
   - Triggers password input box when clicked
-- **Resizable Password Input Box**:
+- Resizable Password Input Box:
   - Adjustable on both vertical and horizontal axis
   - Recognizable by dotted line perimeter
   - First published entry becomes the password
@@ -141,9 +141,9 @@ Admin Access: Invisible Button → Password Input → Dashboard → Management F
 ## Core Technical Decisions
 
 ### 1. Separation of Concerns
-- **User Interface**: Focus on template building and code generation
-- **Admin Interface**: Focus on content management and configuration
-- **Shared Services**: AI generation, database operations, file storage
+- User Interface: Focus on template building and code generation
+- Admin Interface: Focus on content management and configuration
+- Shared Services: AI generation, database operations, file storage
 
 ### 2. Database Design Pattern
 ```sql
@@ -286,27 +286,27 @@ interface CodeTemplate {
 ## Key Technical Decisions
 
 ### 1. Framework Choice
-- **Next.js 15**: App router for clean separation of user/admin routes
-- **React 18**: Component-based architecture with hooks
-- **TypeScript**: Type safety for complex data structures
+- Next.js 15: App router for clean separation of user/admin routes
+- React 18: Component-based architecture with hooks
+- TypeScript: Type safety for complex data structures
 
 ### 2. Styling Strategy
-- **Tailwind CSS**: Utility-first styling
-- **Custom CSS**: Holographic/futuristic theme
-- **Responsive Design**: Mobile-first approach
+- Tailwind CSS: Utility-first styling
+- Custom CSS: Holographic/futuristic theme
+- Responsive Design: Mobile-first approach
 
 ### 3. Database Strategy
-- **Supabase**: PostgreSQL with real-time capabilities
-- **Row Level Security**: Admin vs user data access
-- **Storage Integration**: File upload and management
+- Supabase: PostgreSQL with real-time capabilities
+- Row Level Security: Admin vs user data access
+- Storage Integration: File upload and management
 
 ### 4. AI Integration Strategy
-- **Multi-provider Support**: Flexibility and redundancy
-- **Prompt Engineering**: Specialized prompts per function type
-- **Error Handling**: Graceful fallbacks between providers
+- Multi-provider Support: Flexibility and redundancy
+- Prompt Engineering: Specialized prompts per function type
+- Error Handling: Graceful fallbacks between providers
 
 ### 5. Performance Considerations
-- **Code Splitting**: Separate bundles for user/admin
-- **Lazy Loading**: Components loaded on demand
-- **Caching**: Template and code snippet caching
-- **Optimistic Updates**: Immediate UI feedback
+- Code Splitting: Separate bundles for user/admin
+- Lazy Loading: Components loaded on demand
+- Caching: Template and code snippet caching
+- Optimistic Updates: Immediate UI feedback
