@@ -34,9 +34,9 @@ export default function LiveCodePreview({
       return processed;
     };
 
-    setProcessedHtml(processTemplate(template.html || ""));
-    setProcessedCss(processTemplate(template.css || ""));
-    setProcessedJs(processTemplate(template.javascript || ""));
+    setProcessedHtml(processTemplate(template.master_code || ""));
+    setProcessedCss(""); // CSS not stored separately in current schema
+    setProcessedJs(""); // JavaScript not stored separately in current schema
   }, [template, userAnswers]);
 
   if (!template) {
