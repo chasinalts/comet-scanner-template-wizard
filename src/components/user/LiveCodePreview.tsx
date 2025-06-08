@@ -41,28 +41,28 @@ export default function LiveCodePreview({ code }: LiveCodePreviewProps) {
       className={`fixed right-4 top-20 transition-all duration-300 z-50 ${
         isMinimized ? "w-12" : "w-96"
       }`}
-      data-oid="8vmr0vx"
+      data-oid="cnt:gy:"
     >
       <div
         className="futuristic-container bg-slate-900/95 backdrop-blur-md border border-cyan-500/50"
-        data-oid="5p77rtk"
+        data-oid="c-p1ws_"
       >
         {/* Header */}
         <div
           className="flex items-center justify-between p-4 border-b border-cyan-500/30"
-          data-oid="z06ynfo"
+          data-oid="5f2h2pc"
         >
           <h3
             className={`holographic-text font-semibold ${isMinimized ? "hidden" : "block"}`}
             data-text="Live Code Preview"
-            data-oid="ed5d1qt"
+            data-oid="qdd7wak"
           >
             Live Code Preview
           </h3>
           <button
             onClick={() => setIsMinimized(!isMinimized)}
             className="text-cyan-400 hover:text-cyan-300 transition-colors"
-            data-oid="t3es_.9"
+            data-oid=":fco_kk"
           >
             {isMinimized ? "📖" : "📕"}
           </button>
@@ -71,22 +71,22 @@ export default function LiveCodePreview({ code }: LiveCodePreviewProps) {
         {!isMinimized && (
           <>
             {/* Code Display */}
-            <div className="p-4" data-oid="ike_uu:">
+            <div className="p-4" data-oid="a65-8k1">
               <div
                 className="bg-slate-950 rounded border border-slate-700 max-h-96 overflow-y-auto"
-                data-oid="0mn7m2k"
+                data-oid="d9-595j"
               >
-                <div className="p-3" data-oid="7ixzl53">
+                <div className="p-3" data-oid="cd_tdvm">
                   <div
                     className="text-xs text-gray-400 mb-2"
-                    data-oid="ievq8wy"
+                    data-oid="n6aahzw"
                   >
                     // No code generated yet. Answer questions to see your
                     template build in real-time!
                   </div>
                   <pre
                     className="text-green-400 text-xs font-mono whitespace-pre-wrap"
-                    data-oid="zmbj4ff"
+                    data-oid="s:ujy8d"
                   >
                     {code ||
                       "// Your Pine Script code will appear here as you progress through the wizard..."}
@@ -98,14 +98,14 @@ export default function LiveCodePreview({ code }: LiveCodePreviewProps) {
             {/* Action Buttons */}
             <div
               className="p-4 border-t border-cyan-500/30 space-y-3"
-              data-oid="k4r9uw_"
+              data-oid="fo3jtad"
             >
-              <div className="grid grid-cols-2 gap-2" data-oid="6xu_85q">
+              <div className="grid grid-cols-2 gap-2" data-oid="dt:89cy">
                 <button
                   onClick={handleSaveTemplate}
                   className="futuristic-button px-3 py-2 text-sm"
                   disabled={!code.trim()}
-                  data-oid="n_vsk6h"
+                  data-oid="9uivdd."
                 >
                   💾 Save
                 </button>
@@ -113,7 +113,7 @@ export default function LiveCodePreview({ code }: LiveCodePreviewProps) {
                   onClick={handleExportCode}
                   className="futuristic-button px-3 py-2 text-sm"
                   disabled={!code.trim()}
-                  data-oid="vwr5vz4"
+                  data-oid="x.j.x8r"
                 >
                   📥 Export
                 </button>
@@ -122,21 +122,21 @@ export default function LiveCodePreview({ code }: LiveCodePreviewProps) {
                 onClick={handleCopyCode}
                 className="futuristic-button w-full px-3 py-2 text-sm"
                 disabled={!code.trim()}
-                data-oid="yk4l1dh"
+                data-oid="lbaxine"
               >
                 📋 Copy to Clipboard
               </button>
             </div>
 
             {/* Code Statistics */}
-            <div className="p-4 border-t border-cyan-500/30" data-oid="sg-myc.">
+            <div className="p-4 border-t border-cyan-500/30" data-oid="8qgsjn.">
               <div
                 className="text-xs text-gray-400 space-y-1"
-                data-oid="skhmyt7"
+                data-oid="84:ogfl"
               >
-                <div data-oid="lhpr7lu">Lines: {code.split("\n").length}</div>
-                <div data-oid="kuayire">Characters: {code.length}</div>
-                <div data-oid="4ou:bt.">
+                <div data-oid="at1joqt">Lines: {code.split("\n").length}</div>
+                <div data-oid="sjx.9w6">Characters: {code.length}</div>
+                <div data-oid=":5gv-31">
                   Status:{" "}
                   {code.trim() ? "Ready for TradingView" : "In Progress"}
                 </div>
@@ -147,20 +147,20 @@ export default function LiveCodePreview({ code }: LiveCodePreviewProps) {
             {savedTemplates.length > 0 && (
               <div
                 className="p-4 border-t border-cyan-500/30"
-                data-oid="maz7m0f"
+                data-oid="1:qwsvo"
               >
                 <h4
                   className="text-sm font-semibold text-cyan-300 mb-2"
-                  data-oid="_jz5i9k"
+                  data-oid="57.ajoz"
                 >
                   Saved Templates
                 </h4>
-                <div className="space-y-1" data-oid="mnqcc1l">
+                <div className="space-y-1" data-oid="qumwor6">
                   {savedTemplates.map((template, index) => (
                     <div
                       key={index}
                       className="text-xs text-gray-400 bg-slate-800/50 px-2 py-1 rounded"
-                      data-oid="iandl7u"
+                      data-oid=":s2ziow"
                     >
                       {template}
                     </div>

@@ -78,32 +78,32 @@ export default function ImportExportPanel({
   return (
     <div
       className="bg-slate-800 border border-gray-600 rounded-lg p-6"
-      data-oid="f65tc35"
+      data-oid="9r0ct6m"
     >
-      <h3 className="text-lg font-semibold text-white mb-4" data-oid="_a9wsvq">
+      <h3 className="text-lg font-semibold text-white mb-4" data-oid="lb2xff6">
         Import/Export Templates
       </h3>
 
-      <div className="space-y-4" data-oid="z25xcl8">
+      <div className="space-y-4" data-oid="-yvbzg3">
         {/* Export */}
-        <div data-oid="zebsw80">
+        <div data-oid="cibcytz">
           <button
             onClick={handleExport}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
             disabled={templates.length === 0}
-            data-oid=".:owa2:"
+            data-oid="_c7j3c7"
           >
             Export Templates ({templates.length})
           </button>
-          <p className="text-sm text-gray-400 mt-1" data-oid="8_441w3">
+          <p className="text-sm text-gray-400 mt-1" data-oid="-p4jxiy">
             Download all templates as JSON file
           </p>
         </div>
 
         {/* Import */}
-        <div data-oid="k.fj0qe">
-          <label className="block" data-oid="d0cky9p">
-            <span className="sr-only" data-oid="mc9ezbx">
+        <div data-oid="ccxnq9-">
+          <label className="block" data-oid="hppjn.q">
+            <span className="sr-only" data-oid="5urw9-o">
               Import templates
             </span>
             <input
@@ -120,10 +120,10 @@ export default function ImportExportPanel({
                 file:disabled:bg-gray-600
                 file:disabled:cursor-not-allowed
                 disabled:cursor-not-allowed"
-              data-oid="diwy6rh"
+              data-oid="9xm98a6"
             />
           </label>
-          <p className="text-sm text-gray-400 mt-1" data-oid="mvujdnb">
+          <p className="text-sm text-gray-400 mt-1" data-oid="v:ojrxv">
             {isImporting
               ? "Importing..."
               : "Select JSON file to import templates"}
@@ -134,9 +134,9 @@ export default function ImportExportPanel({
         {importError && (
           <div
             className="bg-red-900/50 border border-red-500 rounded-md p-3"
-            data-oid="kjskuzc"
+            data-oid="gyvqba9"
           >
-            <p className="text-red-200 text-sm" data-oid="xtyk9v-">
+            <p className="text-red-200 text-sm" data-oid="vmaz8kd">
               {importError}
             </p>
           </div>

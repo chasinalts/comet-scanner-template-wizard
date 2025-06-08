@@ -146,26 +146,26 @@ export default function SectionManager({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8" data-oid=".:tduyd">
+      <div className="flex items-center justify-center p-8" data-oid="2xzp-c0">
         <div
           className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"
-          data-oid="t94rc-o"
+          data-oid="aqxq9n4"
         ></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6" data-oid="lwca27j">
+    <div className="space-y-6" data-oid="kxsfwa6">
       {/* Header */}
-      <div className="flex justify-between items-center" data-oid="mk4ze7c">
-        <h2 className="text-2xl font-bold text-white" data-oid="y7vq.nq">
+      <div className="flex justify-between items-center" data-oid="mvndvw9">
+        <h2 className="text-2xl font-bold text-white" data-oid="e4se.8d">
           Section Manager
         </h2>
         <button
           onClick={() => setShowCreateForm(true)}
           className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-          data-oid="828h59-"
+          data-oid="q8hct:t"
         >
           Create Section
         </button>
@@ -175,7 +175,7 @@ export default function SectionManager({
       {error && (
         <div
           className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg"
-          data-oid="rr84kwo"
+          data-oid="-447ys6"
         >
           {error}
         </div>
@@ -185,11 +185,11 @@ export default function SectionManager({
       {showCreateForm && (
         <div
           className="bg-slate-800 border border-cyan-500/30 rounded-lg p-6"
-          data-oid="wr2w.sk"
+          data-oid="ze5qk:7"
         >
           <h3
             className="text-xl font-semibold text-white mb-4"
-            data-oid="bzz05ur"
+            data-oid="c12cocz"
           >
             {editingSection ? "Edit Section" : "Create New Section"}
           </h3>
@@ -197,12 +197,12 @@ export default function SectionManager({
           <form
             onSubmit={handleSubmit}
             className="space-y-4"
-            data-oid=":hg265i"
+            data-oid="9m.bpa0"
           >
-            <div data-oid="ga7h4wr">
+            <div data-oid="t7yse2:">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="oq-h.km"
+                data-oid="2-o17-:"
               >
                 Title
               </label>
@@ -214,14 +214,14 @@ export default function SectionManager({
                 }
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                 required
-                data-oid="y-e7wcb"
+                data-oid="-iuk2v5"
               />
             </div>
 
-            <div data-oid="66z_2h9">
+            <div data-oid="w0jbpg_">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="3-yqukk"
+                data-oid="cgeellm"
               >
                 Description
               </label>
@@ -233,14 +233,14 @@ export default function SectionManager({
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                 rows={3}
                 required
-                data-oid="b0h-h7i"
+                data-oid="-eqtvk6"
               />
             </div>
 
-            <div data-oid=".n4iwan">
+            <div data-oid="n4gwnye">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="li2_c.g"
+                data-oid="m0tsi6m"
               >
                 Question Type
               </label>
@@ -253,28 +253,28 @@ export default function SectionManager({
                   })
                 }
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
-                data-oid="leolbhl"
+                data-oid="etotznp"
               >
-                <option value="multiple_choice" data-oid=".wcen8a">
+                <option value="multiple_choice" data-oid="axl2r:5">
                   Multiple Choice
                 </option>
-                <option value="text_input" data-oid="qp_bdts">
+                <option value="text_input" data-oid="adu81z.">
                   Text Input
                 </option>
-                <option value="boolean" data-oid="7mbl16-">
+                <option value="boolean" data-oid="jzxempy">
                   Boolean
                 </option>
-                <option value="slider" data-oid="q7jpa06">
+                <option value="slider" data-oid="obxutoh">
                   Slider
                 </option>
               </select>
             </div>
 
             {formData.question_type === "multiple_choice" && (
-              <div data-oid="u6:nc9z">
+              <div data-oid="qa:rcoi">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="it-cn6r"
+                  data-oid="ey2u9bo"
                 >
                   Options (one per line)
                 </label>
@@ -284,15 +284,15 @@ export default function SectionManager({
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                   rows={4}
                   placeholder="Option 1\nOption 2\nOption 3"
-                  data-oid="5c9w0jv"
+                  data-oid="egqgrs0"
                 />
               </div>
             )}
 
-            <div data-oid="xxa.70h">
+            <div data-oid="th4kmpo">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="zyblmd8"
+                data-oid="o0fx2:d"
               >
                 Code Snippets (JSON format)
               </label>
@@ -302,14 +302,14 @@ export default function SectionManager({
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500 font-mono text-sm"
                 rows={6}
                 placeholder='{\n  "option1": "code for option 1",\n  "option2": "code for option 2"\n}'
-                data-oid="vnud:.t"
+                data-oid="0pa9nlj"
               />
             </div>
 
-            <div data-oid="uhp-mge">
+            <div data-oid="-z38y_3">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="qqd15.j"
+                data-oid="qmcb0u4"
               >
                 Order Index
               </label>
@@ -324,11 +324,11 @@ export default function SectionManager({
                 }
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                 min="0"
-                data-oid=":pq8jqc"
+                data-oid="jf.4fzv"
               />
             </div>
 
-            <div className="flex items-center" data-oid="w_lb7dh">
+            <div className="flex items-center" data-oid="9_8fcgq">
               <input
                 type="checkbox"
                 id="is_active"
@@ -337,23 +337,23 @@ export default function SectionManager({
                   setFormData({ ...formData, is_active: e.target.checked })
                 }
                 className="mr-2"
-                data-oid="7tjoxae"
+                data-oid="ty:iatz"
               />
 
               <label
                 htmlFor="is_active"
                 className="text-cyan-300 text-sm"
-                data-oid="-r:wc1k"
+                data-oid="wd4f:un"
               >
                 Active
               </label>
             </div>
 
-            <div className="flex space-x-4" data-oid="orgro__">
+            <div className="flex space-x-4" data-oid="1_mo59p">
               <button
                 type="submit"
                 className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg transition-colors"
-                data-oid="26ifhv-"
+                data-oid="if7gdxe"
               >
                 {editingSection ? "Update" : "Create"} Section
               </button>
@@ -361,7 +361,7 @@ export default function SectionManager({
                 type="button"
                 onClick={resetForm}
                 className="bg-slate-600 hover:bg-slate-700 text-white px-6 py-2 rounded-lg transition-colors"
-                data-oid="4jfs416"
+                data-oid=":e7hzve"
               >
                 Cancel
               </button>
@@ -371,9 +371,9 @@ export default function SectionManager({
       )}
 
       {/* Sections List */}
-      <div className="space-y-4" data-oid="oqkv.u4">
+      <div className="space-y-4" data-oid="339fj9n">
         {sections.length === 0 ? (
-          <div className="text-center text-slate-400 py-8" data-oid="68q.ap7">
+          <div className="text-center text-slate-400 py-8" data-oid="y5zv6nj">
             No sections found. Create your first section to get started.
           </div>
         ) : (
@@ -381,65 +381,65 @@ export default function SectionManager({
             <div
               key={section.id}
               className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:border-cyan-500/50 transition-colors"
-              data-oid="4m5k:xr"
+              data-oid="a33be98"
             >
               <div
                 className="flex justify-between items-start"
-                data-oid="kp04nfu"
+                data-oid="r__vn5v"
               >
-                <div className="flex-1" data-oid="12:2dz.">
+                <div className="flex-1" data-oid="6a_br1l">
                   <div
                     className="flex items-center space-x-2 mb-2"
-                    data-oid="mv0zmwd"
+                    data-oid="2dw_utb"
                   >
                     <h3
                       className="text-lg font-semibold text-white"
-                      data-oid="xncwin_"
+                      data-oid="heedcr5"
                     >
                       {section.title}
                     </h3>
                     <span
                       className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded"
-                      data-oid="u9uo49p"
+                      data-oid="yexol5f"
                     >
                       {section.question_type}
                     </span>
                     <span
                       className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded"
-                      data-oid="jrzcfhq"
+                      data-oid="a2-ll_d"
                     >
                       Order: {section.order_index}
                     </span>
                     {!section.is_active && (
                       <span
                         className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded"
-                        data-oid="o6_xhef"
+                        data-oid="hpiosnl"
                       >
                         Inactive
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-300 mb-2" data-oid="r.rwzqw">
+                  <p className="text-slate-300 mb-2" data-oid="51lrtxz">
                     {section.description}
                   </p>
                   {section.options && section.options.length > 0 && (
-                    <div className="text-sm text-slate-400" data-oid="f885rv.">
+                    <div className="text-sm text-slate-400" data-oid="84igyz2">
                       Options: {section.options.join(", ")}
                     </div>
                   )}
                 </div>
-                <div className="flex space-x-2" data-oid="569kknk">
+                <div className="flex space-x-2" data-oid="2ug.7q8">
                   <button
                     onClick={() => handleEdit(section)}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="zi65ftm"
+                    data-oid="q5cie5n"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(section.id)}
                     className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="quger_3"
+                    data-oid="176_p7r"
                   >
                     Delete
                   </button>

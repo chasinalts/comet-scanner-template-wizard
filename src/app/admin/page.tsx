@@ -31,26 +31,26 @@ export default function AdminPage() {
     return (
       <main
         className="flex flex-col items-center justify-center min-h-screen p-24 futuristic-grid-bg"
-        data-oid="_k_3s-c"
+        data-oid="-7forqa"
       >
         <div
           className="p-8 futuristic-container w-auto max-w-md"
-          data-oid="n9wrjl3"
+          data-oid="dg3ji44"
         >
           <h1
             className="mb-6 holographic-title text-center"
             data-text="Admin Access"
-            data-oid="smaxld-"
+            data-oid="ejqqdwl"
           >
             Admin Access
           </h1>
 
-          <form onSubmit={handleLogin} className="space-y-6" data-oid="-sjnda6">
-            <div data-oid="wiqeqee">
+          <form onSubmit={handleLogin} className="space-y-6" data-oid="yrrylxs">
+            <div data-oid="b5xxg.g">
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-cyan-300 mb-2"
-                data-oid="p6pbe54"
+                data-oid="0432o69"
               >
                 Password
               </label>
@@ -62,14 +62,14 @@ export default function AdminPage() {
                 className="w-full px-4 py-3 bg-slate-800 border border-cyan-500/30 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 placeholder="Enter admin password"
                 required
-                data-oid="yfbg:m-"
+                data-oid="k77vizt"
               />
             </div>
 
             {error && (
               <div
                 className="text-red-400 text-sm text-center"
-                data-oid="kif5te2"
+                data-oid="w9n.y.x"
               >
                 {error}
               </div>
@@ -78,7 +78,7 @@ export default function AdminPage() {
             <button
               type="submit"
               className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900"
-              data-oid="foc7xfb"
+              data-oid="xh-:ynt"
             >
               Access Admin Panel
             </button>
@@ -89,29 +89,29 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen futuristic-grid-bg" data-oid="j6ts1ct">
-      <div className="container mx-auto px-6 py-8" data-oid="imyzr4b">
+    <main className="min-h-screen futuristic-grid-bg" data-oid="njicxf8">
+      <div className="container mx-auto px-6 py-8" data-oid="k:stoei">
         <div
           className="flex items-center justify-between mb-8"
-          data-oid="5lo_okg"
+          data-oid="1w9pz10"
         >
           <h1
             className="holographic-title text-4xl font-bold"
             data-text="Admin Dashboard"
-            data-oid="jyf819p"
+            data-oid="qo_6-hv"
           >
             Admin Dashboard
           </h1>
           <button
             onClick={handleLogout}
             className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-300"
-            data-oid="75gjjgm"
+            data-oid="kg33:ox"
           >
             Logout
           </button>
         </div>
 
-        <AdminDashboard data-oid=":3rdez3" />
+        <AdminDashboard data-oid="ic6ystm" />
       </div>
     </main>
   );

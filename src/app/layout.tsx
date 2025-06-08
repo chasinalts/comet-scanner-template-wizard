@@ -10,8 +10,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-oid="w06ykvh">
-      <body className="antialiased futuristic-theme" data-oid="bmuhwyf">
+    <html lang="en" data-oid=".bgiyrr">
+      <body className="antialiased futuristic-theme" data-oid="-5-_uo2">
         {children}
       </body>
     </html>
