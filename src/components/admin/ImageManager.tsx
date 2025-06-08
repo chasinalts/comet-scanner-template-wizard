@@ -246,7 +246,15 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
             </label>
             <select
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value as any)}
+              onChange={(e) =>
+                setSelectedType(
+                  e.target.value as
+                    | "banner"
+                    | "thumbnail"
+                    | "gallery"
+                    | "answer",
+                )
+              }
               className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
             >
               {imageTypes.map((type) => (

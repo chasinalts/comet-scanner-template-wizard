@@ -1,3 +1,8 @@
+const handleLogout = () => {
+    setIsAuthenticated(false);
+    setPassword("");
+  };
+=======
 "use client";
 
 import { useState, useEffect } from "react";
@@ -33,6 +38,11 @@ export default function AdminPage() {
       setAdminPassword(savedPassword);
     }
   }, []);
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setPassword("");
+  };
 =======
 
   const handleLogout = () => {
