@@ -8,6 +8,7 @@ import {
   Section,
 } from "@/types/supabaseDb";
 import { supabase } from "@/lib/supabaseClient";
+import ImportExportPanel from "@/components/ImportExportPanel";
 
 interface TemplateManagerProps {
   onTemplateUpdate?: () => void;
@@ -166,6 +167,23 @@ export default function TemplateManager({
       .join(", ");
   };
 
+  const handleImport = async (importedTemplates: Template[]) => {
+    try {
+      // Import templates to database
+      for (const template of importedTemplates) {
+        const { id, created_at, updated_at, ...templateData } = template;
+        await supabase.from("templates").insert(templateData);
+      }
+      // Refresh templates list
+      await fetchTemplates();
+      if (onTemplateUpdate) onTemplateUpdate();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to import templates",
+      );
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8" data-oid="f6j60ql">
@@ -192,6 +210,13 @@ export default function TemplateManager({
           Create Template
         </button>
       </div>
+
+      {/* Import/Export Panel */}
+      <ImportExportPanel
+        templates={templates}
+        onImport={handleImport}
+        data-oid="import-export-panel"
+      />
 
       {/* Error Display */}
       {error && (

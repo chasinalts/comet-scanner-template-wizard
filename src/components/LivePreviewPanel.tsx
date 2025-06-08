@@ -22,7 +22,7 @@ export default function LivePreviewPanel({
     }
 
     // Process template with user answers
-    let processed = template.html || "";
+    let processed = template.master_code || "";
     Object.entries(userAnswers).forEach(([key, value]) => {
       const placeholder = `{{${key}}}`;
       processed = processed.replace(new RegExp(placeholder, "g"), value);

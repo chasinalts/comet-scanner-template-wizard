@@ -4,7 +4,6 @@ import TemplateGallery from "@/components/user/TemplateGallery";
 import TemplateWizard from "@/components/user/TemplateWizard";
 import LiveCodePreview from "@/components/user/LiveCodePreview";
 import InvisibleAdminButton from "@/components/InvisibleAdminButton";
-import ImportExportPanel from "@/components/ImportExportPanel";
 import LivePreviewPanel from "@/components/LivePreviewPanel";
 import CacheClearButton from "@/components/CacheClearButton";
 
@@ -28,8 +27,6 @@ export default function HomePage() {
     <div className="min-h-screen futuristic-grid-bg" data-oid="n27rh01">
       {/* Invisible Admin Button */}
       <InvisibleAdminButton data-oid="ab9tqmc" />
-      <ImportExportPanel data-oid="_cigra:" />
-      <LivePreviewPanel data-oid="y5x4ijk" />
 
       {/* Header */}
       <header

@@ -50,9 +50,9 @@ export default function ImportExportPanel({
 
         // Validate each template has required fields
         for (const template of importedTemplates) {
-          if (!template.id || !template.name || !template.html) {
+          if (!template.id || !template.name || !template.master_code) {
             throw new Error(
-              "Invalid template format: missing required fields (id, name, html)",
+              "Invalid template format: missing required fields (id, name, master_code)",
             );
           }
         }
