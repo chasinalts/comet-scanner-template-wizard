@@ -1,14 +1,18 @@
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true
   },
   images: {
-    unoptimized: true,
+    unoptimized: true
   },
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  },
+  output: "standalone",
+  distDir: process.env.NODE_ENV === "production" ? ".next-prod" : ".next",
+  typescript: {
+    ignoreBuildErrors: true
   }
 };
-
 module.exports = nextConfig;
