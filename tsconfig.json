@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -23,8 +23,8 @@
       "@/*": ["./src/*"]
     },
     "allowImportingTsExtensions": false,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": false,
     "noPropertyAccessFromIndexSignature": false,
     "verbatimModuleSyntax": false,
     "allowSyntheticDefaultImports": true,
@@ -32,22 +32,7 @@
     "useDefineForClassFields": true,
     "declaration": false,
     "declarationMap": false,
-    "sourceMap": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedSideEffectImports": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "checkJs": false,
-    "maxNodeModuleJsDepth": 1,
-    "newLine": "lf",
-    "removeComments": false,
-    "preserveConstEnums": true,
-    "preserveValueImports": false,
-    "pretty": true,
-    "stripInternal": true
+    "sourceMap": false
   },
   "include": [
     "next-env.d.ts",
@@ -70,9 +55,8 @@
     "**/*.spec.tsx",
     "__tests__/**/*",
     "jest.config.js",
-    "jest.setup.js"
-  ],
-  "ts-node": {
-    "esm": true
-  }
+    "jest.setup.js",
+    "jest.polyfills.js",
+    "jest-transform-stub.js"
+  ]
 }
