@@ -1,3 +1,15 @@
+Create a file named prompt_history_summary.md for any historical prompts previously submitted and any new prompts submitted by the admin making sure to include the time and date of the message. If the prompt is too long or it was of an error or reference to an error then clearly and succinctly summarize it. 
+
+if the admins prompt includes an error for you to fix then summarize the error and add it to a file named AI_errors.md. If it was fixed... note what the solution was, and the date. note if the error was attempted to get fixed but the attempt failed or if the admin stopped the process before the solution was found...then note that the fix had failed. Separate the errors where a solution was found from the failed attempts.
+
+When you come across errors that you need to fix first check the AI_errors.md file to see if a solution to a similar error was found and hse that as a reference to fix the current error.
+
+Do not make adjustments to anything (at all) from this project_rules.md file unless you get explicit permission from the admin (me) first.
+
+Use the codebase's file tree at /Users/chasecambre/comet-scanner-template-wizard/client_docs/fileTreeContext.md as a reference for the project structure.
+
+Any files that are to be added or removed by the AI are to first be approved by the admin before the code base is acted upon.
+
 Every time you choose to apply a rule(s), explicitly state the rule(s) in the output. You can abbreviate the rule description to a single word or phrase.
 
 Project Context
@@ -158,4 +170,4 @@ this will be updated when i ask it to be updated or referenced.
 - When a task is in progress, add a ⚙️ in front of the task.
 - When a task is not started, add a ⚠️ in front of the task.
 
-- using sequential thinking mcp please make a plan for implementation of recently rendered sections of code and proceed with it making sure to abide by Trae's project rules file making sure you test new parts of code when the implementstion of a section has been completed enough to be able to test it using whatver test you feel best would be appropriate with that new functionality whether it be to use browser mcp or something else. fix any issues as they arise through testing until your satisfied that it'll work in/on the web app as intended.
+- using sequential thinking mcp please make a plan for implementation of recently rendered sections of code and proceed with it making sure to abide by Trae's project rules file making sure you test new parts of code when the implementstion of a section has been completed enough to be able to test it using whatver test you feel best would be appropriate with that new functionality whether it be to use browser mcp or something else. fix any issues as they arise through testing until your satisfied that it is functioning as intended.

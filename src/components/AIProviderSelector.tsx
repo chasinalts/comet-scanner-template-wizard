@@ -36,11 +36,11 @@ export function AIProviderSelector({
   disabled = false,
 }: AIProviderSelectorProps) {
   return (
-    <div className="space-y-4" data-oid="4gyp5v2">
-      <label className="block text-cyan-300 font-semibold" data-oid="sp9.5:-">
+    <div className="space-y-4" data-oid="wsr6ys1">
+      <label className="block text-cyan-300 font-semibold" data-oid="uvbsx00">
         AI Provider
       </label>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3" data-oid="uofta4s">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3" data-oid="zhkl8l2">
         {providers.map((provider) => (
           <div
             key={provider.value}
@@ -54,9 +54,9 @@ export function AIProviderSelector({
               ${disabled ? "opacity-50 cursor-not-allowed" : ""}
             `}
             onClick={() => !disabled && onProviderChange(provider.value)}
-            data-oid="y3bm-gc"
+            data-oid="jy-atuf"
           >
-            <div className="flex items-start space-x-3" data-oid="9:ts9t.">
+            <div className="flex items-start space-x-3" data-oid="p69ng-0">
               <div
                 className={`
                 w-4 h-4 rounded-full border-2 mt-1 transition-all duration-200
@@ -66,10 +66,10 @@ export function AIProviderSelector({
                     : "border-slate-500"
                 }
               `}
-                data-oid="byci6fy"
+                data-oid="dk1zlzj"
               />
 
-              <div className="flex-1" data-oid="_npzzno">
+              <div className="flex-1" data-oid="bzqgbi_">
                 <h3
                   className={`
                   font-semibold transition-colors duration-200
@@ -79,11 +79,11 @@ export function AIProviderSelector({
                       : "text-slate-300"
                   }
                 `}
-                  data-oid=":o.g1e_"
+                  data-oid="chm:thc"
                 >
                   {provider.label}
                 </h3>
-                <p className="text-sm text-slate-400 mt-1" data-oid="lhguf:t">
+                <p className="text-sm text-slate-400 mt-1" data-oid="53t1l7e">
                   {provider.description}
                 </p>
               </div>
@@ -92,7 +92,7 @@ export function AIProviderSelector({
             {selectedProvider === provider.value && (
               <div
                 className="absolute inset-0 rounded-lg border-2 border-cyan-400 animate-pulse"
-                data-oid="e4eh7q8"
+                data-oid="n6vm6fn"
               />
             )}
           </div>

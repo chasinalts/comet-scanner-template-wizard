@@ -1,156 +1,147 @@
 "use client";
 
 import { useState } from "react";
-import { ImportExportState } from "@/types/supabaseDb";
+import { Template } from "../types/template";
 
-interface ChecklistItem {
-  id: string;
-  title: string;
-  completed: boolean;
+interface ImportExportPanelProps {
+  templates: Template[];
+  onImport: (templates: Template[]) => void;
 }
 
-export default function ImportExportPanel() {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [checklist, setChecklist] = useState<ChecklistItem[]>([
-    {
-      id: "overall-progress",
-      title: "Overall Progress",
-      completed: false,
-    },
-  ]);
-
-  const handleSingleItemToggle = () => {
-    setChecklist((prev) =>
-      prev.map((item) => ({
-        ...item,
-        completed: !item.completed,
-      })),
-    );
-  };
+export default function ImportExportPanel({
+  templates,
+  onImport,
+}: ImportExportPanelProps) {
+  const [isImporting, setIsImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
 
   const handleExport = () => {
-    const exportData: ImportExportState = {
-      template_id: "current-template",
-      user_answers: {},
-      completed_sections: [],
-      progress_state: checklist[0].completed ? "completed" : "in_progress",
-      generated_code: "",
-      export_timestamp: new Date().toISOString(),
-      app_version: "1.0.0",
-    };
+    const dataStr = JSON.stringify(templates, null, 2);
+    const dataUri =
+      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `comet-scanner-export-${Date.now()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const exportFileDefaultName = `templates-${new Date().toISOString().split("T")[0]}.json`;
+
+    const linkElement = document.createElement("a");
+    linkElement.setAttribute("href", dataUri);
+    linkElement.setAttribute("download", exportFileDefaultName);
+    linkElement.click();
   };
 
-  const handleImport = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const importData: ImportExportState = JSON.parse(
-              e.target?.result as string,
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    setImportError(null);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const importedTemplates = JSON.parse(content) as Template[];
+
+        // Basic validation
+        if (!Array.isArray(importedTemplates)) {
+          throw new Error(
+            "Invalid file format: expected an array of templates",
+          );
+        }
+
+        // Validate each template has required fields
+        for (const template of importedTemplates) {
+          if (!template.id || !template.name || !template.html) {
+            throw new Error(
+              "Invalid template format: missing required fields (id, name, html)",
             );
-            setChecklist([
-              {
-                id: "overall-progress",
-                title: "Overall Progress",
-                completed: importData.progress_state === "completed",
-              },
-            ]);
-          } catch (error) {
-            console.error("Error importing data:", error);
           }
-        };
-        reader.readAsText(file);
+        }
+
+        onImport(importedTemplates);
+        setIsImporting(false);
+      } catch (error) {
+        setImportError(
+          error instanceof Error ? error.message : "Failed to import templates",
+        );
+        setIsImporting(false);
       }
     };
-    input.click();
-  };
 
-  const getStatusIcon = (completed: boolean) => {
-    return completed ? "✅" : "⭕";
-  };
+    reader.onerror = () => {
+      setImportError("Failed to read file");
+      setIsImporting(false);
+    };
 
-  const getStatusColor = (completed: boolean) => {
-    return completed ? "text-green-400" : "text-red-400";
+    reader.readAsText(file);
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50" data-oid="2n:ems_">
-      {/* Tab Button */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-4 py-2 rounded-t-lg border border-cyan-500/30 transition-colors"
-        data-oid="9hkm_wy"
-      >
-        Data
-      </button>
+    <div
+      className="bg-slate-800 border border-gray-600 rounded-lg p-6"
+      data-oid="f65tc35"
+    >
+      <h3 className="text-lg font-semibold text-white mb-4" data-oid="_a9wsvq">
+        Import/Export Templates
+      </h3>
 
-      {/* Expanded Panel */}
-      {isExpanded && (
-        <div
-          className="bg-slate-800 border border-cyan-500/30 rounded-b-lg rounded-tl-lg p-4 min-w-[300px] shadow-lg"
-          data-oid="tisnhr:"
-        >
-          {/* Import/Export Buttons */}
-          <div className="flex gap-2 mb-4" data-oid="7keb417">
-            <button
-              onClick={handleImport}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded transition-colors"
-              data-oid="44ide.h"
-            >
-              Import
-            </button>
-            <button
-              onClick={handleExport}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded transition-colors"
-              data-oid="_fixawj"
-            >
-              Export
-            </button>
-          </div>
-
-          {/* Progress Checklist */}
-          <div className="space-y-2" data-oid="f4m2ltp">
-            {checklist.map((item) => (
-              <div
-                key={item.id}
-                onClick={handleSingleItemToggle}
-                className="flex items-center justify-between p-2 bg-slate-700 rounded cursor-pointer hover:bg-slate-600 transition-colors"
-                data-oid="mlqb::0"
-              >
-                <span
-                  className="text-center flex-1 text-cyan-100"
-                  data-oid="wjct60g"
-                >
-                  {item.title}
-                </span>
-                <span
-                  className={`ml-2 ${getStatusColor(item.completed)}`}
-                  data-oid="o8n-3zu"
-                >
-                  {getStatusIcon(item.completed)}
-                </span>
-              </div>
-            ))}
-          </div>
+      <div className="space-y-4" data-oid="z25xcl8">
+        {/* Export */}
+        <div data-oid="zebsw80">
+          <button
+            onClick={handleExport}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+            disabled={templates.length === 0}
+            data-oid=".:owa2:"
+          >
+            Export Templates ({templates.length})
+          </button>
+          <p className="text-sm text-gray-400 mt-1" data-oid="8_441w3">
+            Download all templates as JSON file
+          </p>
         </div>
-      )}
+
+        {/* Import */}
+        <div data-oid="k.fj0qe">
+          <label className="block" data-oid="d0cky9p">
+            <span className="sr-only" data-oid="mc9ezbx">
+              Import templates
+            </span>
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              disabled={isImporting}
+              className="block w-full text-sm text-gray-400
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-medium
+                file:bg-green-500 file:text-white
+                hover:file:bg-green-600
+                file:disabled:bg-gray-600
+                file:disabled:cursor-not-allowed
+                disabled:cursor-not-allowed"
+              data-oid="diwy6rh"
+            />
+          </label>
+          <p className="text-sm text-gray-400 mt-1" data-oid="mvujdnb">
+            {isImporting
+              ? "Importing..."
+              : "Select JSON file to import templates"}
+          </p>
+        </div>
+
+        {/* Error display */}
+        {importError && (
+          <div
+            className="bg-red-900/50 border border-red-500 rounded-md p-3"
+            data-oid="kjskuzc"
+          >
+            <p className="text-red-200 text-sm" data-oid="xtyk9v-">
+              {importError}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

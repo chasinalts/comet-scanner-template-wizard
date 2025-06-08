@@ -117,52 +117,52 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
   };
 
   const renderMethodSelection = () => (
-    <div className="space-y-8" data-oid="sgce5gw">
-      <div className="text-center" data-oid="79kkx0g">
+    <div className="space-y-8" data-oid="b131er_">
+      <div className="text-center" data-oid="ekqb_jf">
         <h1
           className="holographic-title text-3xl mb-4"
           data-text="Visualize Your Data with COMET Scanner"
-          data-oid=":_mkhy2"
+          data-oid=".51v:vl"
         >
           Visualize Your Data with COMET Scanner
         </h1>
-        <p className="text-gray-400 text-lg" data-oid="d562gfc">
+        <p className="text-gray-400 text-lg" data-oid="71rp5sk">
           Welcome to the stock market
         </p>
       </div>
 
-      <div className="futuristic-container p-8" data-oid="32o-shr">
+      <div className="futuristic-container p-8" data-oid="a:nwmdi">
         <h2
           className="holographic-subtitle text-2xl mb-6 text-center"
           data-text="Choose Your Template Creation Method"
-          data-oid="b:k4lwk"
+          data-oid="kerwv_r"
         >
           Choose Your Template Creation Method
         </h2>
 
         <div
           className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
-          data-oid="i.pcreo"
+          data-oid="sjl.c7d"
         >
           {/* Full Template */}
           <div
             className="bg-slate-800/50 rounded-lg border border-slate-600 p-6 text-center"
-            data-oid=":xl:lyo"
+            data-oid="u5:3q_1"
           >
             <h3
               className="text-xl font-semibold text-cyan-300 mb-4"
-              data-oid="lisuuxz"
+              data-oid="4kbubso"
             >
               Full Template
             </h3>
-            <p className="text-gray-400 mb-6" data-oid="fez_x7w">
+            <p className="text-gray-400 mb-6" data-oid="r_2grn1">
               The administrator has not uploaded a full template yet. Please use
               the Template Builder Wizard to create a template.
             </p>
             <button
               className="futuristic-button px-6 py-3 opacity-50 cursor-not-allowed"
               disabled
-              data-oid="2qti9e:"
+              data-oid="frtxo04"
             >
               Not Available
             </button>
@@ -171,22 +171,22 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
           {/* Template Builder Wizard */}
           <div
             className="bg-slate-800/50 rounded-lg border border-cyan-500/50 p-6 text-center holo-glow"
-            data-oid="d58b88j"
+            data-oid="r2syob1"
           >
             <h3
               className="text-xl font-semibold text-cyan-300 mb-4"
-              data-oid="gb2454u"
+              data-oid="30g73u6"
             >
               Template Builder Wizard
             </h3>
-            <p className="text-gray-400 mb-6" data-oid="agk5:dg">
+            <p className="text-gray-400 mb-6" data-oid="z_aghuk">
               Build your template step-by-step by answering questions. Customize
               the template to your specific needs.
             </p>
             <button
               className="futuristic-button px-6 py-3"
               onClick={() => handleMethodSelection("builder")}
-              data-oid="-8u.8on"
+              data-oid="d_46g.u"
             >
               Start Wizard
             </button>
@@ -195,16 +195,16 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
       </div>
 
       {/* Saved Templates */}
-      <div className="futuristic-container p-8" data-oid="gnw12:7">
+      <div className="futuristic-container p-8" data-oid="5-nb-69">
         <h2
           className="holographic-subtitle text-2xl mb-6"
           data-text="Saved Templates"
-          data-oid="ugr6kc-"
+          data-oid="x--z::8"
         >
           Saved Templates
         </h2>
-        <div className="text-center text-gray-400" data-oid="eee.k8z">
-          <p data-oid="ihb6-ep">
+        <div className="text-center text-gray-400" data-oid="c_ki1rf">
+          <p data-oid="azurxi-">
             No saved templates yet. Create and save a template to see it here.
           </p>
         </div>
@@ -213,27 +213,27 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
   );
 
   const renderWizardChecklist = () => (
-    <div className="space-y-6" data-oid=":wmoyu0">
-      <div className="text-center" data-oid="r8yxzth">
+    <div className="space-y-6" data-oid=":tu-msi">
+      <div className="text-center" data-oid=".33zl_h">
         <h1
           className="holographic-title text-3xl mb-4"
           data-text="Template Builder Wizard"
-          data-oid="6nqzv32"
+          data-oid="7e4srjp"
         >
           Template Builder Wizard
         </h1>
-        <p className="text-gray-400" data-oid="0rtrjej">
+        <p className="text-gray-400" data-oid="z9bmecq">
           Complete each step to build your custom COMET Scanner template
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" data-oid="gby70u6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" data-oid="osq7:qj">
         {/* Wizard Steps */}
-        <div className="space-y-4" data-oid="3wc2af:">
+        <div className="space-y-4" data-oid="35fc0rd">
           <h3
             className="holographic-subtitle text-xl mb-4"
             data-text="Wizard Steps"
-            data-oid="202sl32"
+            data-oid="adfy8ka"
           >
             Wizard Steps
           </h3>
@@ -250,21 +250,21 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
                       : "bg-slate-800/50 border-slate-600 text-gray-300 hover:border-cyan-500/30"
                 }`}
                 onClick={() => handleStepClick(step.id)}
-                data-oid=":by05u3"
+                data-oid="rmk.yrl"
               >
                 <div
                   className="flex items-center justify-between"
-                  data-oid="l9e_x.6"
+                  data-oid="8usmbm9"
                 >
-                  <div data-oid="4nfqz2-">
-                    <h4 className="font-semibold" data-oid="488wkpg">
+                  <div data-oid="ekk8k2_">
+                    <h4 className="font-semibold" data-oid="cni33ik">
                       {step.title}
                     </h4>
-                    <p className="text-sm opacity-80" data-oid="822risz">
+                    <p className="text-sm opacity-80" data-oid="87nn2kh">
                       {step.description}
                     </p>
                   </div>
-                  <div className="text-2xl" data-oid="qgncynu">
+                  <div className="text-2xl" data-oid="7cymlt1">
                     {step.completed ? "✓" : currentStep === step.id ? "→" : "○"}
                   </div>
                 </div>
@@ -273,11 +273,11 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
         </div>
 
         {/* AI Steps */}
-        <div className="space-y-4" data-oid="mblnk2q">
+        <div className="space-y-4" data-oid="7_0z:58">
           <h3
             className="holographic-subtitle text-xl mb-4"
             data-text="AI-Powered Steps"
-            data-oid="1nvmvps"
+            data-oid="xd2n8jn"
           >
             AI-Powered Steps
           </h3>
@@ -294,21 +294,21 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
                       : "bg-slate-800/50 border-slate-600 text-gray-300 hover:border-purple-500/30"
                 }`}
                 onClick={() => handleStepClick(step.id)}
-                data-oid="79.vk79"
+                data-oid="8qdf837"
               >
                 <div
                   className="flex items-center justify-between"
-                  data-oid="z-4qi_u"
+                  data-oid="fh.t8ke"
                 >
-                  <div data-oid="1e6skqo">
-                    <h4 className="font-semibold" data-oid="xr_n-9u">
+                  <div data-oid="bngq50j">
+                    <h4 className="font-semibold" data-oid="hbz8izb">
                       {step.title}
                     </h4>
-                    <p className="text-sm opacity-80" data-oid="v.vlwb7">
+                    <p className="text-sm opacity-80" data-oid="q39p2ve">
                       {step.description}
                     </p>
                   </div>
-                  <div className="text-2xl" data-oid="vqv-i25">
+                  <div className="text-2xl" data-oid="pu4zo73">
                     {step.completed
                       ? "✓"
                       : currentStep === step.id
@@ -322,28 +322,28 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
       </div>
 
       {/* Progress Summary */}
-      <div className="futuristic-container p-6" data-oid="d1oahlx">
+      <div className="futuristic-container p-6" data-oid="r0yoeea">
         <h3
           className="holographic-subtitle text-lg mb-4"
           data-text="Progress Summary"
-          data-oid="mnpd3w2"
+          data-oid="6djfrus"
         >
           Progress Summary
         </h3>
-        <div className="flex items-center space-x-4" data-oid="v1dt8dm">
+        <div className="flex items-center space-x-4" data-oid="piyzh6b">
           <div
             className="flex-1 bg-slate-700 rounded-full h-3"
-            data-oid="uwuor69"
+            data-oid="3zck6xe"
           >
             <div
               className="bg-gradient-to-r from-cyan-500 to-purple-500 h-3 rounded-full transition-all duration-500"
               style={{
                 width: `${(wizardSteps.filter((s) => s.completed).length / wizardSteps.length) * 100}%`,
               }}
-              data-oid="mh7wk_6"
+              data-oid="0:rb-.s"
             ></div>
           </div>
-          <span className="text-cyan-300 font-semibold" data-oid="zqnpi0d">
+          <span className="text-cyan-300 font-semibold" data-oid="okyg7ni">
             {wizardSteps.filter((s) => s.completed).length} /{" "}
             {wizardSteps.length} Complete
           </span>
@@ -358,7 +358,7 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
         return (
           <ImageManagementStep
             onComplete={() => markStepCompleted("image-management")}
-            data-oid="ely:_w3"
+            data-oid="d.id715"
           />
         );
 
@@ -366,7 +366,7 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
         return (
           <ScannerVariationsStep
             onComplete={() => markStepCompleted("scanner-variations")}
-            data-oid="ptr1s35"
+            data-oid="458nm-b"
           />
         );
 
@@ -374,7 +374,7 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
         return (
           <ContentManagementStep
             onComplete={() => markStepCompleted("content-management")}
-            data-oid="zljso4c"
+            data-oid="ai:y8zc"
           />
         );
 
@@ -383,7 +383,7 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
           <AITickerGenerationStep
             onComplete={() => markStepCompleted("ai-ticker-generation")}
             onCodeUpdate={onCodeUpdate}
-            data-oid="kvgcts-"
+            data-oid="bc3ri0g"
           />
         );
 
@@ -392,7 +392,7 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
           <AINameGenerationStep
             onComplete={() => markStepCompleted("ai-name-generation")}
             onCodeUpdate={onCodeUpdate}
-            data-oid="z7:0hqj"
+            data-oid="0-p5uiq"
           />
         );
 
@@ -401,7 +401,7 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
           <AIFunctionCreationStep
             onComplete={() => markStepCompleted("ai-function-creation")}
             onCodeUpdate={onCodeUpdate}
-            data-oid="ong4qh_"
+            data-oid="lt96wot"
           />
         );
 
@@ -412,15 +412,15 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
 
   if (!template) {
     return (
-      <div className="futuristic-container p-8 text-center" data-oid="b:2vs3.">
+      <div className="futuristic-container p-8 text-center" data-oid="q7h84_u">
         <h2
           className="holographic-subtitle text-2xl mb-4"
           data-text="No Template Selected"
-          data-oid="hp8ixm1"
+          data-oid="b7gighn"
         >
           No Template Selected
         </h2>
-        <p className="text-gray-400" data-oid="2cek6g8">
+        <p className="text-gray-400" data-oid="x:29flx">
           Please select a template from the gallery to begin.
         </p>
       </div>
@@ -428,16 +428,16 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
   }
 
   return (
-    <div className="space-y-6" data-oid="nzpgt2c">
+    <div className="space-y-6" data-oid="1to8y:w">
       {currentStep === "method-selection" && renderMethodSelection()}
       {currentStep === "wizard-checklist" && renderWizardChecklist()}
       {currentStep !== "method-selection" &&
         currentStep !== "wizard-checklist" && (
-          <div data-oid="acwuv-j">
+          <div data-oid="s6vyh.s">
             <button
               onClick={() => setCurrentStep("wizard-checklist")}
               className="mb-6 text-cyan-400 hover:text-cyan-300 transition-colors"
-              data-oid="fcjujeh"
+              data-oid="glw09vw"
             >
               ← Back to Wizard Checklist
             </button>
@@ -451,58 +451,58 @@ max_assets = input.int(40, "Maximum Assets to Scan", minval=1, maxval=40)
 // Individual step components
 function ImageManagementStep({ onComplete }: { onComplete: () => void }) {
   return (
-    <div className="futuristic-container p-8" data-oid="j948.ws">
+    <div className="futuristic-container p-8" data-oid="5crf_uh">
       <h2
         className="holographic-subtitle text-2xl mb-6"
         data-text="Image Management"
-        data-oid="_ihgkai"
+        data-oid="0u3h3s7"
       >
         Image Management
       </h2>
-      <div className="space-y-6" data-oid="-8ky8kb">
+      <div className="space-y-6" data-oid="kp:_7hr">
         <div
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          data-oid="v4wr0g."
+          data-oid="3-_wg-5"
         >
-          <div className="space-y-4" data-oid="7vlef5v">
+          <div className="space-y-4" data-oid="hbgq0mn">
             <h3
               className="text-lg font-semibold text-cyan-300"
-              data-oid="tdshphl"
+              data-oid="qgc-3zp"
             >
               Banner Image
             </h3>
             <div
               className="border-2 border-dashed border-cyan-500/50 rounded-lg p-8 text-center"
-              data-oid="6ko:arv"
+              data-oid="ebo0vk:"
             >
-              <p className="text-gray-400 mb-4" data-oid="uly8l04">
+              <p className="text-gray-400 mb-4" data-oid="i.bpzo3">
                 Upload banner image for your scanner
               </p>
               <button
                 className="futuristic-button px-4 py-2"
-                data-oid="sirg:iw"
+                data-oid="0dhpfsn"
               >
                 Choose File
               </button>
             </div>
           </div>
-          <div className="space-y-4" data-oid="t1men5:">
+          <div className="space-y-4" data-oid="od2qma-">
             <h3
               className="text-lg font-semibold text-cyan-300"
-              data-oid="_45hkev"
+              data-oid="7c:::rp"
             >
               Preview Images
             </h3>
             <div
               className="border-2 border-dashed border-cyan-500/50 rounded-lg p-8 text-center"
-              data-oid="9ad-05o"
+              data-oid="hvorqfp"
             >
-              <p className="text-gray-400 mb-4" data-oid="5lmt4-b">
+              <p className="text-gray-400 mb-4" data-oid="v-t8fu:">
                 Upload preview images showing scanner output
               </p>
               <button
                 className="futuristic-button px-4 py-2"
-                data-oid="iknxor3"
+                data-oid="nc-w0ch"
               >
                 Choose Files
               </button>
@@ -512,7 +512,7 @@ function ImageManagementStep({ onComplete }: { onComplete: () => void }) {
         <button
           onClick={onComplete}
           className="futuristic-button px-6 py-3"
-          data-oid="viwezyy"
+          data-oid="f-2-0y0"
         >
           Complete Image Management
         </button>
@@ -523,57 +523,57 @@ function ImageManagementStep({ onComplete }: { onComplete: () => void }) {
 
 function ScannerVariationsStep({ onComplete }: { onComplete: () => void }) {
   return (
-    <div className="futuristic-container p-8" data-oid="59yvnyb">
+    <div className="futuristic-container p-8" data-oid="wkigc-h">
       <h2
         className="holographic-subtitle text-2xl mb-6"
         data-text="Scanner Variations"
-        data-oid="gadidt5"
+        data-oid="2t1dmhq"
       >
         Scanner Variations
       </h2>
-      <div className="space-y-6" data-oid="iqiz8q:">
-        <p className="text-gray-400" data-oid="mye5.dr">
+      <div className="space-y-6" data-oid="ii-_ci5">
+        <p className="text-gray-400" data-oid="t0-6-j-">
           Configure different scanner parameter variations
         </p>
         <div
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          data-oid="8lhrg1e"
+          data-oid="lrj.gw2"
         >
-          <div className="space-y-4" data-oid="-60-f18">
+          <div className="space-y-4" data-oid="lr6vy71">
             <label
               className="block text-cyan-300 font-semibold"
-              data-oid="fmlv25q"
+              data-oid="mn5pqp6"
             >
               Timeframe Settings
             </label>
-            <select className="futuristic-input w-full" data-oid="2--a1_.">
-              <option data-oid="jd3z0mi">1 minute</option>
-              <option data-oid="who2t-9">5 minutes</option>
-              <option data-oid="43r5ylz">15 minutes</option>
-              <option data-oid="7ifxg_u">1 hour</option>
-              <option data-oid="xff:0.m">4 hours</option>
-              <option data-oid="qyh:ho8">1 day</option>
+            <select className="futuristic-input w-full" data-oid="7.edzhb">
+              <option data-oid="7gjf93i">1 minute</option>
+              <option data-oid=".4jykcj">5 minutes</option>
+              <option data-oid="_4.f1rl">15 minutes</option>
+              <option data-oid="ulz3kdc">1 hour</option>
+              <option data-oid="lkfdgza">4 hours</option>
+              <option data-oid="vjr-oh7">1 day</option>
             </select>
           </div>
-          <div className="space-y-4" data-oid="89ruv:h">
+          <div className="space-y-4" data-oid="ncq1e:e">
             <label
               className="block text-cyan-300 font-semibold"
-              data-oid="0lagqks"
+              data-oid="f2zz_zj"
             >
               Sensitivity Level
             </label>
-            <select className="futuristic-input w-full" data-oid="jmmdvem">
-              <option data-oid="mn636.-">Low</option>
-              <option data-oid="fhb2-7i">Medium</option>
-              <option data-oid="zhye3to">High</option>
-              <option data-oid="j5ihju1">Extreme</option>
+            <select className="futuristic-input w-full" data-oid="b8hmuy2">
+              <option data-oid="qr8nma2">Low</option>
+              <option data-oid="br5f55q">Medium</option>
+              <option data-oid="1s45ski">High</option>
+              <option data-oid="vt3944a">Extreme</option>
             </select>
           </div>
         </div>
         <button
           onClick={onComplete}
           className="futuristic-button px-6 py-3"
-          data-oid="2lii3l0"
+          data-oid="q:lonyi"
         >
           Complete Scanner Variations
         </button>
@@ -584,45 +584,45 @@ function ScannerVariationsStep({ onComplete }: { onComplete: () => void }) {
 
 function ContentManagementStep({ onComplete }: { onComplete: () => void }) {
   return (
-    <div className="futuristic-container p-8" data-oid="j9tab36">
+    <div className="futuristic-container p-8" data-oid="f8c-2aj">
       <h2
         className="holographic-subtitle text-2xl mb-6"
         data-text="Home Page Content"
-        data-oid="p.yrho-"
+        data-oid="5xgri9_"
       >
         Home Page Content
       </h2>
-      <div className="space-y-6" data-oid="igmhd_k">
-        <div className="space-y-4" data-oid="uo5gvc2">
+      <div className="space-y-6" data-oid="3in6qwa">
+        <div className="space-y-4" data-oid="88xytfh">
           <label
             className="block text-cyan-300 font-semibold"
-            data-oid="kjp.t4e"
+            data-oid="lcac849"
           >
             Scanner Description
           </label>
           <textarea
             className="futuristic-input w-full h-32"
             placeholder="Describe what your scanner does and how it helps traders..."
-            data-oid="byf395h"
+            data-oid="foixjpz"
           />
         </div>
-        <div className="space-y-4" data-oid="xgpr319">
+        <div className="space-y-4" data-oid="4rj2t1f">
           <label
             className="block text-cyan-300 font-semibold"
-            data-oid="ie2la6z"
+            data-oid="xejpbr."
           >
             Usage Instructions
           </label>
           <textarea
             className="futuristic-input w-full h-32"
             placeholder="Provide instructions on how to use this scanner effectively..."
-            data-oid="9jk7026"
+            data-oid="00xh890"
           />
         </div>
         <button
           onClick={onComplete}
           className="futuristic-button px-6 py-3"
-          data-oid=":ha0_ud"
+          data-oid="1l0slzg"
         >
           Complete Content Management
         </button>
@@ -667,26 +667,26 @@ function AITickerGenerationStep({
   };
 
   return (
-    <div className="futuristic-container p-8" data-oid="pf9ke4f">
+    <div className="futuristic-container p-8" data-oid="t-xa7p6">
       <h2
         className="holographic-subtitle text-2xl mb-6"
         data-text="AI Ticker Generation"
-        data-oid="z9c1q24"
+        data-oid="gylnqg9"
       >
         AI Ticker Generation
       </h2>
-      <div className="space-y-6" data-oid="3inrygn">
+      <div className="space-y-6" data-oid="1:njskq">
         <AIProviderSelector
           selectedProvider={selectedProvider}
           onProviderChange={setSelectedProvider}
           disabled={isLoading}
-          data-oid="-pwwr_b"
+          data-oid="30a8x-m"
         />
 
-        <div className="space-y-4" data-oid="q_1.0v4">
+        <div className="space-y-4" data-oid="fc0k5:2">
           <label
             className="block text-cyan-300 font-semibold"
-            data-oid="_vjcb4i"
+            data-oid="h_odrn6"
           >
             Enter Assets to Scan
           </label>
@@ -696,16 +696,16 @@ function AITickerGenerationStep({
             value={assets}
             onChange={(e) => setAssets(e.target.value)}
             disabled={isLoading}
-            data-oid="j3ss6-t"
+            data-oid="_3ef8bv"
           />
         </div>
 
         {error && (
           <div
             className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-300"
-            data-oid="yluwzxo"
+            data-oid="mmdgc30"
           >
-            <strong data-oid="o.9lcy_">Error:</strong> {error}
+            <strong data-oid="h03qxkn">Error:</strong> {error}
           </div>
         )}
 
@@ -713,13 +713,13 @@ function AITickerGenerationStep({
           onClick={handleGenerateTickerCode}
           className="futuristic-button px-6 py-3"
           disabled={isLoading || !assets.trim()}
-          data-oid=".wx0mv2"
+          data-oid="1ms744:"
         >
           {isLoading ? (
             <>
               <div
                 className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400 inline-block mr-2"
-                data-oid="mwlyq.e"
+                data-oid="8wilqso"
               ></div>
               Generating with {selectedProvider}...
             </>
@@ -728,16 +728,16 @@ function AITickerGenerationStep({
           )}
         </button>
         {generatedCode && (
-          <div className="space-y-4" data-oid="bcr:6sg">
+          <div className="space-y-4" data-oid="a9vfw0m">
             <h3
               className="text-lg font-semibold text-green-300"
-              data-oid="m7yisdi"
+              data-oid="ruao8-p"
             >
               Generated Code:
             </h3>
             <pre
               className="bg-slate-900 p-4 rounded border border-green-500/30 text-green-300 text-sm overflow-x-auto"
-              data-oid="1d2mj72"
+              data-oid="99-z6al"
             >
               {generatedCode}
             </pre>
@@ -747,7 +747,7 @@ function AITickerGenerationStep({
           onClick={onComplete}
           className="futuristic-button px-6 py-3"
           disabled={!generatedCode}
-          data-oid="ld.5.ex"
+          data-oid="o2d2ler"
         >
           Complete Ticker Generation
         </button>
@@ -787,26 +787,26 @@ function AINameGenerationStep({
   };
 
   return (
-    <div className="futuristic-container p-8" data-oid="1zfwz0w">
+    <div className="futuristic-container p-8" data-oid="t7dhg73">
       <h2
         className="holographic-subtitle text-2xl mb-6"
         data-text="AI Name Generation"
-        data-oid="dy:rber"
+        data-oid="klwkk46"
       >
         AI Name Generation
       </h2>
-      <div className="space-y-6" data-oid="04g2-3t">
+      <div className="space-y-6" data-oid="ps8x0b7">
         <AIProviderSelector
           selectedProvider={selectedProvider}
           onProviderChange={setSelectedProvider}
           disabled={isLoading}
-          data-oid="n2t063w"
+          data-oid="k.qvo6a"
         />
 
-        <div className="space-y-4" data-oid="s5d48ce">
+        <div className="space-y-4" data-oid="bae6k.g">
           <label
             className="block text-cyan-300 font-semibold"
-            data-oid="3j2qw98"
+            data-oid="eab:h6j"
           >
             Name Format Preferences
           </label>
@@ -817,16 +817,16 @@ function AINameGenerationStep({
             value={nameFormat}
             onChange={(e) => setNameFormat(e.target.value)}
             disabled={isLoading}
-            data-oid="3k0m0p6"
+            data-oid="8417gpx"
           />
         </div>
 
         {error && (
           <div
             className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-300"
-            data-oid="fouzs_5"
+            data-oid="6y:f::-"
           >
-            <strong data-oid="78z-5c4">Error:</strong> {error}
+            <strong data-oid="rhm:dft">Error:</strong> {error}
           </div>
         )}
 
@@ -834,13 +834,13 @@ function AINameGenerationStep({
           onClick={handleGenerateNameCode}
           className="futuristic-button px-6 py-3"
           disabled={isLoading}
-          data-oid="xlay6tq"
+          data-oid="icajq92"
         >
           {isLoading ? (
             <>
               <div
                 className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400 inline-block mr-2"
-                data-oid="8le4xiq"
+                data-oid="83q.fn4"
               ></div>
               Generating with {selectedProvider}...
             </>
@@ -849,16 +849,16 @@ function AINameGenerationStep({
           )}
         </button>
         {generatedCode && (
-          <div className="space-y-4" data-oid=":gqffqf">
+          <div className="space-y-4" data-oid="lrp:s.s">
             <h3
               className="text-lg font-semibold text-green-300"
-              data-oid="zt5yqyo"
+              data-oid="v._uj_0"
             >
               Generated Code:
             </h3>
             <pre
               className="bg-slate-900 p-4 rounded border border-green-500/30 text-green-300 text-sm overflow-x-auto"
-              data-oid="d-ufs91"
+              data-oid="jvlrdjm"
             >
               {generatedCode}
             </pre>
@@ -868,7 +868,7 @@ function AINameGenerationStep({
           onClick={onComplete}
           className="futuristic-button px-6 py-3"
           disabled={!generatedCode}
-          data-oid="fnieiaj"
+          data-oid="nry-:-6"
         >
           Complete Name Generation
         </button>
@@ -923,31 +923,31 @@ function AIFunctionCreationStep({
   };
 
   return (
-    <div className="futuristic-container p-8" data-oid="qih5y50">
+    <div className="futuristic-container p-8" data-oid=":te2l0g">
       <h2
         className="holographic-subtitle text-2xl mb-6"
         data-text="AI Function Creation"
-        data-oid="jek7duj"
+        data-oid="d1z93aq"
       >
         AI Function Creation
       </h2>
-      <div className="space-y-6" data-oid="szsxl16">
+      <div className="space-y-6" data-oid="e6xsnry">
         <AIProviderSelector
           selectedProvider={selectedProvider}
           onProviderChange={setSelectedProvider}
           disabled={isLoading}
-          data-oid="o8gg7zq"
+          data-oid="6ygd3kp"
         />
 
-        <div className="space-y-4" data-oid="1v_reil">
+        <div className="space-y-4" data-oid="faddv9m">
           <label
             className="block text-cyan-300 font-semibold"
-            data-oid="g-y.-6a"
+            data-oid="s5u.tyy"
           >
             Function Creation Method
           </label>
-          <div className="space-y-3" data-oid="ho4j4eu">
-            <label className="flex items-center space-x-3" data-oid="oo6pvjv">
+          <div className="space-y-3" data-oid="mvtkwlu">
+            <label className="flex items-center space-x-3" data-oid="e:7t9qr">
               <input
                 type="radio"
                 name="functionType"
@@ -955,12 +955,12 @@ function AIFunctionCreationStep({
                 checked={functionType === "idea"}
                 onChange={(e) => setFunctionType(e.target.value as any)}
                 className="text-cyan-500"
-                data-oid="v9:cqn5"
+                data-oid="32j82s8"
               />
 
-              <span data-oid="0qur38m">Describe an indicator idea</span>
+              <span data-oid="p54pvkn">Describe an indicator idea</span>
             </label>
-            <label className="flex items-center space-x-3" data-oid="gu1-i3i">
+            <label className="flex items-center space-x-3" data-oid="vc1crp3">
               <input
                 type="radio"
                 name="functionType"
@@ -968,14 +968,14 @@ function AIFunctionCreationStep({
                 checked={functionType === "existing"}
                 onChange={(e) => setFunctionType(e.target.value as any)}
                 className="text-cyan-500"
-                data-oid="031q675"
+                data-oid="25c:rz_"
               />
 
-              <span data-oid="3fonxu4">
+              <span data-oid="hno-q3c">
                 Convert existing Pine Script indicator
               </span>
             </label>
-            <label className="flex items-center space-x-3" data-oid="cq.rbbg">
+            <label className="flex items-center space-x-3" data-oid="r4n_leu">
               <input
                 type="radio"
                 name="functionType"
@@ -983,18 +983,18 @@ function AIFunctionCreationStep({
                 checked={functionType === "codebase"}
                 onChange={(e) => setFunctionType(e.target.value as any)}
                 className="text-cyan-500"
-                data-oid="n776qwh"
+                data-oid="_9zw:dj"
               />
 
-              <span data-oid="96mqb92">Extract from existing codebase</span>
+              <span data-oid="nbkudap">Extract from existing codebase</span>
             </label>
           </div>
         </div>
 
-        <div className="space-y-4" data-oid="76j4.7l">
+        <div className="space-y-4" data-oid="izt2xon">
           <label
             className="block text-cyan-300 font-semibold"
-            data-oid="o3fkd6n"
+            data-oid="qmvz.e_"
           >
             {functionType === "idea" && "Describe Your Indicator Idea"}
             {functionType === "existing" && "Paste Existing Pine Script Code"}
@@ -1012,16 +1012,16 @@ function AIFunctionCreationStep({
             }
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            data-oid="l3kq4ri"
+            data-oid="h3dqmpg"
           />
         </div>
 
         {error && (
           <div
             className="p-4 bg-red-900/50 border border-red-500 rounded-lg text-red-300"
-            data-oid="dopuun9"
+            data-oid="q7d03-a"
           >
-            <strong data-oid="2ddqt17">Error:</strong> {error}
+            <strong data-oid="2e3pij_">Error:</strong> {error}
           </div>
         )}
 
@@ -1029,13 +1029,13 @@ function AIFunctionCreationStep({
           onClick={handleGenerateFunction}
           className="futuristic-button px-6 py-3"
           disabled={!userInput.trim() || isLoading}
-          data-oid="uyxmj2h"
+          data-oid="jpq33zv"
         >
           {isLoading ? (
             <>
               <div
                 className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400 inline-block mr-2"
-                data-oid="9nc-xjt"
+                data-oid="vfcrojl"
               ></div>
               Generating with {selectedProvider}...
             </>
@@ -1045,16 +1045,16 @@ function AIFunctionCreationStep({
         </button>
 
         {generatedCode && (
-          <div className="space-y-4" data-oid="likq-__">
+          <div className="space-y-4" data-oid="ray1_mk">
             <h3
               className="text-lg font-semibold text-green-300"
-              data-oid="tmqez8z"
+              data-oid="0eru_1y"
             >
               Generated Function:
             </h3>
             <pre
               className="bg-slate-900 p-4 rounded border border-green-500/30 text-green-300 text-sm overflow-x-auto"
-              data-oid="bv.4pln"
+              data-oid="k4ec..y"
             >
               {generatedCode}
             </pre>
@@ -1065,7 +1065,7 @@ function AIFunctionCreationStep({
           onClick={onComplete}
           className="futuristic-button px-6 py-3"
           disabled={!generatedCode}
-          data-oid="aepcf_4"
+          data-oid="gleol5t"
         >
           Complete Function Creation
         </button>

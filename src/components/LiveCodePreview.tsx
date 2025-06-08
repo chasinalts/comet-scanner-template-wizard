@@ -1,175 +1,169 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Template } from "../types/template";
 
 interface LiveCodePreviewProps {
-  code: string;
+  template: Template | null;
+  userAnswers: Record<string, string>;
 }
 
-export default function LiveCodePreview({ code }: LiveCodePreviewProps) {
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [savedTemplates, setSavedTemplates] = useState<string[]>([]);
+export default function LiveCodePreview({
+  template,
+  userAnswers,
+}: LiveCodePreviewProps) {
+  const [processedHtml, setProcessedHtml] = useState<string>("");
+  const [processedCss, setProcessedCss] = useState<string>("");
+  const [processedJs, setProcessedJs] = useState<string>("");
 
-  const handleSaveTemplate = () => {
-    const templateName = prompt("Enter a name for this template:");
-    if (templateName && code.trim()) {
-      setSavedTemplates((prev) => [...prev, templateName]);
-      // In a real app, this would save to the database
-      alert(`Template "${templateName}" saved successfully!`);
+  useEffect(() => {
+    if (!template) {
+      setProcessedHtml("");
+      setProcessedCss("");
+      setProcessedJs("");
+      return;
     }
-  };
 
-  const handleExportCode = () => {
-    const blob = new Blob([code], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "comet_scanner_template.pine";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+    // Process template placeholders with user answers
+    const processTemplate = (content: string) => {
+      let processed = content;
+      Object.entries(userAnswers).forEach(([key, value]) => {
+        const placeholder = `{{${key}}}`;
+        processed = processed.replace(new RegExp(placeholder, "g"), value);
+      });
+      return processed;
+    };
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(code);
-    alert("Code copied to clipboard!");
-  };
+    setProcessedHtml(processTemplate(template.html || ""));
+    setProcessedCss(processTemplate(template.css || ""));
+    setProcessedJs(processTemplate(template.javascript || ""));
+  }, [template, userAnswers]);
+
+  if (!template) {
+    return (
+      <div
+        className="bg-slate-800 border border-gray-600 rounded-lg p-6"
+        data-oid="gmshbnt"
+      >
+        <h3
+          className="text-lg font-semibold text-white mb-4"
+          data-oid="cdmo1hw"
+        >
+          Live Preview
+        </h3>
+        <div className="text-gray-400 text-center py-8" data-oid="xl8nbq9">
+          Select a template to see the live preview
+        </div>
+      </div>
+    );
+  }
+
+  const combinedCode = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Preview</title>
+      <style>
+        ${processedCss}
+      </style>
+    </head>
+    <body>
+      ${processedHtml}
+      <script>
+        ${processedJs}
+      </script>
+    </body>
+    </html>
+  `;
 
   return (
     <div
-      className={`fixed right-4 top-20 transition-all duration-300 z-50 ${
-        isMinimized ? "w-12" : "w-96"
-      }`}
-      data-oid="rfbl5yq"
+      className="bg-slate-800 border border-gray-600 rounded-lg p-6"
+      data-oid="6o4lc41"
     >
-      <div
-        className="futuristic-container bg-slate-900/95 backdrop-blur-md border border-cyan-500/50"
-        data-oid="4uey9-f"
-      >
-        {/* Header */}
+      <h3 className="text-lg font-semibold text-white mb-4" data-oid="57nil9n">
+        Live Preview
+      </h3>
+
+      <div className="space-y-4" data-oid="_d6wfro">
+        {/* Preview iframe */}
         <div
-          className="flex items-center justify-between p-4 border-b border-cyan-500/30"
-          data-oid="j6cf1v_"
+          className="border border-gray-600 rounded-lg overflow-hidden"
+          data-oid="te9y9u9"
         >
-          <h3
-            className={`holographic-text font-semibold ${isMinimized ? "hidden" : "block"}`}
-            data-text="Live Code Preview"
-            data-oid="h12d7:r"
-          >
-            Live Code Preview
-          </h3>
-          <button
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="text-cyan-400 hover:text-cyan-300 transition-colors"
-            data-oid="o56sx73"
-          >
-            {isMinimized ? "📖" : "📕"}
-          </button>
+          <iframe
+            srcDoc={combinedCode}
+            className="w-full h-96 bg-white"
+            title="Live Preview"
+            sandbox="allow-scripts allow-same-origin"
+            data-oid="b89s-_k"
+          />
         </div>
 
-        {!isMinimized && (
-          <>
-            {/* Code Display */}
-            <div className="p-4" data-oid="uvmx1jp">
-              <div
-                className="bg-slate-950 rounded border border-slate-700 max-h-96 overflow-y-auto"
-                data-oid="p-8hruo"
+        {/* Code tabs */}
+        <div className="space-y-2" data-oid="d7w7:-h">
+          {/* HTML */}
+          {processedHtml && (
+            <details className="bg-slate-700 rounded-lg" data-oid="mmhl0j-">
+              <summary
+                className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600"
+                data-oid="edg0p6:"
               >
-                <div className="p-3" data-oid="3.-qk66">
-                  <div
-                    className="text-xs text-gray-400 mb-2"
-                    data-oid="bpz9v1y"
-                  >
-                    // No code generated yet. Answer questions to see your
-                    template build in real-time!
-                  </div>
-                  <pre
-                    className="text-green-400 text-xs font-mono whitespace-pre-wrap"
-                    data-oid="viu5qds"
-                  >
-                    {code ||
-                      "// Your Pine Script code will appear here as you progress through the wizard..."}
-                  </pre>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div
-              className="p-4 border-t border-cyan-500/30 space-y-3"
-              data-oid="2bbem_1"
-            >
-              <div className="grid grid-cols-2 gap-2" data-oid="ww.ph3.">
-                <button
-                  onClick={handleSaveTemplate}
-                  className="futuristic-button px-3 py-2 text-sm"
-                  disabled={!code.trim()}
-                  data-oid=".q9smhi"
+                HTML
+              </summary>
+              <div className="p-3 border-t border-gray-600" data-oid="8.leirm">
+                <pre
+                  className="text-sm text-gray-300 overflow-x-auto"
+                  data-oid="sn.ul8t"
                 >
-                  💾 Save
-                </button>
-                <button
-                  onClick={handleExportCode}
-                  className="futuristic-button px-3 py-2 text-sm"
-                  disabled={!code.trim()}
-                  data-oid="ujfd.h9"
-                >
-                  📥 Export
-                </button>
+                  <code data-oid="58d72sg">{processedHtml}</code>
+                </pre>
               </div>
-              <button
-                onClick={handleCopyCode}
-                className="futuristic-button w-full px-3 py-2 text-sm"
-                disabled={!code.trim()}
-                data-oid=".644y8e"
-              >
-                📋 Copy to Clipboard
-              </button>
-            </div>
+            </details>
+          )}
 
-            {/* Code Statistics */}
-            <div className="p-4 border-t border-cyan-500/30" data-oid="cvh:lh4">
-              <div
-                className="text-xs text-gray-400 space-y-1"
-                data-oid="p8:rk4e"
+          {/* CSS */}
+          {processedCss && (
+            <details className="bg-slate-700 rounded-lg" data-oid="9n3nayk">
+              <summary
+                className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600"
+                data-oid="jqam.bx"
               >
-                <div data-oid="cffzt5n">Lines: {code.split("\n").length}</div>
-                <div data-oid="v25fj9k">Characters: {code.length}</div>
-                <div data-oid="2lrby59">
-                  Status:{" "}
-                  {code.trim() ? "Ready for TradingView" : "In Progress"}
-                </div>
-              </div>
-            </div>
-
-            {/* Saved Templates */}
-            {savedTemplates.length > 0 && (
-              <div
-                className="p-4 border-t border-cyan-500/30"
-                data-oid="8uwqp5h"
-              >
-                <h4
-                  className="text-sm font-semibold text-cyan-300 mb-2"
-                  data-oid="g5zhdo9"
+                CSS
+              </summary>
+              <div className="p-3 border-t border-gray-600" data-oid=":_h5f6t">
+                <pre
+                  className="text-sm text-gray-300 overflow-x-auto"
+                  data-oid="_4gc98-"
                 >
-                  Saved Templates
-                </h4>
-                <div className="space-y-1" data-oid="sf3yapk">
-                  {savedTemplates.map((template, index) => (
-                    <div
-                      key={index}
-                      className="text-xs text-gray-400 bg-slate-800/50 px-2 py-1 rounded"
-                      data-oid="63pjpmg"
-                    >
-                      {template}
-                    </div>
-                  ))}
-                </div>
+                  <code data-oid="2q90td9">{processedCss}</code>
+                </pre>
               </div>
-            )}
-          </>
-        )}
+            </details>
+          )}
+
+          {/* JavaScript */}
+          {processedJs && (
+            <details className="bg-slate-700 rounded-lg" data-oid="hzkv9s3">
+              <summary
+                className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600"
+                data-oid="mtq5wk8"
+              >
+                JavaScript
+              </summary>
+              <div className="p-3 border-t border-gray-600" data-oid="sp5w0ig">
+                <pre
+                  className="text-sm text-gray-300 overflow-x-auto"
+                  data-oid=".xzs9k8"
+                >
+                  <code data-oid="4tt-iy_">{processedJs}</code>
+                </pre>
+              </div>
+            </details>
+          )}
+        </div>
       </div>
     </div>
   );

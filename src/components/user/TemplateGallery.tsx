@@ -131,14 +131,14 @@ export default function TemplateGallery({
     return (
       <div
         className="flex items-center justify-center min-h-[400px]"
-        data-oid="loading-container"
+        data-oid="::3o_6r"
       >
-        <div className="text-center" data-oid="loading-content">
+        <div className="text-center" data-oid="u-jv501">
           <div
             className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"
-            data-oid="loading-spinner"
+            data-oid="6m_51cr"
           ></div>
-          <p className="text-cyan-300" data-oid="loading-text">
+          <p className="text-cyan-300" data-oid="kqs4fyn">
             Loading templates...
           </p>
         </div>
@@ -147,12 +147,9 @@ export default function TemplateGallery({
   }
 
   return (
-    <div className="space-y-8" data-oid="template-gallery">
+    <div className="space-y-8" data-oid="6g0c_gr">
       {/* Category Filter */}
-      <div
-        className="flex flex-wrap gap-4 justify-center"
-        data-oid="category-filter"
-      >
+      <div className="flex flex-wrap gap-4 justify-center" data-oid="ahdkn1l">
         {categories.map((category) => (
           <button
             key={category}
@@ -162,7 +159,7 @@ export default function TemplateGallery({
                 ? "bg-gradient-to-r from-cyan-500 to-purple-600 text-white shadow-lg"
                 : "bg-slate-800 text-cyan-300 hover:bg-slate-700 border border-cyan-500/30"
             }`}
-            data-oid={`category-${category.toLowerCase()}`}
+            data-oid="g8ehytk"
           >
             {category}
           </button>
@@ -172,40 +169,34 @@ export default function TemplateGallery({
       {/* Templates Grid */}
       <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        data-oid="templates-grid"
+        data-oid="1nsbeh6"
       >
         {filteredTemplates.map((template) => (
           <div
             key={template.id}
             className="futuristic-container group hover:scale-105 transition-all duration-300 cursor-pointer"
             onClick={() => onStartWizard(template)}
-            data-oid={`template-${template.id}`}
+            data-oid="vk5atzt"
           >
             {/* Template Image */}
             <div
               className="relative h-48 mb-4 rounded-lg overflow-hidden"
-              data-oid="template-image"
+              data-oid="xwf_jle"
             >
               <div
                 className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center"
-                data-oid="a5h39zg"
+                data-oid="jtl.dpz"
               >
-                <div
-                  className="text-6xl text-cyan-400/30"
-                  data-oid="template-icon"
-                >
+                <div className="text-6xl text-cyan-400/30" data-oid="dt0yqal">
                   ⚡
                 </div>
               </div>
-              <div
-                className="absolute top-4 right-4"
-                data-oid="difficulty-badge"
-              >
+              <div className="absolute top-4 right-4" data-oid="38alvii">
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold bg-slate-900/80 backdrop-blur-sm ${getDifficultyColor(
                     template.difficulty,
                   )}`}
-                  data-oid="mu4aul4"
+                  data-oid=":t__7zx"
                 >
                   {template.difficulty}
                 </span>
@@ -213,29 +204,26 @@ export default function TemplateGallery({
             </div>
 
             {/* Template Info */}
-            <div className="space-y-4" data-oid="template-info">
-              <div data-oid="template-header">
+            <div className="space-y-4" data-oid="f_d54yl">
+              <div data-oid="am9x1jd">
                 <h3
                   className="text-xl font-bold text-white mb-2"
-                  data-oid="template-name"
+                  data-oid="cgmlnt8"
                 >
                   {template.name}
                 </h3>
-                <p
-                  className="text-slate-300 text-sm"
-                  data-oid="template-description"
-                >
+                <p className="text-slate-300 text-sm" data-oid="_1q:09w">
                   {template.description}
                 </p>
               </div>
 
               {/* Tags */}
-              <div className="flex flex-wrap gap-2" data-oid="template-tags">
+              <div className="flex flex-wrap gap-2" data-oid="8kuuimd">
                 {template.tags.map((tag, index) => (
                   <span
                     key={index}
                     className="px-2 py-1 bg-cyan-500/20 text-cyan-300 rounded text-xs"
-                    data-oid={`tag-${index}`}
+                    data-oid="jg:m5j."
                   >
                     #{tag}
                   </span>
@@ -245,41 +233,38 @@ export default function TemplateGallery({
               {/* Estimated Time */}
               <div
                 className="flex items-center text-sm text-slate-400"
-                data-oid="template-time"
+                data-oid="r0slhi-"
               >
-                <span className="mr-2" data-oid=":3o:f:6">
+                <span className="mr-2" data-oid="lqinajv">
                   ⏱️
                 </span>
-                <span data-oid=":z7q3iz">{template.estimated_time}</span>
+                <span data-oid="q6lq:k_">{template.estimated_time}</span>
               </div>
 
               {/* Sections Preview */}
-              <div className="space-y-2" data-oid="template-sections">
+              <div className="space-y-2" data-oid="01w7y_j">
                 <h4
                   className="text-sm font-semibold text-cyan-300"
-                  data-oid="sections-title"
+                  data-oid="vc.8q8f"
                 >
                   Includes:
                 </h4>
-                <ul className="space-y-1" data-oid="sections-list">
+                <ul className="space-y-1" data-oid="mfmshaf">
                   {template.sections.slice(0, 2).map((section) => (
                     <li
                       key={section.id}
                       className="text-xs text-slate-400 flex items-center"
-                      data-oid={`section-${section.id}`}
+                      data-oid="upn1tc9"
                     >
                       <span
                         className="w-1 h-1 bg-cyan-400 rounded-full mr-2"
-                        data-oid="06sl8ki"
+                        data-oid="si.xirj"
                       ></span>
                       {section.name}
                     </li>
                   ))}
                   {template.sections.length > 2 && (
-                    <li
-                      className="text-xs text-slate-500"
-                      data-oid="more-sections"
-                    >
+                    <li className="text-xs text-slate-500" data-oid="ndoktnd">
                       +{template.sections.length - 2} more sections
                     </li>
                   )}
@@ -293,7 +278,7 @@ export default function TemplateGallery({
                   e.stopPropagation();
                   onStartWizard(template);
                 }}
-                data-oid="start-button"
+                data-oid="41lvsuv"
               >
                 Start Building
               </button>
@@ -303,20 +288,17 @@ export default function TemplateGallery({
       </div>
 
       {filteredTemplates.length === 0 && (
-        <div className="text-center py-12" data-oid="no-templates">
-          <div
-            className="text-6xl text-slate-600 mb-4"
-            data-oid="no-templates-icon"
-          >
+        <div className="text-center py-12" data-oid="f2k92n2">
+          <div className="text-6xl text-slate-600 mb-4" data-oid="6-7_vfz">
             📋
           </div>
           <h3
             className="text-xl font-semibold text-slate-400 mb-2"
-            data-oid="no-templates-title"
+            data-oid="8yxk34q"
           >
             No templates found
           </h3>
-          <p className="text-slate-500" data-oid="no-templates-description">
+          <p className="text-slate-500" data-oid="mcr91f-">
             Try selecting a different category or check back later for new
             templates.
           </p>

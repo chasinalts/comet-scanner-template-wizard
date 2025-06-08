@@ -10,14 +10,14 @@ export default async function ExamplePage() {
   if (error) {
     console.error("Error fetching data:", error);
     return (
-      <div className="p-8" data-oid="z_--hw2">
-        <h1 className="text-2xl font-bold mb-4" data-oid="cy75v6o">
+      <div className="p-8" data-oid="lzpqg7i">
+        <h1 className="text-2xl font-bold mb-4" data-oid="6d5jh.u">
           Supabase SSR Example
         </h1>
-        <p className="text-red-500" data-oid="231oql4">
+        <p className="text-red-500" data-oid="t4512wl">
           Error loading data: {error.message}
         </p>
-        <p className="text-sm text-gray-600 mt-2" data-oid="vzr3gbj">
+        <p className="text-sm text-gray-600 mt-2" data-oid="-4e92nx">
           Make sure you have a 'todos' table in your Supabase database, or
           update the table name in this component.
         </p>
@@ -26,28 +26,28 @@ export default async function ExamplePage() {
   }
 
   return (
-    <div className="p-8" data-oid="yoha685">
-      <h1 className="text-2xl font-bold mb-4" data-oid="ga8jada">
+    <div className="p-8" data-oid="p041ajm">
+      <h1 className="text-2xl font-bold mb-4" data-oid="c61.-4a">
         Supabase SSR Example
       </h1>
-      <p className="mb-4" data-oid="ml9lb2c">
+      <p className="mb-4" data-oid="8kc6dtj">
         Data fetched server-side from Supabase:
       </p>
 
       {todos && todos.length > 0 ? (
-        <ul className="space-y-2" data-oid="2um5d-v">
+        <ul className="space-y-2" data-oid=":twg2t3">
           {todos.map((todo, index) => (
             <li
               key={index}
               className="p-2 bg-gray-100 rounded"
-              data-oid="7fryymd"
+              data-oid=":geeijz"
             >
               {JSON.stringify(todo)}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-gray-500" data-oid=".7h:gh:">
+        <p className="text-gray-500" data-oid="6bm_ac7">
           No data found. Make sure your 'todos' table has some data, or update
           the table name in this component.
         </p>

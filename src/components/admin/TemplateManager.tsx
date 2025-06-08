@@ -168,26 +168,26 @@ export default function TemplateManager({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8" data-oid="azasg5k">
+      <div className="flex items-center justify-center p-8" data-oid="f6j60ql">
         <div
           className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"
-          data-oid="ixgfr_i"
+          data-oid="qrouy:i"
         ></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6" data-oid="oiwt7w7">
+    <div className="space-y-6" data-oid="f4vd-em">
       {/* Header */}
-      <div className="flex justify-between items-center" data-oid="k8:ff6l">
-        <h2 className="text-2xl font-bold text-white" data-oid=":l-b3pe">
+      <div className="flex justify-between items-center" data-oid="v7bh9.:">
+        <h2 className="text-2xl font-bold text-white" data-oid="f8qb_.j">
           Template Manager
         </h2>
         <button
           onClick={() => setShowCreateForm(true)}
           className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-          data-oid="tb17vrw"
+          data-oid="pr8480c"
         >
           Create Template
         </button>
@@ -197,7 +197,7 @@ export default function TemplateManager({
       {error && (
         <div
           className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg"
-          data-oid="1g:n36h"
+          data-oid="1szze3:"
         >
           {error}
         </div>
@@ -207,11 +207,11 @@ export default function TemplateManager({
       {showCreateForm && (
         <div
           className="bg-slate-800 border border-cyan-500/30 rounded-lg p-6"
-          data-oid="i:f:s:6"
+          data-oid="pc1na85"
         >
           <h3
             className="text-xl font-semibold text-white mb-4"
-            data-oid="vc7sl5_"
+            data-oid="cp8si_e"
           >
             {editingTemplate ? "Edit Template" : "Create New Template"}
           </h3>
@@ -219,12 +219,12 @@ export default function TemplateManager({
           <form
             onSubmit={handleSubmit}
             className="space-y-4"
-            data-oid="ollj5k."
+            data-oid=".150h1."
           >
-            <div data-oid="-oq603e">
+            <div data-oid="4_28y3c">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="pg9vlo_"
+                data-oid="jew66p7"
               >
                 Name
               </label>
@@ -236,14 +236,14 @@ export default function TemplateManager({
                 }
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                 required
-                data-oid="net:pox"
+                data-oid="346u-ck"
               />
             </div>
 
-            <div data-oid="d-m37o3">
+            <div data-oid="vbrde-:">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="be8t-8:"
+                data-oid="t0rbf3a"
               >
                 Description
               </label>
@@ -255,14 +255,14 @@ export default function TemplateManager({
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                 rows={3}
                 required
-                data-oid="gmz.9z."
+                data-oid="0w4qky1"
               />
             </div>
 
-            <div data-oid="-brt_xd">
+            <div data-oid="0evb.r-">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="p7csiqp"
+                data-oid="s3dbv3z"
               >
                 Master Code Template
               </label>
@@ -275,32 +275,32 @@ export default function TemplateManager({
                 rows={10}
                 placeholder="Enter your master code template with placeholders like {{SECTION_ID}}..."
                 required
-                data-oid="akofud0"
+                data-oid="ohe4j7q"
               />
             </div>
 
-            <div data-oid="k:502z4">
+            <div data-oid="ehh4yx6">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="or-gchs"
+                data-oid="tjk7vg5"
               >
                 Sections ({formData.section_ids?.length || 0} selected)
               </label>
               <div
                 className="bg-slate-700 border border-slate-600 rounded-lg p-4 max-h-60 overflow-y-auto"
-                data-oid="up70_0."
+                data-oid="d7zt5t8"
               >
                 {sections.length === 0 ? (
-                  <p className="text-slate-400 text-sm" data-oid="jb36l0i">
+                  <p className="text-slate-400 text-sm" data-oid="-feq:mq">
                     No sections available. Create sections first.
                   </p>
                 ) : (
-                  <div className="space-y-2" data-oid="ctgq4y5">
+                  <div className="space-y-2" data-oid="_3s-:k4">
                     {sections.map((section) => (
                       <label
                         key={section.id}
                         className="flex items-center space-x-2 cursor-pointer"
-                        data-oid="hgbjp-z"
+                        data-oid="cc69fwx"
                       >
                         <input
                           type="checkbox"
@@ -309,15 +309,15 @@ export default function TemplateManager({
                           }
                           onChange={() => handleSectionToggle(section.id)}
                           className="rounded"
-                          data-oid="ch.7pyo"
+                          data-oid="tvh43tv"
                         />
 
-                        <span className="text-white text-sm" data-oid="d4k3qv5">
+                        <span className="text-white text-sm" data-oid="we-s7gt">
                           {section.title}
                         </span>
                         <span
                           className="text-xs text-slate-400"
-                          data-oid="ukbgme3"
+                          data-oid="c55825v"
                         >
                           ({section.question_type})
                         </span>
@@ -328,7 +328,7 @@ export default function TemplateManager({
               </div>
             </div>
 
-            <div className="flex items-center" data-oid="n0tsk_7">
+            <div className="flex items-center" data-oid="jia_3ao">
               <input
                 type="checkbox"
                 id="template_is_active"
@@ -337,23 +337,23 @@ export default function TemplateManager({
                   setFormData({ ...formData, is_active: e.target.checked })
                 }
                 className="mr-2"
-                data-oid="gkjuysx"
+                data-oid="xrvgni7"
               />
 
               <label
                 htmlFor="template_is_active"
                 className="text-cyan-300 text-sm"
-                data-oid="a7t_s6y"
+                data-oid="-tmxcfn"
               >
                 Active
               </label>
             </div>
 
-            <div className="flex space-x-4" data-oid="excp1q-">
+            <div className="flex space-x-4" data-oid="rue623e">
               <button
                 type="submit"
                 className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg transition-colors"
-                data-oid=":kqf915"
+                data-oid="kjtxncj"
               >
                 {editingTemplate ? "Update" : "Create"} Template
               </button>
@@ -361,7 +361,7 @@ export default function TemplateManager({
                 type="button"
                 onClick={resetForm}
                 className="bg-slate-600 hover:bg-slate-700 text-white px-6 py-2 rounded-lg transition-colors"
-                data-oid="pf-se2."
+                data-oid="6i219.t"
               >
                 Cancel
               </button>
@@ -371,9 +371,9 @@ export default function TemplateManager({
       )}
 
       {/* Templates List */}
-      <div className="space-y-4" data-oid="n.qjm01">
+      <div className="space-y-4" data-oid="n5msfkj">
         {templates.length === 0 ? (
-          <div className="text-center text-slate-400 py-8" data-oid="oe7dq7r">
+          <div className="text-center text-slate-400 py-8" data-oid="2_rwp_r">
             No templates found. Create your first template to get started.
           </div>
         ) : (
@@ -381,81 +381,81 @@ export default function TemplateManager({
             <div
               key={template.id}
               className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:border-cyan-500/50 transition-colors"
-              data-oid=".9b_dqk"
+              data-oid="m3v768b"
             >
               <div
                 className="flex justify-between items-start"
-                data-oid="-4hny83"
+                data-oid="xbqhsqz"
               >
-                <div className="flex-1" data-oid="6_6jji7">
+                <div className="flex-1" data-oid="07n17te">
                   <div
                     className="flex items-center space-x-2 mb-2"
-                    data-oid="-k5o-6m"
+                    data-oid="pk2znil"
                   >
                     <h3
                       className="text-lg font-semibold text-white"
-                      data-oid="_tiu8g:"
+                      data-oid="dobw1vu"
                     >
                       {template.name}
                     </h3>
                     {!template.is_active && (
                       <span
                         className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded"
-                        data-oid="qpmu8mj"
+                        data-oid="xnf9l9k"
                       >
                         Inactive
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-300 mb-2" data-oid="vc3khrx">
+                  <p className="text-slate-300 mb-2" data-oid="620snwl">
                     {template.description}
                   </p>
                   <div
                     className="text-sm text-slate-400 space-y-1"
-                    data-oid="-6b-2vb"
+                    data-oid="lrz-rsg"
                   >
-                    <div data-oid="o.mom6y">
+                    <div data-oid="5a9n6dr">
                       Sections ({template.section_ids.length}):{" "}
                       {getSectionNames(template.section_ids) || "None"}
                     </div>
-                    <div data-oid="wzw4r40">
+                    <div data-oid="n42h.c7">
                       Created:{" "}
                       {new Date(template.created_at).toLocaleDateString()}
                     </div>
-                    <div data-oid="q1a4so5">
+                    <div data-oid="th7q-w:">
                       Updated:{" "}
                       {new Date(template.updated_at).toLocaleDateString()}
                     </div>
                   </div>
 
                   {/* Master Code Preview */}
-                  <details className="mt-3" data-oid=":zrisud">
+                  <details className="mt-3" data-oid="xuucu89">
                     <summary
                       className="text-cyan-300 cursor-pointer text-sm hover:text-cyan-200"
-                      data-oid="0l8ggvc"
+                      data-oid="qiuyu.c"
                     >
                       View Master Code
                     </summary>
                     <pre
                       className="mt-2 bg-slate-900 border border-slate-600 rounded p-3 text-xs text-slate-300 overflow-x-auto"
-                      data-oid="q2m-6gn"
+                      data-oid="da_vl77"
                     >
                       {template.master_code}
                     </pre>
                   </details>
                 </div>
-                <div className="flex space-x-2" data-oid="3:vxasd">
+                <div className="flex space-x-2" data-oid="q6:2vjz">
                   <button
                     onClick={() => handleEdit(template)}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="g-_e7zz"
+                    data-oid="mo9gp78"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(template.id)}
                     className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="wn9i.rz"
+                    data-oid="i84ujah"
                   >
                     Delete
                   </button>
