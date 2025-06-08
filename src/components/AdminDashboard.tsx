@@ -5,6 +5,8 @@ import SectionManager from "./admin/SectionManager";
 import TemplateManager from "./admin/TemplateManager";
 import CodeSnippetManager from "./admin/CodeSnippetManager";
 import AuthManager from "./admin/AuthManager";
+import ImageManager from "./admin/ImageManager";
+import MasterCodeManager from "./admin/MasterCodeManager";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -20,6 +22,8 @@ export default function AdminDashboard() {
     { id: "sections", label: "Sections", icon: "📝" },
     { id: "templates", label: "Templates", icon: "📄" },
     { id: "snippets", label: "Code Snippets", icon: "💻" },
+    { id: "mastercode", label: "Master Code", icon: "🔧" },
+    { id: "images", label: "Images", icon: "🖼️" },
     { id: "auth", label: "Authentication", icon: "🔐" },
     { id: "settings", label: "Settings", icon: "⚙️" },
   ];

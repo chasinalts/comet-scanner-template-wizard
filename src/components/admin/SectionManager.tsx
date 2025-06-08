@@ -22,12 +22,15 @@ export default function SectionManager({
     question_type: "multiple_choice",
     options: [],
     code_snippets: {},
+    image_assignments: {},
     order_index: 0,
     is_active: true,
   });
+  const [availableImages, setAvailableImages] = useState<any[]>([]);
 
   useEffect(() => {
     fetchSections();
+    fetchAvailableImages();
   }, []);
 
   const fetchSections = async () => {
@@ -44,6 +47,24 @@ export default function SectionManager({
       setError(err instanceof Error ? err.message : "Failed to fetch sections");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailableImages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("images")
+        .select("*")
+        .eq("type", "answer")
+        .order("created_at", { ascending: false });
+
+      if (error && error.code !== "42P01") {
+        console.error("Failed to fetch images:", error);
+      } else {
+        setAvailableImages(data || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch images:", err);
     }
   };
 
@@ -110,6 +131,7 @@ export default function SectionManager({
       question_type: section.question_type,
       options: section.options,
       code_snippets: section.code_snippets,
+      image_assignments: section.image_assignments || {},
       order_index: section.order_index,
       is_active: section.is_active,
     });
@@ -125,6 +147,7 @@ export default function SectionManager({
       question_type: "multiple_choice",
       options: [],
       code_snippets: {},
+      image_assignments: {},
       order_index: sections.length,
       is_active: true,
     });
@@ -142,6 +165,16 @@ export default function SectionManager({
     } catch {
       // Invalid JSON, keep current state
     }
+  };
+
+  const handleImageAssignment = (option: string, imageId: string) => {
+    const newAssignments = { ...formData.image_assignments };
+    if (imageId === "") {
+      delete newAssignments[option];
+    } else {
+      newAssignments[option] = imageId;
+    }
+    setFormData({ ...formData, image_assignments: newAssignments });
   };
 
   if (loading) {
@@ -306,6 +339,53 @@ export default function SectionManager({
               />
             </div>
 
+            {/* Image Assignments */}
+            {formData.question_type === "multiple_choice" && formData.options && formData.options.length > 0 && (
+              <div>
+                <label className="block text-cyan-300 text-sm font-medium mb-2">
+                  Image Assignments
+                </label>
+                <div className="space-y-3 bg-slate-700 border border-slate-600 rounded-lg p-4">
+                  {formData.options.map((option, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <span className="text-white text-sm min-w-0 flex-1 truncate">
+                        {option}
+                      </span>
+                      <select
+                        value={formData.image_assignments?.[option] || ""}
+                        onChange={(e) => handleImageAssignment(option, e.target.value)}
+                        className="bg-slate-600 border border-slate-500 text-white rounded px-3 py-1 text-sm focus:outline-none focus:border-cyan-500"
+                      >
+                        <option value="">No image</option>
+                        {availableImages.map((image) => (
+                          <option key={image.id} value={image.id}>
+                            {image.name}
+                          </option>
+                        ))}
+                      </select>
+                      {formData.image_assignments?.[option] && (
+                        <div className="w-12 h-12 bg-slate-600 rounded overflow-hidden">
+                          <img
+                            src={availableImages.find(img => img.id === formData.image_assignments?.[option])?.url}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {availableImages.length === 0 && (
+                    <p className="text-slate-400 text-sm">
+                      No answer images available. Upload images with type "Answer Images" in the Images tab first.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div data-oid="-z38y_3">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
@@ -421,10 +501,14 @@ export default function SectionManager({
                   </div>
                   <p className="text-slate-300 mb-2" data-oid="51lrtxz">
                     {section.description}
-                  </p>
-                  {section.options && section.options.length > 0 && (
-                    <div className="text-sm text-slate-400" data-oid="84igyz2">
+                  </p{section.options && section.options.length > 0 && (
+                    <div className="text-sm text-slate-400 mb-2" data-oid="84igyz2">
                       Options: {section.options.join(", ")}
+                    </div>
+                  )}
+                  {section.image_assignments && Object.keys(section.image_assignments).length > 0 && (
+                    <div className="text-sm text-slate-400">
+                      Images assigned: {Object.keys(section.image_assignments).length} option(s)
                     </div>
                   )}
                 </div>

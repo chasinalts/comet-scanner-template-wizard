@@ -9,9 +9,14 @@ export interface Database {
           id: string;
           title: string;
           description: string;
-          question_type: 'multiple_choice' | 'text_input' | 'boolean' | 'slider';
+          question_type:
+            | "multiple_choice"
+            | "text_input"
+            | "boolean"
+            | "slider";
           options: string[] | null;
           code_snippets: Record<string, string>; // key-value pairs for different answers
+          image_assignments: Record<string, string> | null; // option -> image_id mapping
           order_index: number;
           is_active: boolean;
           created_at: string;
@@ -21,9 +26,14 @@ export interface Database {
           id?: string;
           title: string;
           description: string;
-          question_type: 'multiple_choice' | 'text_input' | 'boolean' | 'slider';
+          question_type:
+            | "multiple_choice"
+            | "text_input"
+            | "boolean"
+            | "slider";
           options?: string[] | null;
           code_snippets: Record<string, string>;
+          image_assignments?: Record<string, string> | null;
           order_index: number;
           is_active?: boolean;
           created_at?: string;
@@ -33,9 +43,14 @@ export interface Database {
           id?: string;
           title?: string;
           description?: string;
-          question_type?: 'multiple_choice' | 'text_input' | 'boolean' | 'slider';
+          question_type?:
+            | "multiple_choice"
+            | "text_input"
+            | "boolean"
+            | "slider";
           options?: string[] | null;
           code_snippets?: Record<string, string>;
+          image_assignments?: Record<string, string> | null;
           order_index?: number;
           is_active?: boolean;
           created_at?: string;
@@ -81,7 +96,11 @@ export interface Database {
           user_answers: Record<string, any>; // section_id -> user_answer
           completed_sections: string[]; // Array of completed section IDs
           generated_code: string;
-          progress_state: 'not_started' | 'in_progress' | 'completed' | 'paused';
+          progress_state:
+            | "not_started"
+            | "in_progress"
+            | "completed"
+            | "paused";
           created_at: string;
           updated_at: string;
         };
@@ -91,7 +110,11 @@ export interface Database {
           user_answers?: Record<string, any>;
           completed_sections?: string[];
           generated_code?: string;
-          progress_state?: 'not_started' | 'in_progress' | 'completed' | 'paused';
+          progress_state?:
+            | "not_started"
+            | "in_progress"
+            | "completed"
+            | "paused";
           created_at?: string;
           updated_at?: string;
         };
@@ -101,7 +124,11 @@ export interface Database {
           user_answers?: Record<string, any>;
           completed_sections?: string[];
           generated_code?: string;
-          progress_state?: 'not_started' | 'in_progress' | 'completed' | 'paused';
+          progress_state?:
+            | "not_started"
+            | "in_progress"
+            | "completed"
+            | "paused";
           created_at?: string;
           updated_at?: string;
         };
@@ -123,24 +150,28 @@ export interface Database {
 }
 
 // Helper types
-export type Section = Database['public']['Tables']['sections']['Row'];
-export type Template = Database['public']['Tables']['templates']['Row'];
-export type UserSession = Database['public']['Tables']['user_sessions']['Row'];
+export type Section = Database["public"]["Tables"]["sections"]["Row"];
+export type Template = Database["public"]["Tables"]["templates"]["Row"];
+export type UserSession = Database["public"]["Tables"]["user_sessions"]["Row"];
 
-export type SectionInsert = Database['public']['Tables']['sections']['Insert'];
-export type TemplateInsert = Database['public']['Tables']['templates']['Insert'];
-export type UserSessionInsert = Database['public']['Tables']['user_sessions']['Insert'];
+export type SectionInsert = Database["public"]["Tables"]["sections"]["Insert"];
+export type TemplateInsert =
+  Database["public"]["Tables"]["templates"]["Insert"];
+export type UserSessionInsert =
+  Database["public"]["Tables"]["user_sessions"]["Insert"];
 
-export type SectionUpdate = Database['public']['Tables']['sections']['Update'];
-export type TemplateUpdate = Database['public']['Tables']['templates']['Update'];
-export type UserSessionUpdate = Database['public']['Tables']['user_sessions']['Update'];
+export type SectionUpdate = Database["public"]["Tables"]["sections"]["Update"];
+export type TemplateUpdate =
+  Database["public"]["Tables"]["templates"]["Update"];
+export type UserSessionUpdate =
+  Database["public"]["Tables"]["user_sessions"]["Update"];
 
 // UI State Types
 export interface ImportExportState {
   template_id: string;
   user_answers: Record<string, any>;
   completed_sections: string[];
-  progress_state: 'not_started' | 'in_progress' | 'completed' | 'paused';
+  progress_state: "not_started" | "in_progress" | "completed" | "paused";
   generated_code: string;
   export_timestamp: string;
   app_version: string;

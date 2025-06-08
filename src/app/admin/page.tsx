@@ -7,20 +7,33 @@ export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [adminPassword, setAdminPassword] = useState("comet2025");
 
-  // Simple password protection (in production, use proper authentication)
-  const ADMIN_PASSWORD = "comet2025"; // This should be in environment variables
-
+  // Dynamic password system - any password entered becomes the new admin password
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
+    if (password.trim()) {
+      // Set the entered password as the new admin password
+      setAdminPassword(password);
       setIsAuthenticated(true);
       setError("");
+      
+      // Store in localStorage for persistence across sessions
+      localStorage.setItem('adminPassword', password);
     } else {
-      setError("Invalid password");
+      setError("Please enter a password");
       setPassword("");
     }
   };
+
+  // Load saved password on component mount
+  useEffect(() => {
+    const savedPassword = localStorage.getItem('adminPassword');
+    if (savedPassword) {
+      setAdminPassword(savedPassword);
+    }
+  }, []);
+=======
 
   const handleLogout = () => {
     setIsAuthenticated(false);
