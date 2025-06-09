@@ -41,17 +41,9 @@ export default function LiveCodePreview({
 
   if (!template) {
     return (
-      <div
-        className="bg-slate-800 border border-gray-600 rounded-lg p-6"
-        data-oid="ta-ouru"
-      >
-        <h3
-          className="text-lg font-semibold text-white mb-4"
-          data-oid="rt8a_71"
-        >
-          Live Preview
-        </h3>
-        <div className="text-gray-400 text-center py-8" data-oid="lhwacwv">
+      <div className="bg-slate-800 border border-gray-600 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Live Preview</h3>
+        <div className="text-gray-400 text-center py-8">
           Select a template to see the live preview
         </div>
       </div>
@@ -79,46 +71,31 @@ export default function LiveCodePreview({
   `;
 
   return (
-    <div
-      className="bg-slate-800 border border-gray-600 rounded-lg p-6"
-      data-oid="1zah2wq"
-    >
-      <h3 className="text-lg font-semibold text-white mb-4" data-oid="pmi.exx">
-        Live Preview
-      </h3>
+    <div className="bg-slate-800 border border-gray-600 rounded-lg p-6">
+      <h3 className="text-lg font-semibold text-white mb-4">Live Preview</h3>
 
-      <div className="space-y-4" data-oid="l8ii3hu">
+      <div className="space-y-4">
         {/* Preview iframe */}
-        <div
-          className="border border-gray-600 rounded-lg overflow-hidden"
-          data-oid="lu.8me7"
-        >
+        <div className="border border-gray-600 rounded-lg overflow-hidden">
           <iframe
             srcDoc={combinedCode}
             className="w-full h-96 bg-white"
             title="Live Preview"
             sandbox="allow-scripts allow-same-origin"
-            data-oid="hzca:0b"
           />
         </div>
 
         {/* Code tabs */}
-        <div className="space-y-2" data-oid="h85.i63">
+        <div className="space-y-2">
           {/* HTML */}
           {processedHtml && (
-            <details className="bg-slate-700 rounded-lg" data-oid="q8wp97.">
-              <summary
-                className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600"
-                data-oid="-rh3_8c"
-              >
+            <details className="bg-slate-700 rounded-lg">
+              <summary className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600">
                 HTML
               </summary>
-              <div className="p-3 border-t border-gray-600" data-oid="grz0v11">
-                <pre
-                  className="text-sm text-gray-300 overflow-x-auto"
-                  data-oid="r6h68jw"
-                >
-                  <code data-oid="qut21em">{processedHtml}</code>
+              <div className="p-3 border-t border-gray-600">
+                <pre className="text-sm text-gray-300 overflow-x-auto">
+                  <code>{processedHtml}</code>
                 </pre>
               </div>
             </details>
@@ -126,19 +103,13 @@ export default function LiveCodePreview({
 
           {/* CSS */}
           {processedCss && (
-            <details className="bg-slate-700 rounded-lg" data-oid="9t31p8z">
-              <summary
-                className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600"
-                data-oid="byjq3g_"
-              >
+            <details className="bg-slate-700 rounded-lg">
+              <summary className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600">
                 CSS
               </summary>
-              <div className="p-3 border-t border-gray-600" data-oid="sm-dx69">
-                <pre
-                  className="text-sm text-gray-300 overflow-x-auto"
-                  data-oid=":qsv7-h"
-                >
-                  <code data-oid="hsyxgtx">{processedCss}</code>
+              <div className="p-3 border-t border-gray-600">
+                <pre className="text-sm text-gray-300 overflow-x-auto">
+                  <code>{processedCss}</code>
                 </pre>
               </div>
             </details>
@@ -146,19 +117,13 @@ export default function LiveCodePreview({
 
           {/* JavaScript */}
           {processedJs && (
-            <details className="bg-slate-700 rounded-lg" data-oid="u__3_13">
-              <summary
-                className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600"
-                data-oid="xmu56bd"
-              >
+            <details className="bg-slate-700 rounded-lg">
+              <summary className="cursor-pointer p-3 text-white font-medium hover:bg-slate-600">
                 JavaScript
               </summary>
-              <div className="p-3 border-t border-gray-600" data-oid="463vo_t">
-                <pre
-                  className="text-sm text-gray-300 overflow-x-auto"
-                  data-oid="bm9_bp-"
-                >
-                  <code data-oid="ss:yxvy">{processedJs}</code>
+              <div className="p-3 border-t border-gray-600">
+                <pre className="text-sm text-gray-300 overflow-x-auto">
+                  <code>{processedJs}</code>
                 </pre>
               </div>
             </details>

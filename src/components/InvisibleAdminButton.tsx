@@ -111,14 +111,12 @@ export default function InvisibleAdminButton() {
         minHeight: "20px",
       }}
       title="Drag to move, resize from bottom-right corner"
-      data-oid="k_zmkkf"
     >
       Admin
       <div
         className="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 cursor-se-resize opacity-50 hover:opacity-100"
         onMouseDown={handleResizeMouseDown}
         title="Resize"
-        data-oid="xbf7iqh"
       />
     </button>
   );

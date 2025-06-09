@@ -7,13 +7,13 @@ describe("Task 3.2: Authentication System", () => {
   });
 
   test("AuthManager renders correctly", () => {
-    render(<AuthManager data-oid="h56e518" />);
+    render(<AuthManager />);
 
     expect(screen.getByText("Authentication Manager")).toBeInTheDocument();
   });
 
   test("Tab navigation works", () => {
-    render(<AuthManager data-oid="vpv2jwk" />);
+    render(<AuthManager />);
 
     const usersTab = screen.getByText("Users");
     const sessionsTab = screen.getByText("Sessions");
@@ -32,7 +32,7 @@ describe("Task 3.2: Authentication System", () => {
   });
 
   test("Create user form appears when button clicked", () => {
-    render(<AuthManager data-oid="it91eo4" />);
+    render(<AuthManager />);
 
     const createUserButton = screen.getByText("Create User");
     fireEvent.click(createUserButton);
@@ -44,7 +44,7 @@ describe("Task 3.2: Authentication System", () => {
   });
 
   test("Role options are available", () => {
-    render(<AuthManager data-oid="7c30jv2" />);
+    render(<AuthManager />);
 
     const createUserButton = screen.getByText("Create User");
     fireEvent.click(createUserButton);
@@ -62,7 +62,7 @@ describe("Task 3.2: Authentication System", () => {
   });
 
   test("Password requirements are enforced", () => {
-    render(<AuthManager data-oid="9ee__f6" />);
+    render(<AuthManager />);
 
     const createUserButton = screen.getByText("Create User");
     fireEvent.click(createUserButton);
@@ -74,7 +74,7 @@ describe("Task 3.2: Authentication System", () => {
   });
 
   test("Security settings are configurable", () => {
-    render(<AuthManager data-oid="cxlncop" />);
+    render(<AuthManager />);
 
     const settingsTab = screen.getByText("Settings");
     fireEvent.click(settingsTab);
@@ -88,7 +88,7 @@ describe("Task 3.2: Authentication System", () => {
   });
 
   test("Session timeout is configurable", () => {
-    render(<AuthManager data-oid="rk6i1uu" />);
+    render(<AuthManager />);
 
     const settingsTab = screen.getByText("Settings");
     fireEvent.click(settingsTab);
@@ -117,7 +117,7 @@ describe("Task 3.2: Authentication System", () => {
       })),
     });
 
-    render(<AuthManager data-oid="chhf0km" />);
+    render(<AuthManager />);
 
     await waitFor(() => {
       expect(
@@ -137,7 +137,7 @@ describe("Task 3.2: Authentication System", () => {
       error: null,
     });
 
-    render(<AuthManager data-oid="4iamc7x" />);
+    render(<AuthManager />);
 
     expect(screen.getByText(/Logged in as:/)).toBeInTheDocument();
   });

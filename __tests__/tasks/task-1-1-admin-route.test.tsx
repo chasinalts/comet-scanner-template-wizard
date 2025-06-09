@@ -8,7 +8,7 @@ describe("Task 1.1: Admin Route Structure", () => {
   });
 
   test("Admin page renders login form when not authenticated", () => {
-    render(<AdminPage data-oid="mn0s6hu" />);
+    render(<AdminPage />);
 
     expect(screen.getByText("Admin Access")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
@@ -18,7 +18,7 @@ describe("Task 1.1: Admin Route Structure", () => {
   });
 
   test("Dynamic password authentication works", async () => {
-    render(<AdminPage data-oid="74pevrr" />);
+    render(<AdminPage />);
 
     const passwordInput = screen.getByLabelText("Password");
     const submitButton = screen.getByRole("button", {
@@ -44,7 +44,7 @@ describe("Task 1.1: Admin Route Structure", () => {
     // Mock pathname to be non-admin
     jest.spyOn(require("next/navigation"), "usePathname").mockReturnValue("/");
 
-    render(<InvisibleAdminButton data-oid="4aw0tga" />);
+    render(<InvisibleAdminButton />);
 
     expect(screen.getByText("Admin")).toBeInTheDocument();
     expect(
@@ -58,13 +58,13 @@ describe("Task 1.1: Admin Route Structure", () => {
       .spyOn(require("next/navigation"), "usePathname")
       .mockReturnValue("/admin");
 
-    const { container } = render(<InvisibleAdminButton data-oid="65n:vql" />);
+    const { container } = render(<InvisibleAdminButton />);
 
     expect(container.firstChild).toBeNull();
   });
 
   test("Admin logout functionality works", async () => {
-    render(<AdminPage data-oid="5t-0wso" />);
+    render(<AdminPage />);
 
     // Login first
     const passwordInput = screen.getByLabelText("Password");

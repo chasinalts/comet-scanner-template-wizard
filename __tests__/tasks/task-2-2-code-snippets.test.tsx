@@ -3,14 +3,14 @@ import CodeSnippetManager from "@/components/admin/CodeSnippetManager";
 
 describe("Task 2.2: Code Snippet Management", () => {
   test("CodeSnippetManager renders correctly", () => {
-    render(<CodeSnippetManager data-oid="1.j-13-" />);
+    render(<CodeSnippetManager />);
 
     expect(screen.getByText("Code Snippet Manager")).toBeInTheDocument();
     expect(screen.getByText("Create Snippet")).toBeInTheDocument();
   });
 
   test("Filter controls are present", () => {
-    render(<CodeSnippetManager data-oid="o.5cq16" />);
+    render(<CodeSnippetManager />);
 
     expect(screen.getByText("Category")).toBeInTheDocument();
     expect(screen.getByText("Language")).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe("Task 2.2: Code Snippet Management", () => {
   });
 
   test("Create snippet form appears when button clicked", () => {
-    render(<CodeSnippetManager data-oid="or48ox4" />);
+    render(<CodeSnippetManager />);
 
     const createButton = screen.getByText("Create Snippet");
     fireEvent.click(createButton);
@@ -32,7 +32,7 @@ describe("Task 2.2: Code Snippet Management", () => {
   });
 
   test("Language options are available", () => {
-    render(<CodeSnippetManager data-oid="ijf9pyb" />);
+    render(<CodeSnippetManager />);
 
     const createButton = screen.getByText("Create Snippet");
     fireEvent.click(createButton);
@@ -46,7 +46,7 @@ describe("Task 2.2: Code Snippet Management", () => {
   });
 
   test("Category options are available", () => {
-    render(<CodeSnippetManager data-oid="sjph6mf" />);
+    render(<CodeSnippetManager />);
 
     const createButton = screen.getByText("Create Snippet");
     fireEvent.click(createButton);
@@ -76,7 +76,7 @@ describe("Task 2.2: Code Snippet Management", () => {
       })),
     });
 
-    render(<CodeSnippetManager data-oid="zk926el" />);
+    render(<CodeSnippetManager />);
 
     await waitFor(() => {
       expect(
@@ -89,7 +89,7 @@ describe("Task 2.2: Code Snippet Management", () => {
   });
 
   test("Tags input handles comma-separated values", () => {
-    render(<CodeSnippetManager data-oid="rn5932k" />);
+    render(<CodeSnippetManager />);
 
     const createButton = screen.getByText("Create Snippet");
     fireEvent.click(createButton);

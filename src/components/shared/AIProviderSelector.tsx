@@ -36,11 +36,9 @@ export function AIProviderSelector({
   disabled = false,
 }: AIProviderSelectorProps) {
   return (
-    <div className="space-y-4" data-oid="owcysjz">
-      <label className="block text-cyan-300 font-semibold" data-oid="n-zj92v">
-        AI Provider
-      </label>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3" data-oid=":bum6xi">
+    <div className="space-y-4">
+      <label className="block text-cyan-300 font-semibold">AI Provider</label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {providers.map((provider) => (
           <div
             key={provider.value}
@@ -54,9 +52,8 @@ export function AIProviderSelector({
               ${disabled ? "opacity-50 cursor-not-allowed" : ""}
             `}
             onClick={() => !disabled && onProviderChange(provider.value)}
-            data-oid="-732cy9"
           >
-            <div className="flex items-start space-x-3" data-oid="iosgu0k">
+            <div className="flex items-start space-x-3">
               <div
                 className={`
                 w-4 h-4 rounded-full border-2 mt-1 transition-all duration-200
@@ -66,10 +63,9 @@ export function AIProviderSelector({
                     : "border-slate-500"
                 }
               `}
-                data-oid="1am421f"
               />
 
-              <div className="flex-1" data-oid="th--2dh">
+              <div className="flex-1">
                 <h3
                   className={`
                   font-semibold transition-colors duration-200
@@ -79,21 +75,17 @@ export function AIProviderSelector({
                       : "text-slate-300"
                   }
                 `}
-                  data-oid="z2c61aj"
                 >
                   {provider.label}
                 </h3>
-                <p className="text-sm text-slate-400 mt-1" data-oid="0-b2_0d">
+                <p className="text-sm text-slate-400 mt-1">
                   {provider.description}
                 </p>
               </div>
             </div>
 
             {selectedProvider === provider.value && (
-              <div
-                className="absolute inset-0 rounded-lg border-2 border-cyan-400 animate-pulse"
-                data-oid="m8jrcg-"
-              />
+              <div className="absolute inset-0 rounded-lg border-2 border-cyan-400 animate-pulse" />
             )}
           </div>
         ))}

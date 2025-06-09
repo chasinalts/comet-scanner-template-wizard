@@ -245,25 +245,22 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8" data-oid="-9uwkjk">
-        <div
-          className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"
-          data-oid="4.z..--"
-        ></div>
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6" data-oid="qg7:jui">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center" data-oid="qxj9enc">
-        <h2 className="text-2xl font-bold text-white" data-oid="014sulw">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-white">
           Authentication Manager
         </h2>
-        <div className="flex space-x-2" data-oid="6aac21i">
+        <div className="flex space-x-2">
           {currentUser && (
-            <span className="text-sm text-slate-400" data-oid="729q8sx">
+            <span className="text-sm text-slate-400">
               Logged in as: {currentUser.email}
             </span>
           )}
@@ -272,18 +269,12 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
 
       {/* Error Display */}
       {error && (
-        <div
-          className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg"
-          data-oid="opuhz.q"
-        >
+        <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg">
           {error}
           {error.includes("table not found") && (
-            <div className="mt-2 text-sm" data-oid="_v:.bud">
-              <p data-oid="8e8lnc_">SQL to create the user_profiles table:</p>
-              <pre
-                className="bg-slate-900 p-2 rounded mt-1 text-xs overflow-x-auto"
-                data-oid="yla8qs6"
-              >
+            <div className="mt-2 text-sm">
+              <p>SQL to create the user_profiles table:</p>
+              <pre className="bg-slate-900 p-2 rounded mt-1 text-xs overflow-x-auto">
                 {`CREATE TABLE user_profiles (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
   email TEXT NOT NULL,
@@ -299,10 +290,7 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
       )}
 
       {/* Tabs */}
-      <div
-        className="flex space-x-1 bg-slate-800 p-1 rounded-lg"
-        data-oid="qp_67xb"
-      >
+      <div className="flex space-x-1 bg-slate-800 p-1 rounded-lg">
         {(["users", "sessions", "settings"] as const).map((tab) => (
           <button
             key={tab}
@@ -312,7 +300,6 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
                 ? "bg-cyan-500 text-white"
                 : "text-slate-300 hover:text-white hover:bg-slate-700"
             }`}
-            data-oid="68oe_96"
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
@@ -321,15 +308,14 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
 
       {/* Users Tab */}
       {activeTab === "users" && (
-        <div className="space-y-4" data-oid="kojde3k">
-          <div className="flex justify-between items-center" data-oid="br8lduq">
-            <h3 className="text-lg font-semibold text-white" data-oid="d-xls6n">
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-white">
               User Management
             </h3>
             <button
               onClick={() => setShowCreateUser(true)}
               className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-              data-oid="8_5ut5f"
             >
               Create User
             </button>
@@ -337,30 +323,14 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
 
           {/* Create User Form */}
           {showCreateUser && (
-            <div
-              className="bg-slate-800 border border-cyan-500/30 rounded-lg p-6"
-              data-oid="b-62kjo"
-            >
-              <h4
-                className="text-lg font-semibold text-white mb-4"
-                data-oid=":f8rzfw"
-              >
+            <div className="bg-slate-800 border border-cyan-500/30 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-white mb-4">
                 Create New User
               </h4>
-              <form
-                onSubmit={handleCreateUser}
-                className="space-y-4"
-                data-oid="i8dzp4e"
-              >
-                <div
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                  data-oid="y4hvmnd"
-                >
-                  <div data-oid="t2oaoqd">
-                    <label
-                      className="block text-cyan-300 text-sm font-medium mb-2"
-                      data-oid="bll0_f_"
-                    >
+              <form onSubmit={handleCreateUser} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-cyan-300 text-sm font-medium mb-2">
                       Email
                     </label>
                     <input
@@ -374,14 +344,10 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
                       }
                       className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                       required
-                      data-oid="pmevred"
                     />
                   </div>
-                  <div data-oid="c8e_fct">
-                    <label
-                      className="block text-cyan-300 text-sm font-medium mb-2"
-                      data-oid="-eh2zlf"
-                    >
+                  <div>
+                    <label className="block text-cyan-300 text-sm font-medium mb-2">
                       Password
                     </label>
                     <input
@@ -396,15 +362,11 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
                       className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                       required
                       minLength={6}
-                      data-oid="5bh-773"
                     />
                   </div>
                 </div>
-                <div data-oid="8k_kpg:">
-                  <label
-                    className="block text-cyan-300 text-sm font-medium mb-2"
-                    data-oid="6zqi:fx"
-                  >
+                <div>
+                  <label className="block text-cyan-300 text-sm font-medium mb-2">
                     Role
                   </label>
                   <select
@@ -413,20 +375,18 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
                       setNewUserData({ ...newUserData, role: e.target.value })
                     }
                     className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
-                    data-oid="_rfi3co"
                   >
                     {roles.map((role) => (
-                      <option key={role} value={role} data-oid="1h155j5">
+                      <option key={role} value={role}>
                         {role}
                       </option>
                     ))}
                   </select>
                 </div>
-                <div className="flex space-x-4" data-oid="61r2fib">
+                <div className="flex space-x-4">
                   <button
                     type="submit"
                     className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg transition-colors"
-                    data-oid="0c08grc"
                   >
                     Create User
                   </button>
@@ -434,7 +394,6 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
                     type="button"
                     onClick={() => setShowCreateUser(false)}
                     className="bg-slate-600 hover:bg-slate-700 text-white px-6 py-2 rounded-lg transition-colors"
-                    data-oid="er2-deo"
                   >
                     Cancel
                   </button>
@@ -444,106 +403,71 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
           )}
 
           {/* Users List */}
-          <div
-            className="bg-slate-800 rounded-lg overflow-hidden"
-            data-oid="fvbn3:l"
-          >
-            <div className="overflow-x-auto" data-oid="o1:3quh">
-              <table className="w-full" data-oid="0fmlkrb">
-                <thead className="bg-slate-700" data-oid="6drnep7">
-                  <tr data-oid="nl26tql">
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="apkqqqn"
-                    >
+          <div className="bg-slate-800 rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-700">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Email
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="0uoep8b"
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Role
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="cg8r8qu"
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Status
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="tzny7n."
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Last Login
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="kozqrr4"
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Created
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="o_nk:u8"
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-700" data-oid=".-x27jo">
+                <tbody className="divide-y divide-slate-700">
                   {users.map((user) => (
-                    <tr
-                      key={user.id}
-                      className="hover:bg-slate-700/50"
-                      data-oid="knv95.y"
-                    >
-                      <td className="px-4 py-3 text-white" data-oid="83bwwuh">
-                        {user.email}
-                      </td>
-                      <td className="px-4 py-3" data-oid="nhl7_:g">
+                    <tr key={user.id} className="hover:bg-slate-700/50">
+                      <td className="px-4 py-3 text-white">{user.email}</td>
+                      <td className="px-4 py-3">
                         <select
                           value={user.role}
                           onChange={(e) =>
                             handleUpdateUserRole(user.id, e.target.value)
                           }
                           className="bg-slate-600 border border-slate-500 text-white rounded px-2 py-1 text-sm"
-                          data-oid="6gbr1pg"
                         >
                           {roles.map((role) => (
-                            <option key={role} value={role} data-oid="8kg82n3">
+                            <option key={role} value={role}>
                               {role}
                             </option>
                           ))}
                         </select>
                       </td>
-                      <td className="px-4 py-3" data-oid="r:oujv8">
+                      <td className="px-4 py-3">
                         <span
                           className={`px-2 py-1 rounded text-xs ${
                             user.is_active
                               ? "bg-green-500/20 text-green-300"
                               : "bg-red-500/20 text-red-300"
                           }`}
-                          data-oid="mlns.iy"
                         >
                           {user.is_active ? "Active" : "Inactive"}
                         </span>
                       </td>
-                      <td
-                        className="px-4 py-3 text-slate-300 text-sm"
-                        data-oid="vm0.gd-"
-                      >
+                      <td className="px-4 py-3 text-slate-300 text-sm">
                         {user.last_login
                           ? formatDate(user.last_login)
                           : "Never"}
                       </td>
-                      <td
-                        className="px-4 py-3 text-slate-300 text-sm"
-                        data-oid="jb7lq0i"
-                      >
+                      <td className="px-4 py-3 text-slate-300 text-sm">
                         {formatDate(user.created_at)}
                       </td>
-                      <td className="px-4 py-3" data-oid="cl.s434">
-                        <div className="flex space-x-2" data-oid="jig8a6z">
+                      <td className="px-4 py-3">
+                        <div className="flex space-x-2">
                           <button
                             onClick={() =>
                               handleToggleUserStatus(user.id, user.is_active)
@@ -553,14 +477,12 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
                                 ? "bg-yellow-500 hover:bg-yellow-600 text-white"
                                 : "bg-green-500 hover:bg-green-600 text-white"
                             }`}
-                            data-oid="e8e79a1"
                           >
                             {user.is_active ? "Deactivate" : "Activate"}
                           </button>
                           <button
                             onClick={() => handleDeleteUser(user.id)}
                             className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition-colors"
-                            data-oid="p4wld1l"
                           >
                             Delete
                           </button>
@@ -577,102 +499,68 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
 
       {/* Sessions Tab */}
       {activeTab === "sessions" && (
-        <div className="space-y-4" data-oid="5cx74ox">
-          <div className="flex justify-between items-center" data-oid="zfz1j-s">
-            <h3 className="text-lg font-semibold text-white" data-oid="pon-qna">
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-white">
               Active Sessions
             </h3>
             <button
               onClick={fetchSessions}
               className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-              data-oid="b4.0e2b"
             >
               Refresh
             </button>
           </div>
 
-          <div
-            className="bg-slate-800 rounded-lg overflow-hidden"
-            data-oid="2hhixcc"
-          >
-            <div className="overflow-x-auto" data-oid="252cvit">
-              <table className="w-full" data-oid="5xs7rwm">
-                <thead className="bg-slate-700" data-oid=".by6.wr">
-                  <tr data-oid="hci_vw6">
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="wqk-4_9"
-                    >
+          <div className="bg-slate-800 rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-700">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       User ID
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="ubzv8vk"
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Created
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="5fcrqc4"
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Expires
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="9o2gt9s"
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Status
                     </th>
-                    <th
-                      className="px-4 py-3 text-left text-cyan-300 font-medium"
-                      data-oid="n_8i_38"
-                    >
+                    <th className="px-4 py-3 text-left text-cyan-300 font-medium">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-700" data-oid="wlg7m5.">
+                <tbody className="divide-y divide-slate-700">
                   {sessions.map((session) => (
-                    <tr
-                      key={session.id}
-                      className="hover:bg-slate-700/50"
-                      data-oid="yc9uil5"
-                    >
-                      <td
-                        className="px-4 py-3 text-white font-mono text-sm"
-                        data-oid="zxiu-8k"
-                      >
+                    <tr key={session.id} className="hover:bg-slate-700/50">
+                      <td className="px-4 py-3 text-white font-mono text-sm">
                         {session.user_id.substring(0, 8)}...
                       </td>
-                      <td
-                        className="px-4 py-3 text-slate-300 text-sm"
-                        data-oid="t6i_y50"
-                      >
+                      <td className="px-4 py-3 text-slate-300 text-sm">
                         {formatDate(session.created_at)}
                       </td>
-                      <td
-                        className="px-4 py-3 text-slate-300 text-sm"
-                        data-oid="1w:ya16"
-                      >
+                      <td className="px-4 py-3 text-slate-300 text-sm">
                         {formatDate(session.expires_at)}
                       </td>
-                      <td className="px-4 py-3" data-oid="4ebk0bg">
+                      <td className="px-4 py-3">
                         <span
                           className={`px-2 py-1 rounded text-xs ${
                             isExpired(session.expires_at)
                               ? "bg-red-500/20 text-red-300"
                               : "bg-green-500/20 text-green-300"
                           }`}
-                          data-oid="kc7a2x1"
                         >
                           {isExpired(session.expires_at) ? "Expired" : "Active"}
                         </span>
                       </td>
-                      <td className="px-4 py-3" data-oid="ei.nkd2">
+                      <td className="px-4 py-3">
                         <button
                           onClick={() => handleInvalidateSession(session.id)}
                           className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition-colors"
-                          data-oid="sjrx4ba"
                         >
                           Invalidate
                         </button>
@@ -688,76 +576,47 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
 
       {/* Settings Tab */}
       {activeTab === "settings" && (
-        <div className="space-y-4" data-oid="z62s5zo">
-          <h3 className="text-lg font-semibold text-white" data-oid="lbxtrb4">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-white">
             Authentication Settings
           </h3>
 
-          <div
-            className="bg-slate-800 border border-slate-700 rounded-lg p-6"
-            data-oid="mu3:6ud"
-          >
-            <h4
-              className="text-md font-semibold text-white mb-4"
-              data-oid="v0-..d4"
-            >
+          <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+            <h4 className="text-md font-semibold text-white mb-4">
               Security Configuration
             </h4>
 
-            <div className="space-y-4" data-oid="be4.-ac">
-              <div
-                className="flex items-center justify-between"
-                data-oid="a3b:6vq"
-              >
-                <div data-oid="t1lwu33">
-                  <label
-                    className="text-cyan-300 font-medium"
-                    data-oid="mot4f_t"
-                  >
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-cyan-300 font-medium">
                     Require Email Confirmation
                   </label>
-                  <p className="text-slate-400 text-sm" data-oid="h8yipcz">
+                  <p className="text-slate-400 text-sm">
                     Users must confirm their email before accessing the system
                   </p>
                 </div>
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="toggle"
-                  data-oid="oj9u..y"
-                />
+                <input type="checkbox" defaultChecked className="toggle" />
               </div>
 
-              <div
-                className="flex items-center justify-between"
-                data-oid="d0fkbzz"
-              >
-                <div data-oid="9pm1kbz">
-                  <label
-                    className="text-cyan-300 font-medium"
-                    data-oid=".8ysd7n"
-                  >
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-cyan-300 font-medium">
                     Enable Two-Factor Authentication
                   </label>
-                  <p className="text-slate-400 text-sm" data-oid=":5nsbse">
+                  <p className="text-slate-400 text-sm">
                     Require 2FA for admin users
                   </p>
                 </div>
-                <input type="checkbox" className="toggle" data-oid="uesbu1q" />
+                <input type="checkbox" className="toggle" />
               </div>
 
-              <div
-                className="flex items-center justify-between"
-                data-oid="ljjycej"
-              >
-                <div data-oid="ivibo4y">
-                  <label
-                    className="text-cyan-300 font-medium"
-                    data-oid=".m0z0y8"
-                  >
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-cyan-300 font-medium">
                     Session Timeout (hours)
                   </label>
-                  <p className="text-slate-400 text-sm" data-oid="8ak-g45">
+                  <p className="text-slate-400 text-sm">
                     Automatically log out inactive users
                   </p>
                 </div>
@@ -767,16 +626,12 @@ export default function AuthManager({ onAuthUpdate }: AuthManagerProps) {
                   min={1}
                   max={168}
                   className="bg-slate-700 border border-slate-600 text-white rounded px-3 py-1 w-20"
-                  data-oid="44n5hry"
                 />
               </div>
             </div>
 
-            <div className="mt-6" data-oid="twoy7q_">
-              <button
-                className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-                data-oid="26nz255"
-              >
+            <div className="mt-6">
+              <button className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors">
                 Save Settings
               </button>
             </div>
