@@ -340,51 +340,63 @@ export default function SectionManager({
             </div>
 
             {/* Image Assignments */}
-            {formData.question_type === "multiple_choice" && formData.options && formData.options.length > 0 && (
-              <div>
-                <label className="block text-cyan-300 text-sm font-medium mb-2">
-                  Image Assignments
-                </label>
-                <div className="space-y-3 bg-slate-700 border border-slate-600 rounded-lg p-4">
-                  {formData.options.map((option, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <span className="text-white text-sm min-w-0 flex-1 truncate">
-                        {option}
-                      </span>
-                      <select
-                        value={formData.image_assignments?.[option] || ""}
-                        onChange={(e) => handleImageAssignment(option, e.target.value)}
-                        className="bg-slate-600 border border-slate-500 text-white rounded px-3 py-1 text-sm focus:outline-none focus:border-cyan-500"
-                      >
-                        <option value="">No image</option>
-                        {availableImages.map((image) => (
-                          <option key={image.id} value={image.id}>
-                            {image.name}
-                          </option>
-                        ))}
-                      </select>
-                      {formData.image_assignments?.[option] && (
-                        <div className="w-12 h-12 bg-slate-600 rounded overflow-hidden">
-                          <img
-                            src={availableImages.find(img => img.id === formData.image_assignments?.[option])?.url}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {availableImages.length === 0 && (
-                    <p className="text-slate-400 text-sm">
-                      No answer images available. Upload images with type "Answer Images" in the Images tab first.
-                    </p>
-                  )}
+            {formData.question_type === "multiple_choice" &&
+              formData.options &&
+              formData.options.length > 0 && (
+                <div>
+                  <label className="block text-cyan-300 text-sm font-medium mb-2">
+                    Image Assignments
+                  </label>
+                  <div className="space-y-3 bg-slate-700 border border-slate-600 rounded-lg p-4">
+                    {formData.options.map((option, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <span className="text-white text-sm min-w-0 flex-1 truncate">
+                          {option}
+                        </span>
+                        <select
+                          value={formData.image_assignments?.[option] || ""}
+                          onChange={(e) =>
+                            handleImageAssignment(option, e.target.value)
+                          }
+                          className="bg-slate-600 border border-slate-500 text-white rounded px-3 py-1 text-sm focus:outline-none focus:border-cyan-500"
+                        >
+                          <option value="">No image</option>
+                          {availableImages.map((image) => (
+                            <option key={image.id} value={image.id}>
+                              {image.name}
+                            </option>
+                          ))}
+                        </select>
+                        {formData.image_assignments?.[option] && (
+                          <div className="w-12 h-12 bg-slate-600 rounded overflow-hidden">
+                            <img
+                              src={
+                                availableImages.find(
+                                  (img) =>
+                                    img.id ===
+                                    formData.image_assignments?.[option],
+                                )?.url
+                              }
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display =
+                                  "none";
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {availableImages.length === 0 && (
+                      <p className="text-slate-400 text-sm">
+                        No answer images available. Upload images with type
+                        "Answer Images" in the Images tab first.
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             <div data-oid="-z38y_3">
               <label
@@ -501,16 +513,23 @@ export default function SectionManager({
                   </div>
                   <p className="text-slate-300 mb-2" data-oid="51lrtxz">
                     {section.description}
-                  </p{section.options && section.options.length > 0 && (
-                    <div className="text-sm text-slate-400 mb-2" data-oid="84igyz2">
+                  </p>
+                  {section.options && section.options.length > 0 && (
+                    <div
+                      className="text-sm text-slate-400 mb-2"
+                      data-oid="84igyz2"
+                    >
                       Options: {section.options.join(", ")}
                     </div>
                   )}
-                  {section.image_assignments && Object.keys(section.image_assignments).length > 0 && (
-                    <div className="text-sm text-slate-400">
-                      Images assigned: {Object.keys(section.image_assignments).length} option(s)
-                    </div>
-                  )}
+                  {section.image_assignments &&
+                    Object.keys(section.image_assignments).length > 0 && (
+                      <div className="text-sm text-slate-400">
+                        Images assigned:{" "}
+                        {Object.keys(section.image_assignments).length}{" "}
+                        option(s)
+                      </div>
+                    )}
                 </div>
                 <div className="flex space-x-2" data-oid="2ug.7q8">
                   <button

@@ -1,5 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { aiService, AIProvider } from '@/lib/aiService';
+import { NextRequest, NextResponse } from "next/server";
+import { aiService } from "@/lib/aiService";
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { prompt, functionType, userInput, provider } = body;
+
+    if (!prompt || !functionType || !provider) {
+      return NextResponse.json(
+        {
+          error:
+            "Missing required fields: prompt, functionType, and provider are required",
+        },
+        { status: 400 },
+      );
+    }
+
+    const result = await aiService.generateCode({
+      prompt,
+      functionType,
+      userInput,
+      provider,
+    });
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("AI generation error:", error);
+
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+        isManualMode: true,
+      },
+      { status: 500 },
+    );
+  }
+}
+import { NextRequest, NextResponse } from "next/server";
+import { aiService, AIProvider } from "@/lib/aiService";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,17 +48,24 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!prompt || !functionType || !provider) {
       return NextResponse.json(
-        { error: 'Missing required fields: prompt, functionType, provider' },
-        { status: 400 }
+        { error: "Missing required fields: prompt, functionType, provider" },
+        { status: 400 },
       );
     }
 
     // Validate provider
-    const validProviders: AIProvider[] = ['openai', 'gemini', 'claude', 'openrouter'];
+    const validProviders: AIProvider[] = [
+      "openai",
+      "gemini",
+      "claude",
+      "openrouter",
+    ];
     if (!validProviders.includes(provider)) {
       return NextResponse.json(
-        { error: `Invalid provider. Must be one of: ${validProviders.join(', ')}` },
-        { status: 400 }
+        {
+          error: `Invalid provider. Must be one of: ${validProviders.join(", ")}`,
+        },
+        { status: 400 },
       );
     }
 
@@ -34,7 +80,7 @@ export async function POST(request: NextRequest) {
     if (!apiKeyMap[provider as AIProvider]) {
       return NextResponse.json(
         { error: `API key not configured for ${provider}` },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -48,10 +94,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('AI generation error:', error);
+    console.error("AI generation error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
+      { status: 500 },
     );
   }
 }
@@ -61,9 +109,9 @@ export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
     },
   });
 }
