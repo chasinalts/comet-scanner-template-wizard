@@ -3,9 +3,9 @@ import { useState } from "react";
 import TemplateGallery from "@/components/user/TemplateGallery";
 import TemplateWizard from "@/components/user/TemplateWizard";
 import LiveCodePreview from "@/components/user/LiveCodePreview";
-import InvisibleAdminButton from "@/components/InvisibleAdminButton";
+// REMOVED: InvisibleAdminButton import
 import LivePreviewPanel from "@/components/LivePreviewPanel";
-import CacheClearButton from "@/components/CacheClearButton";
+// REMOVED: CacheClearButton import
 
 export default function HomePage() {
   const [currentView, setCurrentView] = useState<"gallery" | "wizard">(
@@ -25,8 +25,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen futuristic-grid-bg">
-      {/* Invisible Admin Button */}
-      <InvisibleAdminButton />
+      {/* REMOVED: InvisibleAdminButton */}
 
       {/* Header */}
       <header className="bg-slate-900 bg-opacity-50 backdrop-blur-md border-b border-cyan-500/30">
@@ -40,6 +39,8 @@ export default function HomePage() {
               COMET SCANNER TEMPLATE WIZARD
             </h1>
             <div className="flex items-center space-x-4">
+              {/* REMOVED: Admin email text */}
+              {/* REMOVED: CacheClearButton */}
               <span
                 className="holographic-text"
                 data-text="Owner: chasecambre@gmail.com"
