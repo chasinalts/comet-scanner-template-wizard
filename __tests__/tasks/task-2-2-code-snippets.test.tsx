@@ -3,14 +3,14 @@ import CodeSnippetManager from "@/components/admin/CodeSnippetManager";
 
 describe("Task 2.2: Code Snippet Management", () => {
   test("CodeSnippetManager renders correctly", () => {
-    render(<CodeSnippetManager data-oid="d73rl2l" />);
+    render(<CodeSnippetManager data-oid="1.j-13-" />);
 
     expect(screen.getByText("Code Snippet Manager")).toBeInTheDocument();
     expect(screen.getByText("Create Snippet")).toBeInTheDocument();
   });
 
   test("Filter controls are present", () => {
-    render(<CodeSnippetManager data-oid="5w704zj" />);
+    render(<CodeSnippetManager data-oid="o.5cq16" />);
 
     expect(screen.getByText("Category")).toBeInTheDocument();
     expect(screen.getByText("Language")).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe("Task 2.2: Code Snippet Management", () => {
   });
 
   test("Create snippet form appears when button clicked", () => {
-    render(<CodeSnippetManager data-oid="rkd4v69" />);
+    render(<CodeSnippetManager data-oid="or48ox4" />);
 
     const createButton = screen.getByText("Create Snippet");
     fireEvent.click(createButton);
@@ -32,7 +32,7 @@ describe("Task 2.2: Code Snippet Management", () => {
   });
 
   test("Language options are available", () => {
-    render(<CodeSnippetManager data-oid="c-zv_kb" />);
+    render(<CodeSnippetManager data-oid="ijf9pyb" />);
 
     const createButton = screen.getByText("Create Snippet");
     fireEvent.click(createButton);
@@ -46,7 +46,7 @@ describe("Task 2.2: Code Snippet Management", () => {
   });
 
   test("Category options are available", () => {
-    render(<CodeSnippetManager data-oid="ifi9z3m" />);
+    render(<CodeSnippetManager data-oid="sjph6mf" />);
 
     const createButton = screen.getByText("Create Snippet");
     fireEvent.click(createButton);
@@ -76,7 +76,7 @@ describe("Task 2.2: Code Snippet Management", () => {
       })),
     });
 
-    render(<CodeSnippetManager data-oid="p..ohn7" />);
+    render(<CodeSnippetManager data-oid="zk926el" />);
 
     await waitFor(() => {
       expect(
@@ -89,7 +89,7 @@ describe("Task 2.2: Code Snippet Management", () => {
   });
 
   test("Tags input handles comma-separated values", () => {
-    render(<CodeSnippetManager data-oid="3wie5uq" />);
+    render(<CodeSnippetManager data-oid="rn5932k" />);
 
     const createButton = screen.getByText("Create Snippet");
     fireEvent.click(createButton);

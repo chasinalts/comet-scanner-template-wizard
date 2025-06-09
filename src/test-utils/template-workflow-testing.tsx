@@ -188,7 +188,7 @@ export class TemplateWorkflowTester {
 
     // Render the template wizard component
     render(
-      <div data-testid="template-wizard-container" data-oid="ndz7jh.">
+      <div data-testid="template-wizard-container" data-oid="y6:eh57">
         {/* Template wizard component would be rendered here */}
       </div>,
     );

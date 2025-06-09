@@ -214,34 +214,34 @@ export default function MasterCodeManager({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8" data-oid="db1zh7z">
+      <div className="flex items-center justify-center p-8" data-oid="c-3zma-">
         <div
           className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"
-          data-oid="sts2sgt"
+          data-oid="5salqjh"
         ></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6" data-oid="z9-zbfe">
+    <div className="space-y-6" data-oid="h437dqj">
       {/* Header */}
-      <div className="flex justify-between items-center" data-oid="tpkowtk">
-        <h2 className="text-2xl font-bold text-white" data-oid="5ldjac6">
+      <div className="flex justify-between items-center" data-oid="9o-gjhh">
+        <h2 className="text-2xl font-bold text-white" data-oid="5msespn">
           Master Code Repository
         </h2>
-        <div className="flex space-x-2" data-oid="xuttl_m">
+        <div className="flex space-x-2" data-oid="j8jcvfk">
           <button
             onClick={() => copyCodeToClipboard(generateMasterCode())}
             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
-            data-oid="2del_g4"
+            data-oid="e:uvurp"
           >
             Copy Full Master Code
           </button>
           <button
             onClick={() => setShowCreateForm(true)}
             className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-            data-oid="pnifozc"
+            data-oid="05_:.jw"
           >
             Add Code Block
           </button>
@@ -252,17 +252,17 @@ export default function MasterCodeManager({
       {error && (
         <div
           className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg"
-          data-oid="yamcz6."
+          data-oid="2nsi1vy"
         >
           {error}
           {error.includes("table not found") && (
-            <div className="mt-2 text-sm" data-oid="oe_nsgi">
-              <p data-oid="ggt9jve">
+            <div className="mt-2 text-sm" data-oid=":3ywbzi">
+              <p data-oid="kpnn5q6">
                 SQL to create the master_code_blocks table:
               </p>
               <pre
                 className="bg-slate-900 p-2 rounded mt-1 text-xs overflow-x-auto"
-                data-oid="u.nmsda"
+                data-oid="mg2c:r6"
               >
                 {`CREATE TABLE master_code_blocks (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -283,11 +283,11 @@ export default function MasterCodeManager({
       )}
 
       {/* Filter */}
-      <div className="flex space-x-4" data-oid="e6s9vrm">
-        <div data-oid="jbsyel5">
+      <div className="flex space-x-4" data-oid=".tm8mrv">
+        <div data-oid="nz85y85">
           <label
             className="block text-cyan-300 text-sm font-medium mb-1"
-            data-oid="wjp2b8o"
+            data-oid="laskgch"
           >
             Filter by Category
           </label>
@@ -295,13 +295,13 @@ export default function MasterCodeManager({
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
             className="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
-            data-oid="yb-q35p"
+            data-oid="9942ur5"
           >
-            <option value="all" data-oid="2525:k-">
+            <option value="all" data-oid="394.nf0">
               All Categories
             </option>
             {uniqueCategories.map((category) => (
-              <option key={category} value={category} data-oid="b0vo83-">
+              <option key={category} value={category} data-oid="_6k1hjg">
                 {category}
               </option>
             ))}
@@ -313,11 +313,11 @@ export default function MasterCodeManager({
       {showCreateForm && (
         <div
           className="bg-slate-800 border border-cyan-500/30 rounded-lg p-6"
-          data-oid="ujwj-hg"
+          data-oid="62zs8li"
         >
           <h3
             className="text-xl font-semibold text-white mb-4"
-            data-oid="08h3j6s"
+            data-oid="f4t.4nx"
           >
             {editingBlock ? "Edit Code Block" : "Create New Code Block"}
           </h3>
@@ -325,16 +325,16 @@ export default function MasterCodeManager({
           <form
             onSubmit={handleSubmit}
             className="space-y-4"
-            data-oid="4.86jq1"
+            data-oid="dnlfu21"
           >
             <div
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              data-oid="zo9vv35"
+              data-oid="g9tzl80"
             >
-              <div data-oid="cvzv668">
+              <div data-oid="61m1kg0">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="4zkzcww"
+                  data-oid="05bfmr_"
                 >
                   Name
                 </label>
@@ -346,14 +346,14 @@ export default function MasterCodeManager({
                   }
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                   required
-                  data-oid="h-ka3yr"
+                  data-oid="k::3w_t"
                 />
               </div>
 
-              <div data-oid="8:.99u_">
+              <div data-oid="2wplk1h">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="j.lqa06"
+                  data-oid="n-7:zkk"
                 >
                   Category
                 </label>
@@ -363,10 +363,10 @@ export default function MasterCodeManager({
                     setFormData({ ...formData, category: e.target.value })
                   }
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
-                  data-oid="s_4xob:"
+                  data-oid="zh6fmfn"
                 >
                   {categories.map((cat) => (
-                    <option key={cat} value={cat} data-oid="waz69nz">
+                    <option key={cat} value={cat} data-oid="c1mo.mp">
                       {cat}
                     </option>
                   ))}
@@ -376,12 +376,12 @@ export default function MasterCodeManager({
 
             <div
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              data-oid="g-6afq."
+              data-oid="f-v-85i"
             >
-              <div data-oid="p7tzbzb">
+              <div data-oid="-jmwqc8">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="nf_.m6b"
+                  data-oid="1vzv_ym"
                 >
                   Order Index
                 </label>
@@ -396,14 +396,14 @@ export default function MasterCodeManager({
                   }
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                   min="0"
-                  data-oid="5ecyjwp"
+                  data-oid="w-ugaa-"
                 />
               </div>
 
-              <div data-oid="1usvg54">
+              <div data-oid="a0a.bfo">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="e07m.w4"
+                  data-oid="bxd2390"
                 >
                   Dependencies (comma-separated)
                 </label>
@@ -413,15 +413,15 @@ export default function MasterCodeManager({
                   onChange={(e) => handleDependenciesChange(e.target.value)}
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                   placeholder="block1, block2, block3"
-                  data-oid="jn80gbt"
+                  data-oid="jtspl.4"
                 />
               </div>
             </div>
 
-            <div data-oid="0yrqxrs">
+            <div data-oid="z2edm1-">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="7xwbp51"
+                data-oid="9qrfq5l"
               >
                 Description
               </label>
@@ -433,14 +433,14 @@ export default function MasterCodeManager({
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                 rows={2}
                 required
-                data-oid="5elcbjj"
+                data-oid="j9i-z9g"
               />
             </div>
 
-            <div data-oid="qt4x1pm">
+            <div data-oid="9um-hq:">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="9g0a33v"
+                data-oid="u7lo875"
               >
                 PineScript Code
               </label>
@@ -453,11 +453,11 @@ export default function MasterCodeManager({
                 rows={10}
                 required
                 placeholder="// PineScript code here..."
-                data-oid="q.9w6-8"
+                data-oid="pwdw2sk"
               />
             </div>
 
-            <div className="flex items-center" data-oid="5vznzzg">
+            <div className="flex items-center" data-oid="ewepux9">
               <input
                 type="checkbox"
                 id="block_is_active"
@@ -466,23 +466,23 @@ export default function MasterCodeManager({
                   setFormData({ ...formData, is_active: e.target.checked })
                 }
                 className="mr-2"
-                data-oid="jy7rahx"
+                data-oid="3kc9w1t"
               />
 
               <label
                 htmlFor="block_is_active"
                 className="text-cyan-300 text-sm"
-                data-oid=".javt0j"
+                data-oid="ylsv6io"
               >
                 Active (include in master code generation)
               </label>
             </div>
 
-            <div className="flex space-x-4" data-oid="9_a:d64">
+            <div className="flex space-x-4" data-oid="mf-4ijx">
               <button
                 type="submit"
                 className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg transition-colors"
-                data-oid="xql55uk"
+                data-oid="ge9ef6l"
               >
                 {editingBlock ? "Update" : "Create"} Code Block
               </button>
@@ -490,7 +490,7 @@ export default function MasterCodeManager({
                 type="button"
                 onClick={resetForm}
                 className="bg-slate-600 hover:bg-slate-700 text-white px-6 py-2 rounded-lg transition-colors"
-                data-oid="3wz_myn"
+                data-oid="y_f.:vj"
               >
                 Cancel
               </button>
@@ -500,9 +500,9 @@ export default function MasterCodeManager({
       )}
 
       {/* Code Blocks List */}
-      <div className="space-y-4" data-oid="-de1k8x">
+      <div className="space-y-4" data-oid="2evougz">
         {filteredBlocks.length === 0 ? (
-          <div className="text-center text-slate-400 py-8" data-oid="k-hvmf6">
+          <div className="text-center text-slate-400 py-8" data-oid="1bpx5bm">
             {codeBlocks.length === 0
               ? "No code blocks found. Create your first code block to get started."
               : "No code blocks match the current filter."}
@@ -512,75 +512,75 @@ export default function MasterCodeManager({
             <div
               key={block.id}
               className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:border-cyan-500/50 transition-colors"
-              data-oid="u7p:c9:"
+              data-oid="dueutr8"
             >
               <div
                 className="flex justify-between items-start mb-3"
-                data-oid="tlwz10i"
+                data-oid="ai3qov:"
               >
-                <div className="flex-1" data-oid="ce4rjni">
+                <div className="flex-1" data-oid="99xhr_5">
                   <div
                     className="flex items-center space-x-2 mb-2"
-                    data-oid="wt0l6bl"
+                    data-oid="wk:p:82"
                   >
                     <h3
                       className="text-lg font-semibold text-white"
-                      data-oid="ke1lbgi"
+                      data-oid="onuy8mu"
                     >
                       {block.name}
                     </h3>
                     <span
                       className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded"
-                      data-oid="i9jgf_2"
+                      data-oid="nalwerd"
                     >
                       {block.category}
                     </span>
                     <span
                       className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded"
-                      data-oid="o9368xh"
+                      data-oid="x12yg91"
                     >
                       Order: {block.order_index}
                     </span>
                     {!block.is_active && (
                       <span
                         className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded"
-                        data-oid="42y15x8"
+                        data-oid="zu8.gys"
                       >
                         Inactive
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-300 mb-2" data-oid="p4nsmgo">
+                  <p className="text-slate-300 mb-2" data-oid="96u4c7r">
                     {block.description}
                   </p>
                   {block.dependencies.length > 0 && (
                     <div
                       className="text-sm text-slate-400 mb-2"
-                      data-oid="xti7r2p"
+                      data-oid="6lw4-iy"
                     >
                       Dependencies: {block.dependencies.join(", ")}
                     </div>
                   )}
                 </div>
-                <div className="flex space-x-2" data-oid="ma.ffsd">
+                <div className="flex space-x-2" data-oid="-cj19io">
                   <button
                     onClick={() => copyCodeToClipboard(block.code)}
                     className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="d07hkt4"
+                    data-oid="diidrnb"
                   >
                     Copy
                   </button>
                   <button
                     onClick={() => handleEdit(block)}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="e-imv-x"
+                    data-oid="6gflb69"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(block.id)}
                     className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="s7sya5l"
+                    data-oid="sxqbu-x"
                   >
                     Delete
                   </button>
@@ -588,18 +588,18 @@ export default function MasterCodeManager({
               </div>
 
               {/* Code Preview */}
-              <details data-oid="v-.s6:c">
+              <details data-oid="q38mo:w">
                 <summary
                   className="text-cyan-300 cursor-pointer text-sm hover:text-cyan-200 mb-2"
-                  data-oid="hoobh.p"
+                  data-oid="br81m1c"
                 >
                   View Code
                 </summary>
                 <pre
                   className="bg-slate-900 border border-slate-600 rounded p-3 text-xs text-slate-300 overflow-x-auto"
-                  data-oid="lqsik_j"
+                  data-oid="a:_f5r7"
                 >
-                  <code data-oid="_8zpepr">{block.code}</code>
+                  <code data-oid="t9j:2cv">{block.code}</code>
                 </pre>
               </details>
             </div>

@@ -5,7 +5,7 @@ describe("Task 4.2: Enhanced Code Preview", () => {
   test("LiveCodePreview renders correctly", () => {
     const testCode = '// Test PineScript code\nindicator("Test")';
 
-    render(<LiveCodePreview code={testCode} data-oid="7pmbsrm" />);
+    render(<LiveCodePreview code={testCode} data-oid="70_d6lm" />);
 
     expect(screen.getByText("Live Code Preview")).toBeInTheDocument();
   });
@@ -13,14 +13,14 @@ describe("Task 4.2: Enhanced Code Preview", () => {
   test("Code is displayed in preview", () => {
     const testCode = '// Test PineScript code\nindicator("Test")';
 
-    render(<LiveCodePreview code={testCode} data-oid="o0w0r9s" />);
+    render(<LiveCodePreview code={testCode} data-oid="lv70_ge" />);
 
     expect(screen.getByText(/Test PineScript code/)).toBeInTheDocument();
     expect(screen.getByText(/indicator\("Test"\)/)).toBeInTheDocument();
   });
 
   test("Empty code is handled gracefully", () => {
-    render(<LiveCodePreview code="" data-oid="n.7l6w_" />);
+    render(<LiveCodePreview code="" data-oid="5ytl:.f" />);
 
     expect(screen.getByText("Live Code Preview")).toBeInTheDocument();
     // Should not crash with empty code
@@ -29,7 +29,7 @@ describe("Task 4.2: Enhanced Code Preview", () => {
   test("Code preview has proper styling", () => {
     const testCode = 'indicator("Test")';
 
-    render(<LiveCodePreview code={testCode} data-oid="f:jzq:5" />);
+    render(<LiveCodePreview code={testCode} data-oid="9kfi_pr" />);
 
     // Check for code block styling
     const codeElement = screen.getByText(/indicator/);
@@ -39,7 +39,7 @@ describe("Task 4.2: Enhanced Code Preview", () => {
   test("Copy functionality is available", () => {
     const testCode = 'indicator("Test")';
 
-    render(<LiveCodePreview code={testCode} data-oid="ln_t3ep" />);
+    render(<LiveCodePreview code={testCode} data-oid="6qyuvd4" />);
 
     // Should have copy button or functionality
     const copyButton =
@@ -52,11 +52,11 @@ describe("Task 4.2: Enhanced Code Preview", () => {
     const testCode2 = 'indicator("Test2")';
 
     const { rerender } = render(
-      <LiveCodePreview code={testCode1} data-oid="-o.c8ab" />,
+      <LiveCodePreview code={testCode1} data-oid="wt-94g4" />,
     );
     expect(screen.getByText(/Test1/)).toBeInTheDocument();
 
-    rerender(<LiveCodePreview code={testCode2} data-oid="yce:3l9" />);
+    rerender(<LiveCodePreview code={testCode2} data-oid="w6yd7y5" />);
     expect(screen.getByText(/Test2/)).toBeInTheDocument();
     expect(screen.queryByText(/Test1/)).not.toBeInTheDocument();
   });
@@ -64,7 +64,7 @@ describe("Task 4.2: Enhanced Code Preview", () => {
   test("Component is user-facing", () => {
     const testCode = 'indicator("Test")';
 
-    render(<LiveCodePreview code={testCode} data-oid="-9sv3v9" />);
+    render(<LiveCodePreview code={testCode} data-oid="5.-vvar" />);
 
     // Should not contain admin-specific elements
     expect(screen.queryByText("Admin")).not.toBeInTheDocument();

@@ -15,7 +15,7 @@ describe("Task 4.1: Streamlined Template Builder", () => {
       <TemplateWizard
         template={mockTemplate}
         onCodeUpdate={() => {}}
-        data-oid="ie5wqe3"
+        data-oid="wu-32z7"
       />,
     );
 
@@ -23,7 +23,7 @@ describe("Task 4.1: Streamlined Template Builder", () => {
   });
 
   test("TemplateGallery renders correctly", () => {
-    render(<TemplateGallery onStartWizard={() => {}} data-oid="1cewtoy" />);
+    render(<TemplateGallery onStartWizard={() => {}} data-oid="8q.k71p" />);
 
     expect(screen.getByText("Template Gallery")).toBeInTheDocument();
   });
@@ -33,7 +33,7 @@ describe("Task 4.1: Streamlined Template Builder", () => {
       <TemplateWizard
         template={null}
         onCodeUpdate={() => {}}
-        data-oid="s8ll4aa"
+        data-oid="o5u153s"
       />,
     );
 
@@ -44,7 +44,7 @@ describe("Task 4.1: Streamlined Template Builder", () => {
   test("TemplateGallery has start wizard functionality", () => {
     const mockOnStartWizard = jest.fn();
     render(
-      <TemplateGallery onStartWizard={mockOnStartWizard} data-oid="3w2eovk" />,
+      <TemplateGallery onStartWizard={mockOnStartWizard} data-oid="wjui_4f" />,
     );
 
     // The component should render without errors
@@ -64,7 +64,7 @@ describe("Task 4.1: Streamlined Template Builder", () => {
       <TemplateWizard
         template={mockTemplate}
         onCodeUpdate={mockCodeUpdate}
-        data-oid="acytuy2"
+        data-oid="478s956"
       />,
     );
 
@@ -84,7 +84,7 @@ describe("Task 4.1: Streamlined Template Builder", () => {
       <TemplateWizard
         template={mockTemplate}
         onCodeUpdate={() => {}}
-        data-oid="o65phru"
+        data-oid="jxz3ime"
       />,
     );
 

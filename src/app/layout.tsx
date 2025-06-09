@@ -2,9 +2,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-oid="s85gck5">
-      <body className="antialiased futuristic-theme" data-oid="_h3v0lg">
-        <main className="min-h-screen futuristic-grid-bg" data-oid="34cubdg">
+    <html lang="en" data-oid=":f:lnt4">
+      <body className="antialiased futuristic-theme" data-oid="i.-44zv">
+        <main className="min-h-screen futuristic-grid-bg" data-oid="xvcc7db">
           {children}
         </main>
       </body>

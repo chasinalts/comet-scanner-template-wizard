@@ -121,17 +121,17 @@ export default function CacheClearButton() {
   return (
     <div
       className="bg-slate-800 border border-cyan-500/30 rounded-lg p-4"
-      data-oid="7fv6xf1"
+      data-oid="hw3dwn."
     >
       <h3
         className="text-lg font-semibold text-cyan-400 mb-4"
-        data-oid="8s_v7lv"
+        data-oid="6-ln047"
       >
         Browser Cache Management
       </h3>
 
       {/* Main Clear Button */}
-      <div className="mb-4" data-oid="cp0m8pp">
+      <div className="mb-4" data-oid="61asb3s">
         <button
           onClick={clearBrowserCache}
           disabled={isClearing}
@@ -140,19 +140,19 @@ export default function CacheClearButton() {
               ? "bg-gray-600 text-gray-300 cursor-not-allowed"
               : "bg-red-500 hover:bg-red-600 text-white"
           }`}
-          data-oid=":127pxz"
+          data-oid="4lww6um"
         >
           {isClearing ? (
             <span
               className="flex items-center justify-center"
-              data-oid="mi4pr-q"
+              data-oid="wv5s394"
             >
               <svg
                 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                data-oid="hzya:l9"
+                data-oid="02cjbyy"
               >
                 <circle
                   className="opacity-25"
@@ -161,13 +161,13 @@ export default function CacheClearButton() {
                   r="10"
                   stroke="currentColor"
                   strokeWidth="4"
-                  data-oid="xj2:pgp"
+                  data-oid="2etj3n_"
                 ></circle>
                 <path
                   className="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  data-oid=".b52tv."
+                  data-oid="80q8vf-"
                 ></path>
               </svg>
               Clearing Cache...
@@ -178,23 +178,23 @@ export default function CacheClearButton() {
         </button>
 
         {lastCleared && (
-          <p className="text-sm text-gray-400 mt-2" data-oid="474.s34">
+          <p className="text-sm text-gray-400 mt-2" data-oid="oyzjhy_">
             Last cleared: {lastCleared}
           </p>
         )}
       </div>
 
       {/* Specific Cache Controls */}
-      <div className="space-y-2" data-oid="ukdgf81">
-        <p className="text-sm text-gray-300 mb-2" data-oid="w4zlt6p">
+      <div className="space-y-2" data-oid="sdjx1bn">
+        <p className="text-sm text-gray-300 mb-2" data-oid="1bykx11">
           Clear specific cache types:
         </p>
 
-        <div className="grid grid-cols-2 gap-2" data-oid="o58o-_f">
+        <div className="grid grid-cols-2 gap-2" data-oid="v2nt3do">
           <button
             onClick={() => clearSpecificCache("localStorage")}
             className="bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded transition-colors"
-            data-oid="dr5ub8c"
+            data-oid="l-qogw5"
           >
             Local Storage
           </button>
@@ -202,7 +202,7 @@ export default function CacheClearButton() {
           <button
             onClick={() => clearSpecificCache("sessionStorage")}
             className="bg-green-500 hover:bg-green-600 text-white text-sm py-2 px-3 rounded transition-colors"
-            data-oid="x4v8edj"
+            data-oid="-n9t-zc"
           >
             Session Storage
           </button>
@@ -210,7 +210,7 @@ export default function CacheClearButton() {
           <button
             onClick={() => clearSpecificCache("indexedDB")}
             className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm py-2 px-3 rounded transition-colors"
-            data-oid="6badh3y"
+            data-oid="o3y4-gk"
           >
             IndexedDB
           </button>
@@ -218,7 +218,7 @@ export default function CacheClearButton() {
           <button
             onClick={() => clearSpecificCache("serviceWorker")}
             className="bg-purple-500 hover:bg-purple-600 text-white text-sm py-2 px-3 rounded transition-colors"
-            data-oid="ao0si38"
+            data-oid="hczw2:c"
           >
             Service Worker
           </button>
@@ -228,18 +228,18 @@ export default function CacheClearButton() {
       {/* Info */}
       <div
         className="mt-4 p-3 bg-slate-700 rounded text-sm text-gray-300"
-        data-oid="6fs7d0j"
+        data-oid="oqq3u4a"
       >
-        <p className="font-medium text-cyan-400 mb-1" data-oid="ugisliq">
+        <p className="font-medium text-cyan-400 mb-1" data-oid="5bbzmtv">
           ℹ️ Cache Clearing Info:
         </p>
-        <ul className="text-xs space-y-1" data-oid="hqzhzao">
-          <li data-oid="u0hpkud">
+        <ul className="text-xs space-y-1" data-oid="re.94vl">
+          <li data-oid="fmeuaoh">
             • Full clear will reload the page to ensure fresh content
           </li>
-          <li data-oid="nguf8sk">• Use before testing new functionality</li>
-          <li data-oid="hyyr2u4">• Specific clears won't reload the page</li>
-          <li data-oid="26b2ikm">
+          <li data-oid="c_:-d2:">• Use before testing new functionality</li>
+          <li data-oid="-y5a18l">• Specific clears won't reload the page</li>
+          <li data-oid="b83hsi3">
             • Some caches may require manual browser refresh
           </li>
         </ul>

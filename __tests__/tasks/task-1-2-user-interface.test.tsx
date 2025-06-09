@@ -3,7 +3,7 @@ import HomePage from "@/app/page";
 
 describe("Task 1.2: User Interface Separation", () => {
   test("Main page renders user-only components", () => {
-    render(<HomePage data-oid="ue2.--j" />);
+    render(<HomePage data-oid="9oh4jj0" />);
 
     // Check for main user interface elements
     expect(
@@ -17,7 +17,7 @@ describe("Task 1.2: User Interface Separation", () => {
   });
 
   test("Navigation between gallery and wizard views works", () => {
-    render(<HomePage data-oid="emreqwi" />);
+    render(<HomePage data-oid="8a_btgz" />);
 
     const galleryButton = screen.getByText("Home Screen");
     const wizardButton = screen.getByText("Template Wizard");
@@ -31,7 +31,7 @@ describe("Task 1.2: User Interface Separation", () => {
   });
 
   test("InvisibleAdminButton is present but not visible admin elements", () => {
-    render(<HomePage data-oid="w.89n9c" />);
+    render(<HomePage data-oid="tk.i1l9" />);
 
     // Should have invisible admin button
     expect(screen.getByText("Admin")).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe("Task 1.2: User Interface Separation", () => {
   });
 
   test("Clean user interface without admin clutter", () => {
-    render(<HomePage data-oid="3luahr." />);
+    render(<HomePage data-oid="a6qck-4" />);
 
     // Check that only user-facing elements are present
     const userElements = [

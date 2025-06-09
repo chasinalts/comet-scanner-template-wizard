@@ -18,30 +18,30 @@ import LiveCodePreview from "@/components/user/LiveCodePreview";
 describe("Comprehensive Task Build Test", () => {
   test("All admin components render without build errors", () => {
     expect(() => {
-      render(<AdminPage data-oid="f4_xmbm" />);
-      render(<AdminDashboard data-oid="l67yf9w" />);
-      render(<SectionManager data-oid="qnmt.h-" />);
-      render(<TemplateManager data-oid="auwzvqc" />);
-      render(<CodeSnippetManager data-oid="edw.th:" />);
-      render(<ImageManager data-oid="meupqt2" />);
-      render(<MasterCodeManager data-oid="3y7.b5:" />);
-      render(<AuthManager data-oid="bfhs-:0" />);
+      render(<AdminPage data-oid="z.6oiz2" />);
+      render(<AdminDashboard data-oid="er8ela6" />);
+      render(<SectionManager data-oid="wxc-ohx" />);
+      render(<TemplateManager data-oid=".lsz6.r" />);
+      render(<CodeSnippetManager data-oid="a5iz7wu" />);
+      render(<ImageManager data-oid="cd3bag-" />);
+      render(<MasterCodeManager data-oid="b04mr8r" />);
+      render(<AuthManager data-oid="b48so5." />);
     }).not.toThrow();
   });
 
   test("All user components render without build errors", () => {
     expect(() => {
-      render(<HomePage data-oid="p._1om." />);
-      render(<InvisibleAdminButton data-oid="gmojdt5" />);
+      render(<HomePage data-oid="8pm7_sl" />);
+      render(<InvisibleAdminButton data-oid="nduhh:j" />);
       render(
         <TemplateWizard
           template={null}
           onCodeUpdate={() => {}}
-          data-oid="08rz_hf"
+          data-oid="v.a2qhp"
         />,
       );
-      render(<TemplateGallery onStartWizard={() => {}} data-oid="lgbenui" />);
-      render(<LiveCodePreview code="" data-oid="0nhnu8w" />);
+      render(<TemplateGallery onStartWizard={() => {}} data-oid="m_q_pgb" />);
+      render(<LiveCodePreview code="" data-oid="pna-qcv" />);
     }).not.toThrow();
   });
 

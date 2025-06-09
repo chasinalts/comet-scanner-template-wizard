@@ -12,7 +12,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="admin-layout" data-oid="6ge_9bd">
+    <div className="admin-layout" data-oid="714.b31">
       {children}
     </div>
   );

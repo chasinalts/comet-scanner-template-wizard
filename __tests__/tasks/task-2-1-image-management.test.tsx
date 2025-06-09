@@ -3,7 +3,7 @@ import ImageManager from "@/components/admin/ImageManager";
 
 describe("Task 2.1: Image Management System", () => {
   test("ImageManager renders correctly", () => {
-    render(<ImageManager data-oid="eielf7-" />);
+    render(<ImageManager data-oid="vlw8tj6" />);
 
     expect(screen.getByText("Image Management")).toBeInTheDocument();
     expect(screen.getByText("Upload New Image")).toBeInTheDocument();
@@ -11,7 +11,7 @@ describe("Task 2.1: Image Management System", () => {
   });
 
   test("Image type selection works", () => {
-    render(<ImageManager data-oid="wm1b7ln" />);
+    render(<ImageManager data-oid="idc5nea" />);
 
     const typeSelect = screen.getByDisplayValue("Gallery Images");
     expect(typeSelect).toBeInTheDocument();
@@ -21,7 +21,7 @@ describe("Task 2.1: Image Management System", () => {
   });
 
   test("File upload input is present", () => {
-    render(<ImageManager data-oid="pkjzfmm" />);
+    render(<ImageManager data-oid="jxr3eka" />);
 
     const fileInput = screen.getByLabelText("Select Image File");
     expect(fileInput).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe("Task 2.1: Image Management System", () => {
   });
 
   test("Filter functionality works", () => {
-    render(<ImageManager data-oid="xe4mq1d" />);
+    render(<ImageManager data-oid="b3tdihx" />);
 
     const filterSelect = screen.getByDisplayValue("All Types");
     expect(filterSelect).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe("Task 2.1: Image Management System", () => {
       })),
     });
 
-    render(<ImageManager data-oid="_lgfg3." />);
+    render(<ImageManager data-oid="ylnk2qt" />);
 
     await waitFor(() => {
       expect(screen.getByText(/Images table not found/)).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe("Task 2.1: Image Management System", () => {
   });
 
   test("Image categories are properly defined", () => {
-    render(<ImageManager data-oid="m.nvint" />);
+    render(<ImageManager data-oid="c_72nvm" />);
 
     const typeSelect = screen.getByDisplayValue("Gallery Images");
 

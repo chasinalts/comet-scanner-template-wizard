@@ -295,11 +295,11 @@ export const ErrorBoundaryTestWrapper: React.FC<{
 
   if (hasError) {
     return (
-      <div data-testid="error-boundary" role="alert" data-oid="75e_8dy">
-        <h2 data-oid="j.vxyem">Something went wrong</h2>
-        <details data-oid="2c08tjd">
-          <summary data-oid="ohjtxnt">Error details</summary>
-          <pre data-oid="4mq2wf9">{error?.message}</pre>
+      <div data-testid="error-boundary" role="alert">
+        <h2>Something went wrong</h2>
+        <details>
+          <summary>Error details</summary>
+          <pre>{error?.message}</pre>
         </details>
       </div>
     );
