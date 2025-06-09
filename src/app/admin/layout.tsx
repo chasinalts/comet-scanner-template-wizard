@@ -1,13 +1,8 @@
-import type { Metadata } from "next";
+'use client';
+
 import { createClient } from '@/lib/supabaseClient';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-export const metadata: Metadata = {
-  title: "Admin Dashboard - COMET Scanner Template Wizard",
-  description:
-    "Administrative interface for managing templates, sections, and system settings",
-};
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();

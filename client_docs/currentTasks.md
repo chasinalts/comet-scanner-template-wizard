@@ -2,8 +2,8 @@ CSTW TASKS - APP RESTRUCTURING POST INITIAL "SETUP-PROMPT"
 
 # Phase 1: Interface Separation
 
-⚠️ **Task 1.1: Create Admin Route Structure** - To-be achieved: Establish `/admin` route with proper authentication to Dashboard through invisible button on Template Builder page. - Already achieved: Basic Next.js routing structure exists - Is blocked: Need to define authentication strategy - In progress: Nothing - Is next: Create admin layout and routing - Components created: None yet - Files to modify: `src/app/admin/layout.tsx`, `src/app/admin/page.tsx`
-⚠️ **Task 1.2: Separate User Interface (Main Page)** - To-be achieved: Clean main page to only show user-facing template builder - Already achieved: TemplateGallery and TemplateWizard components exist - Is blocked: Nothing - In progress: Nothing - Is next: Remove admin elements from main page - Components created: TemplateGallery.tsx, TemplateWizard.tsx, LiveCodePreview.tsx - Files to modify: `src/app/page.tsx`
+✅ **Task 1.1: Create Admin Route Structure** - To-be achieved: Establish `/admin` route with proper authentication to Dashboard through invisible button on Template Builder page. - Already achieved: Basic Next.js routing structure exists, authentication check implemented in admin layout - Is blocked: Nothing - In progress: Nothing - Is next: Nothing - Components created: Admin layout with authentication check - Files modified: `src/app/admin/layout.tsx`
+✅ **Task 1.2: Separate User Interface (Main Page)** - To-be achieved: Clean main page to only show user-facing template builder - Already achieved: TemplateGallery and TemplateWizard components exist, admin elements removed from main page - Is blocked: Nothing - In progress: Nothing - Is next: Nothing - Components created: TemplateGallery.tsx, TemplateWizard.tsx, LiveCodePreview.tsx - Files modified: `src/app/page.tsx`
 ⚠️ **Task 1.3: Move Admin Components to Dashboard** - To-be achieved: Consolidate all admin functionality into dedicated dashboard - Already achieved: AdminDashboard.tsx component exists (basic) - Is blocked: Need detailed admin requirements - In progress: Nothing - Is next: Expand AdminDashboard component - Components created: AdminDashboard.tsx (needs expansion) - Files to modify: `src/components/AdminDashboard.tsx`
 
 # Phase 2: Admin Dashboard Features
@@ -23,6 +23,6 @@ CSTW TASKS - APP RESTRUCTURING POST INITIAL "SETUP-PROMPT"
 ⚠️ **Task 4.1: Streamline Template Builder** - To-be achieved: Optimize user workflow in wizard And ability to reorder questions - Already achieved: Basic wizard structure (1051 lines) - Is blocked: Nothing - In progress: Nothing - Is next: Analyze and optimize wizard flow - Components created: TemplateWizard.tsx - Files to modify: `src/components/TemplateWizard.tsx`
 ⚠️ **Task 4.2: Enhanced Code Preview** - To-be achieved: Better code preview - Already achieved: LiveCodePreview component exists - Is blocked: Nothing - In progress: Nothing - Is next: Add better formatting - Components created: LiveCodePreview.tsx - Files to modify: `src/components/LiveCodePreview.tsx`
 
-SUMMARY - Total Tasks: 12 - Not Started: 12 ⚠️ - In Progress: 0 ⚙️ - Blocked: 0 ❌ - Completed: 0 ✅
+SUMMARY - Total Tasks: 12 - Not Started: 10 ⚠️ - In Progress: 0 ⚙️ - Blocked: 0 ❌ - Completed: 2 ✅
 
-IMMEDIATE PROIORITY 1. Task 1.2: Separate User Interface (Main Page) from Dashboard 2. Task 1.1: Create Admin Route Structure 3. Task 1.3: Move Admin Components to Dashboard 4. Task 3.1: Supabase Schema Design
+IMMEDIATE PROIORITY 1. Task 1.3: Move Admin Components to Dashboard 2. Task 3.1: Supabase Schema Design 3. Task 3.2: Authentication System
