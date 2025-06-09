@@ -11,19 +11,31 @@ describe("Task 4.1: Streamlined Template Builder", () => {
       sections: [],
     };
 
-    render(<TemplateWizard template={mockTemplate} onCodeUpdate={() => {}} />);
+    render(
+      <TemplateWizard
+        template={mockTemplate}
+        onCodeUpdate={() => {}}
+        data-oid="ie5wqe3"
+      />,
+    );
 
     expect(screen.getByText("Template Wizard")).toBeInTheDocument();
   });
 
   test("TemplateGallery renders correctly", () => {
-    render(<TemplateGallery onStartWizard={() => {}} />);
+    render(<TemplateGallery onStartWizard={() => {}} data-oid="1cewtoy" />);
 
     expect(screen.getByText("Template Gallery")).toBeInTheDocument();
   });
 
   test("TemplateWizard handles null template gracefully", () => {
-    render(<TemplateWizard template={null} onCodeUpdate={() => {}} />);
+    render(
+      <TemplateWizard
+        template={null}
+        onCodeUpdate={() => {}}
+        data-oid="s8ll4aa"
+      />,
+    );
 
     // Should not crash and should show appropriate message
     expect(screen.getByText(/select a template/i)).toBeInTheDocument();
@@ -31,7 +43,9 @@ describe("Task 4.1: Streamlined Template Builder", () => {
 
   test("TemplateGallery has start wizard functionality", () => {
     const mockOnStartWizard = jest.fn();
-    render(<TemplateGallery onStartWizard={mockOnStartWizard} />);
+    render(
+      <TemplateGallery onStartWizard={mockOnStartWizard} data-oid="3w2eovk" />,
+    );
 
     // The component should render without errors
     expect(screen.getByText("Template Gallery")).toBeInTheDocument();
@@ -47,7 +61,11 @@ describe("Task 4.1: Streamlined Template Builder", () => {
     };
 
     render(
-      <TemplateWizard template={mockTemplate} onCodeUpdate={mockCodeUpdate} />,
+      <TemplateWizard
+        template={mockTemplate}
+        onCodeUpdate={mockCodeUpdate}
+        data-oid="acytuy2"
+      />,
     );
 
     // Component should render without TypeScript errors
@@ -62,7 +80,13 @@ describe("Task 4.1: Streamlined Template Builder", () => {
       sections: [],
     };
 
-    render(<TemplateWizard template={mockTemplate} onCodeUpdate={() => {}} />);
+    render(
+      <TemplateWizard
+        template={mockTemplate}
+        onCodeUpdate={() => {}}
+        data-oid="o65phru"
+      />,
+    );
 
     // Should not contain admin-specific elements
     expect(screen.queryByText("Admin")).not.toBeInTheDocument();

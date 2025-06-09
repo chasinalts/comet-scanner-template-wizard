@@ -21,17 +21,17 @@ describe("ComponentName", () => {
 
   describe("Rendering", () => {
     it("renders without crashing", () => {
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="g-hphk." />);
       expect(screen.getByTestId("component-name")).toBeInTheDocument();
     });
 
     it("displays the correct title", () => {
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="zd20qtk" />);
       expect(screen.getByText(mockTemplate.name)).toBeInTheDocument();
     });
 
     it("renders all required elements", () => {
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="fd7y8jo" />);
 
       expect(
         screen.getByRole("button", { name: /submit/i }),
@@ -42,7 +42,7 @@ describe("ComponentName", () => {
 
   describe("User Interactions", () => {
     it("handles button click correctly", async () => {
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="o-ez1z8" />);
 
       const button = screen.getByRole("button", { name: /submit/i });
       await user.click(button);
@@ -51,7 +51,7 @@ describe("ComponentName", () => {
     });
 
     it("handles form input correctly", async () => {
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="twr6w5u" />);
 
       const input = screen.getByLabelText(/input field/i);
       await user.type(input, "test value");
@@ -60,7 +60,7 @@ describe("ComponentName", () => {
     });
 
     it("validates form submission", async () => {
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="5kc:wah" />);
 
       const submitButton = screen.getByRole("button", { name: /submit/i });
       await user.click(submitButton);
@@ -86,7 +86,7 @@ describe("ComponentName", () => {
         }),
       );
 
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="6_qql6w" />);
 
       const button = screen.getByRole("button", { name: /submit/i });
       await user.click(button);
@@ -97,21 +97,21 @@ describe("ComponentName", () => {
     });
 
     it("handles missing props gracefully", () => {
-      const { container } = render(<ComponentName />);
+      const { container } = render(<ComponentName data-oid="dw5immg" />);
       expect(container.firstChild).toBeInTheDocument();
     });
   });
 
   describe("Accessibility", () => {
     it("has proper ARIA labels", () => {
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="-t4ti7r" />);
 
       const button = screen.getByRole("button", { name: /submit/i });
       expect(button).toHaveAttribute("aria-label");
     });
 
     it("supports keyboard navigation", async () => {
-      render(<ComponentName {...mockProps} />);
+      render(<ComponentName {...mockProps} data-oid="mvn5_p1" />);
 
       const button = screen.getByRole("button", { name: /submit/i });
       button.focus();
@@ -126,11 +126,11 @@ describe("ComponentName", () => {
       const renderSpy = jest.fn();
       const TestComponent = React.memo(() => {
         renderSpy();
-        return <ComponentName {...mockProps} />;
+        return <ComponentName {...mockProps} data-oid="94ks9v_" />;
       });
 
-      const { rerender } = render(<TestComponent />);
-      rerender(<TestComponent />);
+      const { rerender } = render(<TestComponent data-oid="9_ggmlu" />);
+      rerender(<TestComponent data-oid="7rliq84" />);
 
       expect(renderSpy).toHaveBeenCalledTimes(1);
     });
@@ -139,5 +139,9 @@ describe("ComponentName", () => {
 
 // Placeholder component for template
 const ComponentName: React.FC<any> = () => {
-  return <div data-testid="component-name">Component</div>;
+  return (
+    <div data-testid="component-name" data-oid="osemk5o">
+      Component
+    </div>
+  );
 };

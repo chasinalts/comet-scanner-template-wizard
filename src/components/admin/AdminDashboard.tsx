@@ -10,10 +10,10 @@ export default function AdminDashboard() {
   const renderNavigation = () => (
     <nav
       className="bg-slate-800 bg-opacity-40 backdrop-blur-sm border-b border-cyan-500/20"
-      data-oid="2_jdyc4"
+      data-oid="8m_8m0m"
     >
-      <div className="container mx-auto px-6 py-3" data-oid="sqy:nwi">
-        <div className="flex space-x-6" data-oid="ef:pio2">
+      <div className="container mx-auto px-6 py-3" data-oid="s97cb5_">
+        <div className="flex space-x-6" data-oid="xluuwz1">
           {[
             { id: "overview", label: "Overview" },
             { id: "templates", label: "Template Builder Dashboard" },
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
                   ? "bg-cyan-500/30 text-cyan-300 border border-cyan-500/50"
                   : "text-gray-300 hover:text-cyan-300"
               }`}
-              data-oid="nqkhiw0"
+              data-oid="lc5e-v6"
             >
               {item.label}
             </button>
@@ -40,58 +40,58 @@ export default function AdminDashboard() {
   );
 
   const renderOverview = () => (
-    <div className="space-y-8" data-oid="zt0dl54">
+    <div className="space-y-8" data-oid="e-h-.17">
       <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        data-oid="wnrnmmv"
+        data-oid="5cefkln"
       >
         {/* Stats Cards */}
         <div
           className="futuristic-container p-6 text-center"
-          data-oid=".32zwhl"
+          data-oid="g8.ok0."
         >
           <h3
             className="holographic-text text-lg mb-2"
             data-text="Total Templates"
-            data-oid="9:wsj00"
+            data-oid="q9hvyji"
           >
             Total Templates
           </h3>
-          <div className="text-3xl font-bold text-cyan-400" data-oid="6l37pp_">
+          <div className="text-3xl font-bold text-cyan-400" data-oid="36uj:..">
             3
           </div>
         </div>
 
         <div
           className="futuristic-container p-6 text-center"
-          data-oid="0a0.62j"
+          data-oid="ffhbnns"
         >
           <h3
             className="holographic-text text-lg mb-2"
             data-text="Active Users"
-            data-oid="4_eh:xf"
+            data-oid="dub31py"
           >
             Active Users
           </h3>
-          <div className="text-3xl font-bold text-green-400" data-oid="0miuhmu">
+          <div className="text-3xl font-bold text-green-400" data-oid="._levjg">
             127
           </div>
         </div>
 
         <div
           className="futuristic-container p-6 text-center"
-          data-oid="f6kpusb"
+          data-oid="tci72:."
         >
           <h3
             className="holographic-text text-lg mb-2"
             data-text="Questions Created"
-            data-oid="jdmt_pt"
+            data-oid="ayww43w"
           >
             Questions Created
           </h3>
           <div
             className="text-3xl font-bold text-purple-400"
-            data-oid="mkqq:.s"
+            data-oid="st9y3_a"
           >
             45
           </div>
@@ -99,18 +99,18 @@ export default function AdminDashboard() {
 
         <div
           className="futuristic-container p-6 text-center"
-          data-oid="bk6cbnu"
+          data-oid="vf00bbl"
         >
           <h3
             className="holographic-text text-lg mb-2"
             data-text="Media Files"
-            data-oid="6qu3yvc"
+            data-oid="an:fnv4"
           >
             Media Files
           </h3>
           <div
             className="text-3xl font-bold text-yellow-400"
-            data-oid="l7nvtvq"
+            data-oid="o6gza:7"
           >
             89
           </div>
@@ -118,15 +118,15 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="futuristic-container p-8" data-oid="jy4ik5u">
+      <div className="futuristic-container p-8" data-oid="92rozm2">
         <h2
           className="holographic-subtitle text-2xl mb-6"
           data-text="Recent Activity"
-          data-oid="f7wggld"
+          data-oid="m8pw3jg"
         >
           Recent Activity
         </h2>
-        <div className="space-y-4" data-oid="2u3fnxs">
+        <div className="space-y-4" data-oid="d63ysj.">
           {[
             {
               action: "New template created",
@@ -156,9 +156,9 @@ export default function AdminDashboard() {
             <div
               key={index}
               className="flex items-center justify-between p-4 bg-slate-800/50 rounded border border-slate-600"
-              data-oid="bt7ijb8"
+              data-oid="catidxi"
             >
-              <div className="flex items-center space-x-4" data-oid="3djfskg">
+              <div className="flex items-center space-x-4" data-oid="dlrjxvu">
                 <div
                   className={`w-3 h-3 rounded-full ${
                     activity.type === "template"
@@ -169,18 +169,18 @@ export default function AdminDashboard() {
                           ? "bg-yellow-400"
                           : "bg-green-400"
                   }`}
-                  data-oid="xbsr:4k"
+                  data-oid="q7azsi7"
                 ></div>
-                <div data-oid="oi7bieg">
-                  <p className="text-white" data-oid="jq8lm_f">
+                <div data-oid="3g8d08g">
+                  <p className="text-white" data-oid="3a4a8fi">
                     {activity.action}
                   </p>
-                  <p className="text-gray-400 text-sm" data-oid="wyj4dcs">
+                  <p className="text-gray-400 text-sm" data-oid="gig:4-m">
                     by {activity.user}
                   </p>
                 </div>
               </div>
-              <span className="text-gray-400 text-sm" data-oid="370.gh0">
+              <span className="text-gray-400 text-sm" data-oid="v5w2y:f">
                 {activity.time}
               </span>
             </div>
@@ -191,45 +191,45 @@ export default function AdminDashboard() {
   );
 
   const renderTemplateBuilder = () => (
-    <div className="space-y-8" data-oid="qth--.a">
-      <div className="futuristic-container p-8" data-oid="61fv_20">
+    <div className="space-y-8" data-oid="eqi4bv7">
+      <div className="futuristic-container p-8" data-oid="0kvmsyh">
         <h2
           className="holographic-subtitle text-2xl mb-6"
           data-text="Template Builder Dashboard"
-          data-oid="sdhnqv9"
+          data-oid="2gl2kdw"
         >
           Template Builder Dashboard
         </h2>
 
         <div
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-          data-oid="qg8sl.z"
+          data-oid="nsfloco"
         >
           {/* Master Template Upload */}
-          <div className="space-y-6" data-oid="dx4pz0h">
+          <div className="space-y-6" data-oid="5vcxoo3">
             <h3
               className="text-xl font-semibold text-cyan-300"
-              data-oid="3wcon8n"
+              data-oid="5r1ezb0"
             >
               Master Template
             </h3>
-            <div className="space-y-4" data-oid="qjj10bx">
-              <div data-oid="9x:83qi">
+            <div className="space-y-4" data-oid="iy7974k">
+              <div data-oid="dy9yn-n">
                 <label
                   className="block text-cyan-300 font-semibold mb-2"
-                  data-oid="4vlq47r"
+                  data-oid="t1szs5:"
                 >
                   Upload Complete Pine Script Template
                 </label>
                 <textarea
                   className="futuristic-input w-full h-40"
                   placeholder="Paste your complete Pine Script code here..."
-                  data-oid="cbpl-b1"
+                  data-oid=".0hwdlp"
                 />
               </div>
               <button
                 className="futuristic-button px-6 py-3"
-                data-oid="s5hhs8i"
+                data-oid="e-4myeq"
               >
                 Save Master Template
               </button>
@@ -237,30 +237,30 @@ export default function AdminDashboard() {
           </div>
 
           {/* Base Code */}
-          <div className="space-y-6" data-oid="k3o38.o">
+          <div className="space-y-6" data-oid="ow9ya-f">
             <h3
               className="text-xl font-semibold text-cyan-300"
-              data-oid="0t1o_km"
+              data-oid="blza32e"
             >
               Base Code
             </h3>
-            <div className="space-y-4" data-oid="bvalsik">
-              <div data-oid="qotm9eb">
+            <div className="space-y-4" data-oid="eosp730">
+              <div data-oid="x1en:g1">
                 <label
                   className="block text-cyan-300 font-semibold mb-2"
-                  data-oid="fvykkgv"
+                  data-oid="6lp.:hj"
                 >
                   Code Included in Every Template
                 </label>
                 <textarea
                   className="futuristic-input w-full h-40"
                   placeholder="Enter base code that appears in every generated template..."
-                  data-oid="2.nrw48"
+                  data-oid="w4njl:8"
                 />
               </div>
               <button
                 className="futuristic-button px-6 py-3"
-                data-oid="lgyeqfc"
+                data-oid="f61kn7s"
               >
                 Save Base Code
               </button>
@@ -269,36 +269,36 @@ export default function AdminDashboard() {
         </div>
 
         {/* Code Snippets */}
-        <div className="mt-8" data-oid="c.gh:eo">
+        <div className="mt-8" data-oid="-h2v:n2">
           <h3
             className="text-xl font-semibold text-cyan-300 mb-4"
-            data-oid="5od6j-e"
+            data-oid=".ked46p"
           >
             Code Snippets
           </h3>
-          <div className="space-y-4" data-oid="hhqqpai">
+          <div className="space-y-4" data-oid="333x-ti">
             <div
               className="flex items-center justify-between p-4 bg-slate-800/50 rounded border border-slate-600"
-              data-oid="mk-6vi8"
+              data-oid="ea3unu_"
             >
-              <div data-oid="h2vkk_k">
-                <h4 className="font-semibold text-white" data-oid="jimjrda">
+              <div data-oid="03:drzq">
+                <h4 className="font-semibold text-white" data-oid="a4w0-at">
                   RSI Condition
                 </h4>
-                <p className="text-gray-400 text-sm" data-oid="9eliq57">
+                <p className="text-gray-400 text-sm" data-oid="3.4.41p">
                   Adds RSI-based filtering logic
                 </p>
               </div>
-              <div className="flex space-x-2" data-oid="aqrgc-r">
+              <div className="flex space-x-2" data-oid="o25t22l">
                 <button
                   className="futuristic-button px-3 py-1 text-sm"
-                  data-oid=".x3hnsv"
+                  data-oid="1xgxbng"
                 >
                   Edit
                 </button>
                 <button
                   className="bg-red-500/20 text-red-300 px-3 py-1 rounded text-sm border border-red-500/50"
-                  data-oid="jiwafg:"
+                  data-oid="k9fdwgg"
                 >
                   Delete
                 </button>
@@ -307,33 +307,33 @@ export default function AdminDashboard() {
 
             <div
               className="flex items-center justify-between p-4 bg-slate-800/50 rounded border border-slate-600"
-              data-oid="z1dhg:c"
+              data-oid="z.621:2"
             >
-              <div data-oid="_o0:f5a">
-                <h4 className="font-semibold text-white" data-oid="n15_vbt">
+              <div data-oid="gadwe5z">
+                <h4 className="font-semibold text-white" data-oid="rshxzmn">
                   Volume Spike Detection
                 </h4>
-                <p className="text-gray-400 text-sm" data-oid="wtiai60">
+                <p className="text-gray-400 text-sm" data-oid=":uen4di">
                   Identifies unusual volume activity
                 </p>
               </div>
-              <div className="flex space-x-2" data-oid="vzhs88i">
+              <div className="flex space-x-2" data-oid="ydpv6f.">
                 <button
                   className="futuristic-button px-3 py-1 text-sm"
-                  data-oid="6fnis25"
+                  data-oid="4l1q8-a"
                 >
                   Edit
                 </button>
                 <button
                   className="bg-red-500/20 text-red-300 px-3 py-1 rounded text-sm border border-red-500/50"
-                  data-oid=".p59ue:"
+                  data-oid="sf98833"
                 >
                   Delete
                 </button>
               </div>
             </div>
 
-            <button className="futuristic-button px-6 py-3" data-oid="fxswy_5">
+            <button className="futuristic-button px-6 py-3" data-oid="0toj6yo">
               + Add New Code Snippet
             </button>
           </div>
@@ -343,34 +343,34 @@ export default function AdminDashboard() {
   );
 
   const renderQuestionDesigner = () => (
-    <div className="space-y-8" data-oid="-_sdz8w">
-      <div className="futuristic-container p-8" data-oid="xr4l0c.">
+    <div className="space-y-8" data-oid="ryej:i3">
+      <div className="futuristic-container p-8" data-oid=":i93-kh">
         <h2
           className="holographic-subtitle text-2xl mb-6"
           data-text="Visual Question Designer"
-          data-oid="lhpw_h2"
+          data-oid="6kakiry"
         >
           Visual Question Designer
         </h2>
 
         <div
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-          data-oid="29:25uf"
+          data-oid="cz1xl.d"
         >
           {/* Question Creation */}
-          <div className="space-y-6" data-oid="-g7c96o">
+          <div className="space-y-6" data-oid="e-6-iiu">
             <h3
               className="text-xl font-semibold text-cyan-300"
-              data-oid="24nvsju"
+              data-oid="3r-eyqp"
             >
               Create New Question
             </h3>
 
-            <div className="space-y-4" data-oid="9-yjl:o">
-              <div data-oid="_.w00f3">
+            <div className="space-y-4" data-oid="ux2j3j6">
+              <div data-oid="sbafye2">
                 <label
                   className="block text-cyan-300 font-semibold mb-2"
-                  data-oid="dj9s9rb"
+                  data-oid="thtme2y"
                 >
                   Question Text
                 </label>
@@ -378,65 +378,65 @@ export default function AdminDashboard() {
                   type="text"
                   className="futuristic-input w-full"
                   placeholder="Enter your question..."
-                  data-oid="f8csr5b"
+                  data-oid="wk:c9kh"
                 />
               </div>
 
-              <div data-oid="q80xwzh">
+              <div data-oid="auejwpz">
                 <label
                   className="block text-cyan-300 font-semibold mb-2"
-                  data-oid="l5bf8yr"
+                  data-oid="2jt-42n"
                 >
                   Question Type
                 </label>
-                <select className="futuristic-input w-full" data-oid="xhvp:ww">
-                  <option data-oid=".d::me.">Multiple Choice</option>
-                  <option data-oid="g5kp0hy">True/False</option>
-                  <option data-oid="ue98h_r">Text Input</option>
-                  <option data-oid="8qdk.2i">Number Input</option>
+                <select className="futuristic-input w-full" data-oid="d2hqys8">
+                  <option data-oid="2xi06r-">Multiple Choice</option>
+                  <option data-oid="txasp6g">True/False</option>
+                  <option data-oid="f.1_g7o">Text Input</option>
+                  <option data-oid="_.wu3oo">Number Input</option>
                 </select>
               </div>
 
-              <div data-oid="t705qa:">
+              <div data-oid=".u2w30:">
                 <label
                   className="block text-cyan-300 font-semibold mb-2"
-                  data-oid="e2u14eg"
+                  data-oid="jnhdh_0"
                 >
                   Preview Image
                 </label>
                 <div
                   className="border-2 border-dashed border-cyan-500/50 rounded-lg p-8 text-center"
-                  data-oid="rd2ioz_"
+                  data-oid="5-:z1xx"
                 >
-                  <p className="text-gray-400 mb-4" data-oid="l2h9uhe">
+                  <p className="text-gray-400 mb-4" data-oid="264xz93">
                     Upload image showing chart effect
                   </p>
                   <button
                     className="futuristic-button px-4 py-2"
-                    data-oid="x_rob-4"
+                    data-oid="og9eksu"
                   >
                     Choose Image
                   </button>
                 </div>
               </div>
 
-              <div data-oid="ddm9prf">
+              <div data-oid="v6qfmbd">
                 <label
                   className="block text-cyan-300 font-semibold mb-2"
-                  data-oid="uxdr1yz"
+                  data-oid="_86ooce"
                 >
                   Associated Code
                 </label>
                 <textarea
                   className="futuristic-input w-full h-32"
                   placeholder="Enter Pine Script code for this answer choice..."
-                  data-oid="w3rqsnt"
+                  data-oid="jtejxrb"
                 />
               </div>
 
               <button
                 className="futuristic-button px-6 py-3"
-                data-oid="mp_al-v"
+                data-oid="pmc.m3m"
               >
                 Create Question
               </button>
@@ -444,17 +444,17 @@ export default function AdminDashboard() {
           </div>
 
           {/* Existing Questions */}
-          <div className="space-y-6" data-oid="cbb_mx-">
+          <div className="space-y-6" data-oid="x2k_yg3">
             <h3
               className="text-xl font-semibold text-cyan-300"
-              data-oid="zd3gnk6"
+              data-oid="-7ammz2"
             >
               Existing Questions
             </h3>
 
             <div
               className="space-y-4 max-h-96 overflow-y-auto"
-              data-oid=".6_ivps"
+              data-oid="t5o-5so"
             >
               {[
                 {
@@ -485,33 +485,33 @@ export default function AdminDashboard() {
                 <div
                   key={question.id}
                   className="p-4 bg-slate-800/50 rounded border border-slate-600"
-                  data-oid="z-6xk2."
+                  data-oid="y96tfwe"
                 >
                   <div
                     className="flex items-start justify-between"
-                    data-oid="pju:oyw"
+                    data-oid=".rp3:uj"
                   >
-                    <div data-oid="2xmscvo">
+                    <div data-oid="::5htx_">
                       <h4
                         className="font-semibold text-white mb-1"
-                        data-oid="0qz33re"
+                        data-oid="axv13dr"
                       >
                         {question.text}
                       </h4>
-                      <p className="text-gray-400 text-sm" data-oid="dkd00v8">
+                      <p className="text-gray-400 text-sm" data-oid="4c_kxsa">
                         {question.type} • {question.answers} answer(s)
                       </p>
                     </div>
-                    <div className="flex space-x-2" data-oid="q:1glyh">
+                    <div className="flex space-x-2" data-oid="n10e9q3">
                       <button
                         className="futuristic-button px-3 py-1 text-sm"
-                        data-oid="f5kaho9"
+                        data-oid="40palut"
                       >
                         Edit
                       </button>
                       <button
                         className="bg-red-500/20 text-red-300 px-3 py-1 rounded text-sm border border-red-500/50"
-                        data-oid="tmoflp3"
+                        data-oid="z7uvojz"
                       >
                         Delete
                       </button>
@@ -527,31 +527,31 @@ export default function AdminDashboard() {
   );
 
   const renderMediaLibrary = () => (
-    <div className="space-y-8" data-oid="v07:o4n">
-      <div className="futuristic-container p-8" data-oid="aylbdev">
+    <div className="space-y-8" data-oid="zh26fx_">
+      <div className="futuristic-container p-8" data-oid="omcfif_">
         <h2
           className="holographic-subtitle text-2xl mb-6"
           data-text="Media Library"
-          data-oid="qy6xndp"
+          data-oid=".:8:7mx"
         >
           Media Library
         </h2>
 
-        <div className="mb-6" data-oid="10.dyh.">
-          <button className="futuristic-button px-6 py-3" data-oid="g2dlifd">
+        <div className="mb-6" data-oid="-5sp_rr">
+          <button className="futuristic-button px-6 py-3" data-oid="6c:bygk">
             + Upload New Media
           </button>
         </div>
 
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          data-oid="_zzqq9c"
+          data-oid="v-04d2o"
         >
           {/* Media folders */}
-          <div className="space-y-4" data-oid="ppzli:c">
+          <div className="space-y-4" data-oid=":kwafww">
             <h3
               className="text-lg font-semibold text-cyan-300"
-              data-oid="j40aqne"
+              data-oid="uy8kzc5"
             >
               Folders
             </h3>
@@ -564,13 +564,13 @@ export default function AdminDashboard() {
               <div
                 key={folder}
                 className="p-4 bg-slate-800/50 rounded border border-slate-600 cursor-pointer hover:border-cyan-500/50 transition-colors"
-                data-oid="3pctybw"
+                data-oid="60eim2q"
               >
-                <div className="flex items-center space-x-3" data-oid="fouh0ew">
-                  <div className="text-yellow-400 text-xl" data-oid="b.7tg5k">
+                <div className="flex items-center space-x-3" data-oid="ulmq1dl">
+                  <div className="text-yellow-400 text-xl" data-oid="m8_-vu2">
                     📁
                   </div>
-                  <span className="text-white" data-oid="-83x0hf">
+                  <span className="text-white" data-oid="e29d0-r">
                     {folder}
                   </span>
                 </div>
@@ -579,28 +579,28 @@ export default function AdminDashboard() {
           </div>
 
           {/* Recent uploads */}
-          <div className="lg:col-span-2 space-y-4" data-oid="fulfciw">
+          <div className="lg:col-span-2 space-y-4" data-oid="g9o5n:-">
             <h3
               className="text-lg font-semibold text-cyan-300"
-              data-oid="4tzd7lu"
+              data-oid="-2g1_:v"
             >
               Recent Uploads
             </h3>
             <div
               className="grid grid-cols-2 md:grid-cols-3 gap-4"
-              data-oid="hrz7p.6"
+              data-oid="t4qmcar"
             >
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
                   key={index}
                   className="aspect-square bg-slate-800/50 rounded border border-slate-600 flex items-center justify-center"
-                  data-oid="-6g:6ty"
+                  data-oid="826902z"
                 >
-                  <div className="text-gray-400 text-center" data-oid="pqcp2v4">
-                    <div className="text-2xl mb-2" data-oid="h3:ew6w">
+                  <div className="text-gray-400 text-center" data-oid="cakvizx">
+                    <div className="text-2xl mb-2" data-oid="j8hr7ex">
                       🖼️
                     </div>
-                    <div className="text-xs" data-oid="bgpg78b">
+                    <div className="text-xs" data-oid="4o-83d_">
                       Image {index + 1}
                     </div>
                   </div>
@@ -614,75 +614,75 @@ export default function AdminDashboard() {
   );
 
   const renderUserManagement = () => (
-    <div className="space-y-8" data-oid="y6s:7uy">
-      <div className="futuristic-container p-8" data-oid="wjmnk:6">
+    <div className="space-y-8" data-oid="dtejsve">
+      <div className="futuristic-container p-8" data-oid="x_t.v.0">
         <h2
           className="holographic-subtitle text-2xl mb-6"
           data-text="User Management"
-          data-oid="127cn04"
+          data-oid="72m6vmp"
         >
           User Management
         </h2>
 
-        <div className="space-y-6" data-oid="cfrotv8">
+        <div className="space-y-6" data-oid="lp8udr_">
           {/* User stats */}
           <div
             className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            data-oid="b1p0:dk"
+            data-oid="l4q5:-v"
           >
             <div
               className="p-4 bg-slate-800/50 rounded border border-slate-600 text-center"
-              data-oid="773u.:r"
+              data-oid="c9:72se"
             >
               <div
                 className="text-2xl font-bold text-green-400"
-                data-oid="n_fxrn."
+                data-oid="p_eoutr"
               >
                 127
               </div>
-              <div className="text-gray-400" data-oid="1v7t.k0">
+              <div className="text-gray-400" data-oid="i6:witr">
                 Total Users
               </div>
             </div>
             <div
               className="p-4 bg-slate-800/50 rounded border border-slate-600 text-center"
-              data-oid="c0adbz:"
+              data-oid="1_pns0p"
             >
               <div
                 className="text-2xl font-bold text-cyan-400"
-                data-oid="fuosq58"
+                data-oid="vabxm.m"
               >
                 23
               </div>
-              <div className="text-gray-400" data-oid="6jgm8_y">
+              <div className="text-gray-400" data-oid="bwlr20n">
                 Active Today
               </div>
             </div>
             <div
               className="p-4 bg-slate-800/50 rounded border border-slate-600 text-center"
-              data-oid="m_dgbkl"
+              data-oid="g6mosi6"
             >
               <div
                 className="text-2xl font-bold text-purple-400"
-                data-oid="5ad-:e9"
+                data-oid="7b62q.a"
               >
                 89
               </div>
-              <div className="text-gray-400" data-oid="wzo0y02">
+              <div className="text-gray-400" data-oid="_exl8b9">
                 Templates Created
               </div>
             </div>
           </div>
 
           {/* User list */}
-          <div className="space-y-4" data-oid="5a_4dt3">
+          <div className="space-y-4" data-oid="48x4m-.">
             <h3
               className="text-lg font-semibold text-cyan-300"
-              data-oid="yy6kcng"
+              data-oid="igvr8sw"
             >
               Recent Users
             </h3>
-            <div className="space-y-2" data-oid="cw6qp_d">
+            <div className="space-y-2" data-oid="ob1kwon">
               {[
                 {
                   email: "trader1@example.com",
@@ -708,26 +708,26 @@ export default function AdminDashboard() {
                 <div
                   key={index}
                   className="flex items-center justify-between p-4 bg-slate-800/50 rounded border border-slate-600"
-                  data-oid="e1vak_0"
+                  data-oid=".:0oql1"
                 >
-                  <div data-oid="pdz-k_5">
+                  <div data-oid="eaidu.8">
                     <div
                       className="text-white font-semibold"
-                      data-oid="0:jl_aj"
+                      data-oid="jnwzncj"
                     >
                       {user.email}
                     </div>
-                    <div className="text-gray-400 text-sm" data-oid="c4t65kz">
+                    <div className="text-gray-400 text-sm" data-oid="pmcgjxf">
                       Last active: {user.lastActive}
                     </div>
                   </div>
-                  <div className="text-right" data-oid="3hx-mzm">
-                    <div className="text-cyan-400" data-oid=":ug_uqd">
+                  <div className="text-right" data-oid="._3jyn3">
+                    <div className="text-cyan-400" data-oid="nwzf57a">
                       {user.templates} templates
                     </div>
                     <button
                       className="text-red-400 hover:text-red-300 text-sm"
-                      data-oid="_tkct4u"
+                      data-oid="d3j8ydz"
                     >
                       Remove
                     </button>
@@ -742,10 +742,10 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div data-oid="39ltvpy">
+    <div data-oid="jh:iudz">
       {renderNavigation()}
 
-      <main className="container mx-auto px-6 py-8" data-oid="5d6tk23">
+      <main className="container mx-auto px-6 py-8" data-oid="0zjbm:s">
         {currentView === "overview" && renderOverview()}
         {currentView === "templates" && renderTemplateBuilder()}
         {currentView === "questions" && renderQuestionDesigner()}

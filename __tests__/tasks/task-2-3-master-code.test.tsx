@@ -3,7 +3,7 @@ import MasterCodeManager from "@/components/admin/MasterCodeManager";
 
 describe("Task 2.3: Master Code Repository", () => {
   test("MasterCodeManager renders correctly", () => {
-    render(<MasterCodeManager />);
+    render(<MasterCodeManager data-oid="4pv7i.0" />);
 
     expect(screen.getByText("Master Code Repository")).toBeInTheDocument();
     expect(screen.getByText("Copy Full Master Code")).toBeInTheDocument();
@@ -11,7 +11,7 @@ describe("Task 2.3: Master Code Repository", () => {
   });
 
   test("Filter by category works", () => {
-    render(<MasterCodeManager />);
+    render(<MasterCodeManager data-oid="z_7-bd:" />);
 
     const filterSelect = screen.getByDisplayValue("All Categories");
     expect(filterSelect).toBeInTheDocument();
@@ -21,7 +21,7 @@ describe("Task 2.3: Master Code Repository", () => {
   });
 
   test("Create code block form appears when button clicked", () => {
-    render(<MasterCodeManager />);
+    render(<MasterCodeManager data-oid="k8s6773" />);
 
     const addButton = screen.getByText("Add Code Block");
     fireEvent.click(addButton);
@@ -37,7 +37,7 @@ describe("Task 2.3: Master Code Repository", () => {
   });
 
   test("Category options are predefined", () => {
-    render(<MasterCodeManager />);
+    render(<MasterCodeManager data-oid="0wgeqc." />);
 
     const addButton = screen.getByText("Add Code Block");
     fireEvent.click(addButton);
@@ -64,7 +64,7 @@ describe("Task 2.3: Master Code Repository", () => {
   });
 
   test("Dependencies input handles comma-separated values", () => {
-    render(<MasterCodeManager />);
+    render(<MasterCodeManager data-oid="a22-.-y" />);
 
     const addButton = screen.getByText("Add Code Block");
     fireEvent.click(addButton);
@@ -79,7 +79,7 @@ describe("Task 2.3: Master Code Repository", () => {
   });
 
   test("Order index is numeric input", () => {
-    render(<MasterCodeManager />);
+    render(<MasterCodeManager data-oid="sles3-w" />);
 
     const addButton = screen.getByText("Add Code Block");
     fireEvent.click(addButton);
@@ -107,7 +107,7 @@ describe("Task 2.3: Master Code Repository", () => {
       })),
     });
 
-    render(<MasterCodeManager />);
+    render(<MasterCodeManager data-oid="k3t0pos" />);
 
     await waitFor(() => {
       expect(
@@ -128,7 +128,7 @@ describe("Task 2.3: Master Code Repository", () => {
       },
     });
 
-    render(<MasterCodeManager />);
+    render(<MasterCodeManager data-oid="kmtlwmy" />);
 
     const copyButton = screen.getByText("Copy Full Master Code");
     fireEvent.click(copyButton);

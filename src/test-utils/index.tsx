@@ -44,7 +44,11 @@ const COMETTestProvider: React.FC<COMETTestProviderProps> = ({
     }
   }, [mockServices]);
 
-  return <div data-testid="comet-test-provider">{children}</div>;
+  return (
+    <div data-testid="comet-test-provider" data-oid="_h-2zoz">
+      {children}
+    </div>
+  );
 };
 
 // Custom render function with COMET-specific providers
@@ -66,6 +70,7 @@ export const renderWithCOMETProviders = (
       initialState={initialState}
       mockServices={mockServices}
       {...wrapperProps}
+      data-oid="ox.ag:-"
     >
       {children}
     </COMETTestProvider>

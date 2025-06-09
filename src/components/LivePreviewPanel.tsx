@@ -57,29 +57,29 @@ export default function LivePreviewPanel({
       className={`fixed right-4 top-20 transition-all duration-300 z-50 ${
         isMinimized ? "w-12" : "w-96"
       }`}
-      data-oid="9v_o9yg"
+      data-oid="hr6c-t_"
     >
       <div
         className="bg-slate-900/95 backdrop-blur-md border border-cyan-500/50 rounded-lg"
-        data-oid="gji:l:a"
+        data-oid="n8sfd9z"
       >
         {/* Header */}
         <div
           className="flex items-center justify-between p-4 border-b border-cyan-500/30"
-          data-oid="wqrwu-d"
+          data-oid="j_hbp8d"
         >
           <h3
             className={`text-cyan-400 font-semibold ${
               isMinimized ? "hidden" : "block"
             }`}
-            data-oid="in8cb-k"
+            data-oid="a5vlcoq"
           >
             Live Preview
           </h3>
           <button
             onClick={() => setIsMinimized(!isMinimized)}
             className="text-cyan-400 hover:text-cyan-300 transition-colors"
-            data-oid="budpe4h"
+            data-oid="ya:36e."
           >
             {isMinimized ? "📖" : "📕"}
           </button>
@@ -88,21 +88,21 @@ export default function LivePreviewPanel({
         {!isMinimized && (
           <>
             {/* Code Display */}
-            <div className="p-4" data-oid="ghfeh..">
+            <div className="p-4" data-oid="o49wqk1">
               <div
                 className="bg-slate-950 rounded border border-slate-700 max-h-96 overflow-y-auto"
-                data-oid="ij7xy7c"
+                data-oid="icys3oz"
               >
-                <div className="p-3" data-oid="14hnws6">
+                <div className="p-3" data-oid="zqf148r">
                   {processedCode ? (
                     <pre
                       className="text-green-400 text-xs font-mono whitespace-pre-wrap"
-                      data-oid="ugpqe2k"
+                      data-oid="bl9-9.."
                     >
                       {processedCode}
                     </pre>
                   ) : (
-                    <div className="text-xs text-gray-400" data-oid="5x89ivh">
+                    <div className="text-xs text-gray-400" data-oid="zf4ga0b">
                       {template
                         ? "No code generated yet. Answer questions to see your template build in real-time!"
                         : "Select a template to see the live preview..."}
@@ -115,14 +115,14 @@ export default function LivePreviewPanel({
             {/* Action Buttons */}
             <div
               className="p-4 border-t border-cyan-500/30 space-y-3"
-              data-oid="vjp_etc"
+              data-oid="f5lkfu3"
             >
-              <div className="grid grid-cols-2 gap-2" data-oid="u.n8_e:">
+              <div className="grid grid-cols-2 gap-2" data-oid="_maax71">
                 <button
                   onClick={handleCopyCode}
                   className="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-2 text-sm rounded transition-colors"
                   disabled={!processedCode.trim()}
-                  data-oid="b6c6cj0"
+                  data-oid="vdl3d.f"
                 >
                   📋 Copy
                 </button>
@@ -130,7 +130,7 @@ export default function LivePreviewPanel({
                   onClick={handleExportCode}
                   className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 text-sm rounded transition-colors"
                   disabled={!processedCode.trim()}
-                  data-oid="3n39pz3"
+                  data-oid="ysmmooo"
                 >
                   📥 Export
                 </button>
@@ -138,16 +138,16 @@ export default function LivePreviewPanel({
             </div>
 
             {/* Code Statistics */}
-            <div className="p-4 border-t border-cyan-500/30" data-oid="lnfkzpw">
+            <div className="p-4 border-t border-cyan-500/30" data-oid="nmk9mt-">
               <div
                 className="text-xs text-gray-400 space-y-1"
-                data-oid="tl019b0"
+                data-oid="qw8tnpn"
               >
-                <div data-oid="h9a6hv:">
+                <div data-oid="8isl.ne">
                   Lines: {processedCode.split("\n").length}
                 </div>
-                <div data-oid=":30qz6_">Characters: {processedCode.length}</div>
-                <div data-oid="076_obh">
+                <div data-oid="9hcpask">Characters: {processedCode.length}</div>
+                <div data-oid="030n5jy">
                   Status: {processedCode.trim() ? "Ready" : "In Progress"}
                 </div>
               </div>

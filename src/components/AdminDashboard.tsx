@@ -35,17 +35,17 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white" data-oid="3bk97ex">
-      <div className="container mx-auto px-4 py-8" data-oid="i3:e2qw">
+    <div className="min-h-screen bg-slate-900 text-white" data-oid="k0qybqf">
+      <div className="container mx-auto px-4 py-8" data-oid="4s_s-4a">
         {/* Header */}
-        <div className="mb-8" data-oid="jqrcrcq">
+        <div className="mb-8" data-oid="9q98tkg">
           <h1
             className="text-3xl font-bold text-cyan-400 mb-2"
-            data-oid="pg0r1-u"
+            data-oid="joc97ws"
           >
             Admin Dashboard
           </h1>
-          <p className="text-slate-300" data-oid="9yy2-.-">
+          <p className="text-slate-300" data-oid="vhj0iyw">
             Manage templates, sections, code snippets, and system settings
           </p>
         </div>
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
         {/* Navigation Tabs */}
         <div
           className="flex flex-wrap gap-1 bg-slate-800 p-1 rounded-lg mb-8"
-          data-oid="ycp6_o:"
+          data-oid="z8m7v.t"
         >
           {tabs.map((tab) => (
             <button
@@ -64,47 +64,47 @@ export default function AdminDashboard() {
                   ? "bg-cyan-500 text-white"
                   : "text-slate-300 hover:text-white hover:bg-slate-700"
               }`}
-              data-oid="1tvtd-6"
+              data-oid="pz.g0ih"
             >
-              <span data-oid="czx--gn">{tab.icon}</span>
-              <span data-oid="qsj69tl">{tab.label}</span>
+              <span data-oid="s187y:x">{tab.icon}</span>
+              <span data-oid="4t-sj9m">{tab.label}</span>
             </button>
           ))}
         </div>
 
         {/* Tab Content */}
-        <div className="bg-slate-800 rounded-lg p-6" data-oid="-z6ry_4">
+        <div className="bg-slate-800 rounded-lg p-6" data-oid="d0tken1">
           {activeTab === "overview" && (
-            <div data-oid="ao0_at_">
-              <h2 className="text-2xl font-bold mb-6" data-oid="rso7:99">
+            <div data-oid="-yiilss">
+              <h2 className="text-2xl font-bold mb-6" data-oid="81uow.u">
                 System Overview
               </h2>
 
               {/* Stats Grid */}
               <div
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-                data-oid="6h_mp_z"
+                data-oid="enajb1v"
               >
                 <div
                   className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 p-6 rounded-lg"
-                  data-oid="ch6qou4"
+                  data-oid="tlz3f0s"
                 >
                   <div
                     className="flex items-center justify-between"
-                    data-oid="nk4tl75"
+                    data-oid="pkn..s0"
                   >
-                    <div data-oid="wll9cvm">
+                    <div data-oid="28ronox">
                       <h3
                         className="text-lg font-semibold text-cyan-400 mb-2"
-                        data-oid="m7wlevk"
+                        data-oid="x9y..cd"
                       >
                         Total Templates
                       </h3>
-                      <p className="text-3xl font-bold" data-oid="kaoth_c">
+                      <p className="text-3xl font-bold" data-oid="rnnra4j">
                         {stats.totalTemplates}
                       </p>
                     </div>
-                    <div className="text-3xl" data-oid="a4wue3w">
+                    <div className="text-3xl" data-oid="7jh2qy4">
                       📄
                     </div>
                   </div>
@@ -112,24 +112,24 @@ export default function AdminDashboard() {
 
                 <div
                   className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 p-6 rounded-lg"
-                  data-oid="z5.gl-2"
+                  data-oid="t623r1c"
                 >
                   <div
                     className="flex items-center justify-between"
-                    data-oid="i2t:.bu"
+                    data-oid="a.rvd4d"
                   >
-                    <div data-oid="p0-mujd">
+                    <div data-oid="qx9tglv">
                       <h3
                         className="text-lg font-semibold text-green-400 mb-2"
-                        data-oid="a3-d72y"
+                        data-oid="0rp7:_c"
                       >
                         Active Sections
                       </h3>
-                      <p className="text-3xl font-bold" data-oid="0:gx:sb">
+                      <p className="text-3xl font-bold" data-oid=":u3mnam">
                         {stats.activeSections}
                       </p>
                     </div>
-                    <div className="text-3xl" data-oid=".i1xtyq">
+                    <div className="text-3xl" data-oid="9nwlw:0">
                       📝
                     </div>
                   </div>
@@ -137,24 +137,24 @@ export default function AdminDashboard() {
 
                 <div
                   className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 p-6 rounded-lg"
-                  data-oid="sg9pval"
+                  data-oid="8cu.nkv"
                 >
                   <div
                     className="flex items-center justify-between"
-                    data-oid=".zlsnli"
+                    data-oid="3s.i-4v"
                   >
-                    <div data-oid="5q146pp">
+                    <div data-oid="wh9j1hw">
                       <h3
                         className="text-lg font-semibold text-purple-400 mb-2"
-                        data-oid="c-a:_ij"
+                        data-oid="1:t1xpz"
                       >
                         Code Snippets
                       </h3>
-                      <p className="text-3xl font-bold" data-oid="ni3w.7z">
+                      <p className="text-3xl font-bold" data-oid="ph62ra6">
                         {stats.codeSnippets}
                       </p>
                     </div>
-                    <div className="text-3xl" data-oid="-0t:qzu">
+                    <div className="text-3xl" data-oid="-fhhjnu">
                       💻
                     </div>
                   </div>
@@ -162,24 +162,24 @@ export default function AdminDashboard() {
 
                 <div
                   className="bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30 p-6 rounded-lg"
-                  data-oid="4.5a.dv"
+                  data-oid="ofjbm8n"
                 >
                   <div
                     className="flex items-center justify-between"
-                    data-oid="2-3.8qf"
+                    data-oid="b:cm1uc"
                   >
-                    <div data-oid="e_s21lv">
+                    <div data-oid="o9f9sni">
                       <h3
                         className="text-lg font-semibold text-orange-400 mb-2"
-                        data-oid="1z5l7ep"
+                        data-oid="9h7jgwp"
                       >
                         Total Users
                       </h3>
-                      <p className="text-3xl font-bold" data-oid="e8l8a4q">
+                      <p className="text-3xl font-bold" data-oid="9woo4fp">
                         {stats.totalUsers}
                       </p>
                     </div>
-                    <div className="text-3xl" data-oid="3xozdfg">
+                    <div className="text-3xl" data-oid="-g:zl6h">
                       👥
                     </div>
                   </div>
@@ -189,20 +189,20 @@ export default function AdminDashboard() {
               {/* Quick Actions */}
               <div
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                data-oid="rpmv62d"
+                data-oid="d8pyzvy"
               >
                 <button
                   onClick={() => setActiveTab("sections")}
                   className="bg-slate-700 hover:bg-slate-600 border border-slate-600 hover:border-cyan-500/50 p-4 rounded-lg transition-all text-left"
-                  data-oid="7f1t9jc"
+                  data-oid="jhgw7g1"
                 >
                   <h4
                     className="font-semibold text-cyan-400 mb-2"
-                    data-oid="kjcirlr"
+                    data-oid="thv2.y7"
                   >
                     Manage Sections
                   </h4>
-                  <p className="text-slate-300 text-sm" data-oid=".mg52q3">
+                  <p className="text-slate-300 text-sm" data-oid="c41-syt">
                     Create and organize template sections
                   </p>
                 </button>
@@ -210,15 +210,15 @@ export default function AdminDashboard() {
                 <button
                   onClick={() => setActiveTab("templates")}
                   className="bg-slate-700 hover:bg-slate-600 border border-slate-600 hover:border-cyan-500/50 p-4 rounded-lg transition-all text-left"
-                  data-oid="h6fe2ss"
+                  data-oid="c83tbfi"
                 >
                   <h4
                     className="font-semibold text-cyan-400 mb-2"
-                    data-oid="gvwiktq"
+                    data-oid="_q4p1xh"
                   >
                     Manage Templates
                   </h4>
-                  <p className="text-slate-300 text-sm" data-oid="qohtntt">
+                  <p className="text-slate-300 text-sm" data-oid="1ib8zc1">
                     Create and edit code templates
                   </p>
                 </button>
@@ -226,15 +226,15 @@ export default function AdminDashboard() {
                 <button
                   onClick={() => setActiveTab("snippets")}
                   className="bg-slate-700 hover:bg-slate-600 border border-slate-600 hover:border-cyan-500/50 p-4 rounded-lg transition-all text-left"
-                  data-oid="6jmzk4m"
+                  data-oid="lgc66vh"
                 >
                   <h4
                     className="font-semibold text-cyan-400 mb-2"
-                    data-oid="ch7hx-7"
+                    data-oid="s9vmvtm"
                   >
                     Code Snippets
                   </h4>
-                  <p className="text-slate-300 text-sm" data-oid="w-5i1vm">
+                  <p className="text-slate-300 text-sm" data-oid="r2s44h.">
                     Manage reusable code snippets
                   </p>
                 </button>
@@ -243,31 +243,31 @@ export default function AdminDashboard() {
               {/* System Status */}
               <div
                 className="mt-8 bg-slate-700 border border-slate-600 rounded-lg p-6"
-                data-oid="etij3:k"
+                data-oid="bpm9knz"
               >
                 <h3
                   className="text-lg font-semibold text-white mb-4"
-                  data-oid="348-hla"
+                  data-oid="7psm5h0"
                 >
                   System Status
                 </h3>
                 <div
                   className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                  data-oid="gp5p:bo"
+                  data-oid=":fy_f93"
                 >
                   <div
                     className="flex items-center space-x-3"
-                    data-oid="rrc6re5"
+                    data-oid="83ky1i9"
                   >
                     <div
                       className="w-3 h-3 bg-green-500 rounded-full animate-pulse"
-                      data-oid="s3e.wip"
+                      data-oid="qtm38ya"
                     ></div>
-                    <span className="text-slate-300" data-oid="6zc9gzt">
+                    <span className="text-slate-300" data-oid=":yjpkgo">
                       Database:{" "}
                       <span
                         className="text-green-400 font-semibold"
-                        data-oid="veiugoc"
+                        data-oid="ldd-x_p"
                       >
                         Connected
                       </span>
@@ -275,17 +275,17 @@ export default function AdminDashboard() {
                   </div>
                   <div
                     className="flex items-center space-x-3"
-                    data-oid="uw_v1x_"
+                    data-oid="n-v:d5g"
                   >
                     <div
                       className="w-3 h-3 bg-green-500 rounded-full animate-pulse"
-                      data-oid="2pfl-zm"
+                      data-oid="jlv.fe-"
                     ></div>
-                    <span className="text-slate-300" data-oid="f7ne704">
+                    <span className="text-slate-300" data-oid="be:yaua">
                       API:{" "}
                       <span
                         className="text-green-400 font-semibold"
-                        data-oid="b.0oi46"
+                        data-oid="nb2jqw."
                       >
                         Online
                       </span>
@@ -293,17 +293,17 @@ export default function AdminDashboard() {
                   </div>
                   <div
                     className="flex items-center space-x-3"
-                    data-oid="0:308m_"
+                    data-oid="8empu9f"
                   >
                     <div
                       className="w-3 h-3 bg-green-500 rounded-full animate-pulse"
-                      data-oid="16f6saj"
+                      data-oid="zgebho-"
                     ></div>
-                    <span className="text-slate-300" data-oid="cp5s_pp">
+                    <span className="text-slate-300" data-oid="q5rl0j9">
                       Storage:{" "}
                       <span
                         className="text-green-400 font-semibold"
-                        data-oid=".dwn:b1"
+                        data-oid=":bte8_h"
                       >
                         Available
                       </span>
@@ -317,61 +317,61 @@ export default function AdminDashboard() {
           {activeTab === "sections" && (
             <SectionManager
               onSectionUpdate={handleDataUpdate}
-              data-oid="k6mavwb"
+              data-oid="tx.6xf3"
             />
           )}
 
           {activeTab === "templates" && (
             <TemplateManager
               onTemplateUpdate={handleDataUpdate}
-              data-oid="hhuy56."
+              data-oid="xmskxmi"
             />
           )}
 
           {activeTab === "snippets" && (
             <CodeSnippetManager
               onSnippetUpdate={handleDataUpdate}
-              data-oid="x3h0it1"
+              data-oid="f4tewiz"
             />
           )}
 
           {activeTab === "auth" && (
-            <AuthManager onAuthUpdate={handleDataUpdate} data-oid="1f.1phh" />
+            <AuthManager onAuthUpdate={handleDataUpdate} data-oid="2_s4ir9" />
           )}
 
           {activeTab === "settings" && (
-            <div data-oid="ohadptg">
-              <h2 className="text-2xl font-bold mb-6" data-oid="x86k6.s">
+            <div data-oid="n:.tx93">
+              <h2 className="text-2xl font-bold mb-6" data-oid="lfj7jl0">
                 System Settings
               </h2>
 
-              <div className="space-y-6" data-oid="481u37c">
+              <div className="space-y-6" data-oid=":u7ei2e">
                 {/* General Settings */}
                 <div
                   className="bg-slate-700 border border-slate-600 rounded-lg p-6"
-                  data-oid="9uhnxvc"
+                  data-oid="31ni2gv"
                 >
                   <h3
                     className="text-lg font-semibold text-white mb-4"
-                    data-oid="ij9-f1w"
+                    data-oid=":r5xb3a"
                   >
                     General Settings
                   </h3>
-                  <div className="space-y-4" data-oid="uk2v92t">
+                  <div className="space-y-4" data-oid="riwzmtg">
                     <div
                       className="flex items-center justify-between"
-                      data-oid="53m.sug"
+                      data-oid="yyv3rpl"
                     >
-                      <div data-oid="e8z5d4-">
+                      <div data-oid="zh9n4:q">
                         <label
                           className="text-cyan-300 font-medium"
-                          data-oid="nhn:7_g"
+                          data-oid="afp9pnz"
                         >
                           Enable Live Preview
                         </label>
                         <p
                           className="text-slate-400 text-sm"
-                          data-oid="7bjzw0:"
+                          data-oid="lwei_sn"
                         >
                           Allow real-time template preview
                         </p>
@@ -380,24 +380,24 @@ export default function AdminDashboard() {
                         type="checkbox"
                         defaultChecked
                         className="toggle"
-                        data-oid="-iz:-5z"
+                        data-oid="2cfy.l:"
                       />
                     </div>
 
                     <div
                       className="flex items-center justify-between"
-                      data-oid="ynipzoj"
+                      data-oid="8_lma1c"
                     >
-                      <div data-oid="u48_6yi">
+                      <div data-oid="gboedgw">
                         <label
                           className="text-cyan-300 font-medium"
-                          data-oid="fim:ke2"
+                          data-oid="0vkph7p"
                         >
                           Auto-save Templates
                         </label>
                         <p
                           className="text-slate-400 text-sm"
-                          data-oid="ckvg3gg"
+                          data-oid="cph9zue"
                         >
                           Automatically save template changes
                         </p>
@@ -406,24 +406,24 @@ export default function AdminDashboard() {
                         type="checkbox"
                         defaultChecked
                         className="toggle"
-                        data-oid="kim-89i"
+                        data-oid="mws1ewa"
                       />
                     </div>
 
                     <div
                       className="flex items-center justify-between"
-                      data-oid="wr4un8n"
+                      data-oid="s-y8dv9"
                     >
-                      <div data-oid="mwc:.d:">
+                      <div data-oid="5jsnf2_">
                         <label
                           className="text-cyan-300 font-medium"
-                          data-oid="dk8i3tz"
+                          data-oid="99_z7za"
                         >
                           Enable Syntax Highlighting
                         </label>
                         <p
                           className="text-slate-400 text-sm"
-                          data-oid="s4htbq0"
+                          data-oid="z6ct5r_"
                         >
                           Highlight code syntax in templates
                         </p>
@@ -432,7 +432,7 @@ export default function AdminDashboard() {
                         type="checkbox"
                         defaultChecked
                         className="toggle"
-                        data-oid="uqqc12m"
+                        data-oid="x7jt::x"
                       />
                     </div>
                   </div>
@@ -441,29 +441,29 @@ export default function AdminDashboard() {
                 {/* Performance Settings */}
                 <div
                   className="bg-slate-700 border border-slate-600 rounded-lg p-6"
-                  data-oid="a_r4wty"
+                  data-oid=".ehvqcr"
                 >
                   <h3
                     className="text-lg font-semibold text-white mb-4"
-                    data-oid="mq5vt1p"
+                    data-oid="3lo5i.7"
                   >
                     Performance Settings
                   </h3>
-                  <div className="space-y-4" data-oid="7d-x23v">
+                  <div className="space-y-4" data-oid="t:avral">
                     <div
                       className="flex items-center justify-between"
-                      data-oid="c.oxic:"
+                      data-oid="uyyzgqd"
                     >
-                      <div data-oid="x2-a72e">
+                      <div data-oid=":gv6sdn">
                         <label
                           className="text-cyan-300 font-medium"
-                          data-oid="2nd9oqk"
+                          data-oid="k3-j_e6"
                         >
                           Cache Templates
                         </label>
                         <p
                           className="text-slate-400 text-sm"
-                          data-oid="b8y0vls"
+                          data-oid="ipux-l5"
                         >
                           Cache frequently used templates
                         </p>
@@ -472,24 +472,24 @@ export default function AdminDashboard() {
                         type="checkbox"
                         defaultChecked
                         className="toggle"
-                        data-oid="dsldh6_"
+                        data-oid="slnvpw1"
                       />
                     </div>
 
                     <div
                       className="flex items-center justify-between"
-                      data-oid=":r_15ij"
+                      data-oid="qf6br31"
                     >
-                      <div data-oid="bwaom-j">
+                      <div data-oid="p:m8._4">
                         <label
                           className="text-cyan-300 font-medium"
-                          data-oid="0:k4l7k"
+                          data-oid="4_.9x1u"
                         >
                           Lazy Load Components
                         </label>
                         <p
                           className="text-slate-400 text-sm"
-                          data-oid="0:q.mb5"
+                          data-oid="c823iep"
                         >
                           Load components only when needed
                         </p>
@@ -498,7 +498,7 @@ export default function AdminDashboard() {
                         type="checkbox"
                         defaultChecked
                         className="toggle"
-                        data-oid="erdj5p-"
+                        data-oid="pj:5.c2"
                       />
                     </div>
                   </div>
@@ -507,29 +507,29 @@ export default function AdminDashboard() {
                 {/* Backup Settings */}
                 <div
                   className="bg-slate-700 border border-slate-600 rounded-lg p-6"
-                  data-oid="iqmr3-o"
+                  data-oid="dif3:4p"
                 >
                   <h3
                     className="text-lg font-semibold text-white mb-4"
-                    data-oid="y-3d9z8"
+                    data-oid="-t6g7ha"
                   >
                     Backup & Export
                   </h3>
-                  <div className="space-y-4" data-oid="a8w_tb-">
+                  <div className="space-y-4" data-oid="yf2-4aw">
                     <div
                       className="flex items-center justify-between"
-                      data-oid="bq7e1e5"
+                      data-oid="exytzr5"
                     >
-                      <div data-oid="mri2op4">
+                      <div data-oid="49hy4xb">
                         <label
                           className="text-cyan-300 font-medium"
-                          data-oid="9gxj8pj"
+                          data-oid="4rmfy31"
                         >
                           Auto Backup
                         </label>
                         <p
                           className="text-slate-400 text-sm"
-                          data-oid="voogrmo"
+                          data-oid="347l195"
                         >
                           Automatically backup data daily
                         </p>
@@ -538,26 +538,26 @@ export default function AdminDashboard() {
                         type="checkbox"
                         defaultChecked
                         className="toggle"
-                        data-oid="7u.74_j"
+                        data-oid="6m6:gm9"
                       />
                     </div>
 
-                    <div className="flex space-x-4 mt-4" data-oid="eky-p_d">
+                    <div className="flex space-x-4 mt-4" data-oid="en4k1iu">
                       <button
                         className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-                        data-oid="wt7--v:"
+                        data-oid="wntx4f4"
                       >
                         Export All Data
                       </button>
                       <button
                         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
-                        data-oid="wzg0r.3"
+                        data-oid="jmezniu"
                       >
                         Create Backup
                       </button>
                       <button
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-                        data-oid="8cmfc1u"
+                        data-oid="gzeyfg1"
                       >
                         Import Data
                       </button>
@@ -566,10 +566,10 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Save Settings */}
-                <div className="flex justify-end" data-oid="xr-:yhf">
+                <div className="flex justify-end" data-oid="moys3ao">
                   <button
                     className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg transition-colors"
-                    data-oid="-0elvmz"
+                    data-oid="qp4eatf"
                   >
                     Save All Settings
                   </button>

@@ -3,7 +3,7 @@ import AdminDashboard from "@/components/AdminDashboard";
 
 describe("Task 1.3: Admin Dashboard Components", () => {
   test("AdminDashboard renders all required tabs", () => {
-    render(<AdminDashboard />);
+    render(<AdminDashboard data-oid="__3rnw0" />);
 
     const expectedTabs = [
       "Overview",
@@ -22,7 +22,7 @@ describe("Task 1.3: Admin Dashboard Components", () => {
   });
 
   test("Tab navigation works correctly", () => {
-    render(<AdminDashboard />);
+    render(<AdminDashboard data-oid="rrgcrtc" />);
 
     // Initially Overview should be active
     expect(screen.getByText("System Overview")).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe("Task 1.3: Admin Dashboard Components", () => {
   });
 
   test("Overview tab displays system stats", () => {
-    render(<AdminDashboard />);
+    render(<AdminDashboard data-oid="4ga4bz5" />);
 
     expect(screen.getByText("System Overview")).toBeInTheDocument();
     expect(screen.getByText("Total Templates")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("Task 1.3: Admin Dashboard Components", () => {
   });
 
   test("Quick action buttons work", () => {
-    render(<AdminDashboard />);
+    render(<AdminDashboard data-oid="v4f4jr2" />);
 
     // Test quick action to sections
     const manageSectionsButton = screen.getByText("Manage Sections");
@@ -56,7 +56,7 @@ describe("Task 1.3: Admin Dashboard Components", () => {
   });
 
   test("System status indicators are present", () => {
-    render(<AdminDashboard />);
+    render(<AdminDashboard data-oid="2byr0u4" />);
 
     expect(screen.getByText("System Status")).toBeInTheDocument();
     expect(screen.getByText(/Database:/)).toBeInTheDocument();

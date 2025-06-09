@@ -189,27 +189,38 @@ export default function ImageManager({ onImageUpdate }: ImageManagerProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+      <div className="flex items-center justify-center p-8" data-oid="hka49d2">
+        <div
+          className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"
+          data-oid="904hq4w"
+        ></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-oid="j99k0bo">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Image Management</h2>
+      <div className="flex justify-between items-center" data-oid="zd6ndc9">
+        <h2 className="text-2xl font-bold text-white" data-oid="su5cdya">
+          Image Management
+        </h2>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg">
+        <div
+          className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg"
+          data-oid="hj29p6d"
+        >
           {error}
           {error.includes("table not found") && (
-            <div className="mt-2 text-sm">
-              <p>SQL to create the images table:</p>
-              <pre className="bg-slate-900 p-2 rounded mt-1 text-xs overflow-x-auto">
+            <div className="mt-2 text-sm" data-oid="njh_skw">
+              <p data-oid="6_7t-n4">SQL to create the images table:</p>
+              <pre
+                className="bg-slate-900 p-2 rounded mt-1 text-xs overflow-x-auto"
+                data-oid="66m943o"
+              >
                 {`CREATE TABLE images (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
@@ -234,14 +245,26 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
       )}
 
       {/* Upload Section */}
-      <div className="bg-slate-800 border border-cyan-500/30 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-white mb-4">
+      <div
+        className="bg-slate-800 border border-cyan-500/30 rounded-lg p-6"
+        data-oid="zh_il1q"
+      >
+        <h3
+          className="text-xl font-semibold text-white mb-4"
+          data-oid="rp0vn6a"
+        >
           Upload New Image
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-cyan-300 text-sm font-medium mb-2">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"
+          data-oid="b-817tb"
+        >
+          <div data-oid="i9hdp7k">
+            <label
+              className="block text-cyan-300 text-sm font-medium mb-2"
+              data-oid="00o8010"
+            >
               Image Type
             </label>
             <select
@@ -256,17 +279,21 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
                 )
               }
               className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
+              data-oid="lhu0r1l"
             >
               {imageTypes.map((type) => (
-                <option key={type.value} value={type.value}>
+                <option key={type.value} value={type.value} data-oid="mxwc1ak">
                   {type.label}
                 </option>
               ))}
             </select>
           </div>
 
-          <div>
-            <label className="block text-cyan-300 text-sm font-medium mb-2">
+          <div data-oid="lxf_j72">
+            <label
+              className="block text-cyan-300 text-sm font-medium mb-2"
+              data-oid="s2aw6nq"
+            >
               Select Image File
             </label>
             <input
@@ -275,32 +302,45 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
               onChange={handleFileUpload}
               disabled={uploading}
               className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500 file:mr-4 file:py-1 file:px-4 file:rounded file:border-0 file:text-sm file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
+              data-oid="9-f-b99"
             />
           </div>
         </div>
 
         {uploading && (
-          <div className="flex items-center space-x-2 text-cyan-300">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-500"></div>
-            <span>Uploading...</span>
+          <div
+            className="flex items-center space-x-2 text-cyan-300"
+            data-oid="1dxxl18"
+          >
+            <div
+              className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-500"
+              data-oid="2h7h3.w"
+            ></div>
+            <span data-oid="-_l.oav">Uploading...</span>
           </div>
         )}
       </div>
 
       {/* Filter Section */}
-      <div className="flex space-x-4">
-        <div>
-          <label className="block text-cyan-300 text-sm font-medium mb-1">
+      <div className="flex space-x-4" data-oid="3e6-t2p">
+        <div data-oid="mrtknij">
+          <label
+            className="block text-cyan-300 text-sm font-medium mb-1"
+            data-oid="nnse:rv"
+          >
             Filter by Type
           </label>
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
             className="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
+            data-oid="3:p8y8q"
           >
-            <option value="all">All Types</option>
+            <option value="all" data-oid="xx.:frr">
+              All Types
+            </option>
             {imageTypes.map((type) => (
-              <option key={type.value} value={type.value}>
+              <option key={type.value} value={type.value} data-oid="sa:1icw">
                 {type.label}
               </option>
             ))}
@@ -309,9 +349,15 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
       </div>
 
       {/* Images Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        data-oid="t:grn-."
+      >
         {filteredImages.length === 0 ? (
-          <div className="col-span-full text-center text-slate-400 py-8">
+          <div
+            className="col-span-full text-center text-slate-400 py-8"
+            data-oid="k.60rta"
+          >
             {images.length === 0
               ? "No images found. Upload your first image to get started."
               : "No images match the current filter."}
@@ -321,9 +367,13 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
             <div
               key={image.id}
               className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden hover:border-cyan-500/50 transition-colors"
+              data-oid="_xrjcyi"
             >
               {/* Image Preview */}
-              <div className="aspect-video bg-slate-900 flex items-center justify-center">
+              <div
+                className="aspect-video bg-slate-900 flex items-center justify-center"
+                data-oid="a0dt.8a"
+              >
                 <img
                   src={image.url}
                   alt={image.name}
@@ -332,13 +382,20 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
                     (e.target as HTMLImageElement).src =
                       "/placeholder-image.png";
                   }}
+                  data-oid="p9cc-t7"
                 />
               </div>
 
               {/* Image Info */}
-              <div className="p-4">
-                <div className="flex items-center space-x-2 mb-2">
-                  <h4 className="text-white font-medium truncate flex-1">
+              <div className="p-4" data-oid="2w210f4">
+                <div
+                  className="flex items-center space-x-2 mb-2"
+                  data-oid="p.86t0u"
+                >
+                  <h4
+                    className="text-white font-medium truncate flex-1"
+                    data-oid=":g9hqbe"
+                  >
                     {image.name}
                   </h4>
                   <span
@@ -351,21 +408,23 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
                             ? "bg-green-500/20 text-green-300"
                             : "bg-orange-500/20 text-orange-300"
                     }`}
+                    data-oid="w0-87-r"
                   >
                     {image.type}
                   </span>
                 </div>
 
-                <p className="text-slate-400 text-sm mb-3">
+                <p className="text-slate-400 text-sm mb-3" data-oid="4pvahk0">
                   {formatFileSize(image.size)}
                 </p>
 
                 {/* Action Buttons */}
-                <div className="flex space-x-2">
+                <div className="flex space-x-2" data-oid="n2ze4na">
                   <button
                     onClick={() => copyImageUrl(image.url)}
                     className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-1 rounded text-sm transition-colors"
                     title="Copy URL"
+                    data-oid="lhu9986"
                   >
                     Copy URL
                   </button>
@@ -373,6 +432,7 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
                     onClick={() => window.open(image.url, "_blank")}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
                     title="View Full Size"
+                    data-oid="p-:8zas"
                   >
                     View
                   </button>
@@ -380,6 +440,7 @@ CREATE POLICY "Authenticated Delete" ON storage.objects FOR DELETE USING (bucket
                     onClick={() => handleDeleteImage(image.id, image.url)}
                     className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
                     title="Delete"
+                    data-oid="kr8piwv"
                   >
                     Delete
                   </button>

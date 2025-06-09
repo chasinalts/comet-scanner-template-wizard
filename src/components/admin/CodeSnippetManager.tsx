@@ -232,26 +232,26 @@ export default function CodeSnippetManager({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8" data-oid="22k2fdz">
+      <div className="flex items-center justify-center p-8" data-oid="f3i..ft">
         <div
           className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"
-          data-oid="609g0w:"
+          data-oid="htwncb."
         ></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6" data-oid="e9q.vav">
+    <div className="space-y-6" data-oid="6yk-2yx">
       {/* Header */}
-      <div className="flex justify-between items-center" data-oid="zcevz6o">
-        <h2 className="text-2xl font-bold text-white" data-oid="fv6qar1">
+      <div className="flex justify-between items-center" data-oid="m:lgc_a">
+        <h2 className="text-2xl font-bold text-white" data-oid="blzqd_p">
           Code Snippet Manager
         </h2>
         <button
           onClick={() => setShowCreateForm(true)}
           className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg transition-colors"
-          data-oid="d0p4:h9"
+          data-oid="7uq9luz"
         >
           Create Snippet
         </button>
@@ -261,15 +261,15 @@ export default function CodeSnippetManager({
       {error && (
         <div
           className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg"
-          data-oid="8_bgqo9"
+          data-oid="c5ws24v"
         >
           {error}
           {error.includes("table not found") && (
-            <div className="mt-2 text-sm" data-oid="cnf-b_7">
-              <p data-oid="_2a1-6x">SQL to create the table:</p>
+            <div className="mt-2 text-sm" data-oid="eb--d9d">
+              <p data-oid="rdw97s7">SQL to create the table:</p>
               <pre
                 className="bg-slate-900 p-2 rounded mt-1 text-xs overflow-x-auto"
-                data-oid="v5l85hd"
+                data-oid="itjjpvt"
               >
                 {`CREATE TABLE code_snippets (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -290,11 +290,11 @@ export default function CodeSnippetManager({
       )}
 
       {/* Filters */}
-      <div className="flex space-x-4" data-oid="egozce0">
-        <div data-oid="wx9pc3_">
+      <div className="flex space-x-4" data-oid="5ooi9jn">
+        <div data-oid="_g7sx71">
           <label
             className="block text-cyan-300 text-sm font-medium mb-1"
-            data-oid="htz24wx"
+            data-oid="l88qqj0"
           >
             Category
           </label>
@@ -302,22 +302,22 @@ export default function CodeSnippetManager({
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
             className="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
-            data-oid="dvikko_"
+            data-oid="h.54_0_"
           >
-            <option value="all" data-oid="d:uslal">
+            <option value="all" data-oid="4pqyrfi">
               All Categories
             </option>
             {uniqueCategories.map((category) => (
-              <option key={category} value={category} data-oid="s2jwj98">
+              <option key={category} value={category} data-oid="b53jwgs">
                 {category}
               </option>
             ))}
           </select>
         </div>
-        <div data-oid="p6l:z7k">
+        <div data-oid="bqz-a4c">
           <label
             className="block text-cyan-300 text-sm font-medium mb-1"
-            data-oid="e1_rrqk"
+            data-oid="tr_d4e8"
           >
             Language
           </label>
@@ -325,13 +325,13 @@ export default function CodeSnippetManager({
             value={filterLanguage}
             onChange={(e) => setFilterLanguage(e.target.value)}
             className="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
-            data-oid="n57ezvo"
+            data-oid="z83kag0"
           >
-            <option value="all" data-oid="ph7fepo">
+            <option value="all" data-oid="uanpu52">
               All Languages
             </option>
             {uniqueLanguages.map((language) => (
-              <option key={language} value={language} data-oid="tszha_:">
+              <option key={language} value={language} data-oid="yq2g094">
                 {language}
               </option>
             ))}
@@ -343,11 +343,11 @@ export default function CodeSnippetManager({
       {showCreateForm && (
         <div
           className="bg-slate-800 border border-cyan-500/30 rounded-lg p-6"
-          data-oid="as5tad9"
+          data-oid="2bi4.tg"
         >
           <h3
             className="text-xl font-semibold text-white mb-4"
-            data-oid="m33jf64"
+            data-oid="e-ek_j9"
           >
             {editingSnippet ? "Edit Code Snippet" : "Create New Code Snippet"}
           </h3>
@@ -355,16 +355,16 @@ export default function CodeSnippetManager({
           <form
             onSubmit={handleSubmit}
             className="space-y-4"
-            data-oid="icm1yaq"
+            data-oid="dltfuue"
           >
             <div
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              data-oid="dhhze6f"
+              data-oid="c6:u-us"
             >
-              <div data-oid="9qsn8vu">
+              <div data-oid="u-z.zza">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="svaap3f"
+                  data-oid="szveb-h"
                 >
                   Name
                 </label>
@@ -376,14 +376,14 @@ export default function CodeSnippetManager({
                   }
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                   required
-                  data-oid="l7whwe7"
+                  data-oid="zu:.av9"
                 />
               </div>
 
-              <div data-oid="vd:vgi4">
+              <div data-oid="al:un5j">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="u49ody:"
+                  data-oid="5uurlmk"
                 >
                   Language
                 </label>
@@ -393,10 +393,10 @@ export default function CodeSnippetManager({
                     setFormData({ ...formData, language: e.target.value })
                   }
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
-                  data-oid="7.vf2_9"
+                  data-oid="ftu:b2t"
                 >
                   {languages.map((lang) => (
-                    <option key={lang} value={lang} data-oid="m19-cog">
+                    <option key={lang} value={lang} data-oid="f:-qrj5">
                       {lang}
                     </option>
                   ))}
@@ -406,12 +406,12 @@ export default function CodeSnippetManager({
 
             <div
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              data-oid="n9i6r2f"
+              data-oid="be-h5ii"
             >
-              <div data-oid="n8l-rxn">
+              <div data-oid="d0z8de8">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="fi7mb74"
+                  data-oid="0zd:xcv"
                 >
                   Category
                 </label>
@@ -421,20 +421,20 @@ export default function CodeSnippetManager({
                     setFormData({ ...formData, category: e.target.value })
                   }
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
-                  data-oid="zpc0fi0"
+                  data-oid="o-t1gas"
                 >
                   {categories.map((cat) => (
-                    <option key={cat} value={cat} data-oid="mlqeadg">
+                    <option key={cat} value={cat} data-oid="bc3jn99">
                       {cat}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div data-oid="_35oguq">
+              <div data-oid="s:9.qh3">
                 <label
                   className="block text-cyan-300 text-sm font-medium mb-2"
-                  data-oid="sv5.66b"
+                  data-oid="d.9hl3v"
                 >
                   Tags (comma-separated)
                 </label>
@@ -444,15 +444,15 @@ export default function CodeSnippetManager({
                   onChange={(e) => handleTagsChange(e.target.value)}
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                   placeholder="react, hook, utility"
-                  data-oid="fbqy.0r"
+                  data-oid="fz6skm4"
                 />
               </div>
             </div>
 
-            <div data-oid="y-t27kp">
+            <div data-oid="pd6jc37">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="wlryr7b"
+                data-oid="bw9m:v7"
               >
                 Description
               </label>
@@ -464,14 +464,14 @@ export default function CodeSnippetManager({
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500"
                 rows={2}
                 required
-                data-oid="f7kpmmi"
+                data-oid="x11v6oi"
               />
             </div>
 
-            <div data-oid="66tol4f">
+            <div data-oid="1-wgeoz">
               <label
                 className="block text-cyan-300 text-sm font-medium mb-2"
-                data-oid="yu21jpj"
+                data-oid="efq6zhz"
               >
                 Code
               </label>
@@ -483,11 +483,11 @@ export default function CodeSnippetManager({
                 className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-cyan-500 font-mono text-sm"
                 rows={10}
                 required
-                data-oid="8ev4.jm"
+                data-oid="pz5c58_"
               />
             </div>
 
-            <div className="flex items-center" data-oid="ws62mq9">
+            <div className="flex items-center" data-oid="-vm6sv-">
               <input
                 type="checkbox"
                 id="snippet_is_active"
@@ -496,23 +496,23 @@ export default function CodeSnippetManager({
                   setFormData({ ...formData, is_active: e.target.checked })
                 }
                 className="mr-2"
-                data-oid="yk6sqsv"
+                data-oid="7v-hcpf"
               />
 
               <label
                 htmlFor="snippet_is_active"
                 className="text-cyan-300 text-sm"
-                data-oid="88agj7_"
+                data-oid="kujym1:"
               >
                 Active
               </label>
             </div>
 
-            <div className="flex space-x-4" data-oid="du3r9lw">
+            <div className="flex space-x-4" data-oid="5zbb_2n">
               <button
                 type="submit"
                 className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg transition-colors"
-                data-oid="3v2r617"
+                data-oid="aab0c3m"
               >
                 {editingSnippet ? "Update" : "Create"} Snippet
               </button>
@@ -520,7 +520,7 @@ export default function CodeSnippetManager({
                 type="button"
                 onClick={resetForm}
                 className="bg-slate-600 hover:bg-slate-700 text-white px-6 py-2 rounded-lg transition-colors"
-                data-oid="ri2eeh8"
+                data-oid="7dtlfoa"
               >
                 Cancel
               </button>
@@ -530,9 +530,9 @@ export default function CodeSnippetManager({
       )}
 
       {/* Snippets List */}
-      <div className="space-y-4" data-oid="r79j5rd">
+      <div className="space-y-4" data-oid="njtbzxs">
         {filteredSnippets.length === 0 ? (
-          <div className="text-center text-slate-400 py-8" data-oid="an1rhdj">
+          <div className="text-center text-slate-400 py-8" data-oid="ivn4a1w">
             {snippets.length === 0
               ? "No code snippets found. Create your first snippet to get started."
               : "No snippets match the current filters."}
@@ -542,57 +542,57 @@ export default function CodeSnippetManager({
             <div
               key={snippet.id}
               className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:border-cyan-500/50 transition-colors"
-              data-oid="4n8j-7b"
+              data-oid="j4paxfu"
             >
               <div
                 className="flex justify-between items-start mb-3"
-                data-oid="6l2d1xc"
+                data-oid="k0k:qde"
               >
-                <div className="flex-1" data-oid="i6:sp8i">
+                <div className="flex-1" data-oid="t0xj-91">
                   <div
                     className="flex items-center space-x-2 mb-2"
-                    data-oid="e9:inyi"
+                    data-oid="gbadxck"
                   >
                     <h3
                       className="text-lg font-semibold text-white"
-                      data-oid="7.-rh3-"
+                      data-oid="whamzf7"
                     >
                       {snippet.name}
                     </h3>
                     <span
                       className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded"
-                      data-oid="6i7-:mb"
+                      data-oid="z0k:o6x"
                     >
                       {snippet.language}
                     </span>
                     <span
                       className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded"
-                      data-oid="l2l5qq9"
+                      data-oid="uy0f9e."
                     >
                       {snippet.category}
                     </span>
                     {!snippet.is_active && (
                       <span
                         className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded"
-                        data-oid="d:mi3s6"
+                        data-oid="o_zn2ef"
                       >
                         Inactive
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-300 mb-2" data-oid="adf05_m">
+                  <p className="text-slate-300 mb-2" data-oid="tfnez-h">
                     {snippet.description}
                   </p>
                   {snippet.tags.length > 0 && (
                     <div
                       className="flex flex-wrap gap-1 mb-2"
-                      data-oid=":8b-uaq"
+                      data-oid="9x_83tx"
                     >
                       {snippet.tags.map((tag, index) => (
                         <span
                           key={index}
                           className="text-xs bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded"
-                          data-oid="3e5c:65"
+                          data-oid="20.do:t"
                         >
                           {tag}
                         </span>
@@ -600,26 +600,26 @@ export default function CodeSnippetManager({
                     </div>
                   )}
                 </div>
-                <div className="flex space-x-2" data-oid="yh7x00a">
+                <div className="flex space-x-2" data-oid="65h7k4y">
                   <button
                     onClick={() => copyToClipboard(snippet.code)}
                     className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
                     title="Copy code"
-                    data-oid="x_azbog"
+                    data-oid="l4m4wmw"
                   >
                     Copy
                   </button>
                   <button
                     onClick={() => handleEdit(snippet)}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="db45qcs"
+                    data-oid="xdv5dt9"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(snippet.id)}
                     className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    data-oid="ok61k:i"
+                    data-oid="62gp0d0"
                   >
                     Delete
                   </button>
@@ -627,18 +627,18 @@ export default function CodeSnippetManager({
               </div>
 
               {/* Code Preview */}
-              <details data-oid="5r:57.a">
+              <details data-oid="im13u-9">
                 <summary
                   className="text-cyan-300 cursor-pointer text-sm hover:text-cyan-200 mb-2"
-                  data-oid="1.vr8ye"
+                  data-oid="9tjs8ie"
                 >
                   View Code
                 </summary>
                 <pre
                   className="bg-slate-900 border border-slate-600 rounded p-3 text-xs text-slate-300 overflow-x-auto"
-                  data-oid="8jgn60k"
+                  data-oid="81q94_y"
                 >
-                  <code data-oid="xnovr4w">{snippet.code}</code>
+                  <code data-oid="af67hv6">{snippet.code}</code>
                 </pre>
               </details>
             </div>

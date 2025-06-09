@@ -3,14 +3,14 @@ import SectionManager from "@/components/admin/SectionManager";
 
 describe("Task 2.4: Wizard Configuration Interface", () => {
   test("SectionManager renders correctly", () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="pd-4xzj" />);
 
     expect(screen.getByText("Section Manager")).toBeInTheDocument();
     expect(screen.getByText("Create Section")).toBeInTheDocument();
   });
 
   test("Create section form appears when button clicked", () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="6:muxvs" />);
 
     const createButton = screen.getByText("Create Section");
     fireEvent.click(createButton);
@@ -23,7 +23,7 @@ describe("Task 2.4: Wizard Configuration Interface", () => {
   });
 
   test("Question type options are available", () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="kegrggf" />);
 
     const createButton = screen.getByText("Create Section");
     fireEvent.click(createButton);
@@ -46,7 +46,7 @@ describe("Task 2.4: Wizard Configuration Interface", () => {
   });
 
   test("Options textarea appears for multiple choice questions", () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="m3xm5-p" />);
 
     const createButton = screen.getByText("Create Section");
     fireEvent.click(createButton);
@@ -59,7 +59,7 @@ describe("Task 2.4: Wizard Configuration Interface", () => {
   });
 
   test("Code snippets JSON editor is present", () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="._h0j0h" />);
 
     const createButton = screen.getByText("Create Section");
     fireEvent.click(createButton);
@@ -72,7 +72,7 @@ describe("Task 2.4: Wizard Configuration Interface", () => {
   });
 
   test("Image assignments section appears for multiple choice", async () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="km1n848" />);
 
     const createButton = screen.getByText("Create Section");
     fireEvent.click(createButton);
@@ -89,7 +89,7 @@ describe("Task 2.4: Wizard Configuration Interface", () => {
   });
 
   test("Order index is numeric and configurable", () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="p3lqfax" />);
 
     const createButton = screen.getByText("Create Section");
     fireEvent.click(createButton);
@@ -101,7 +101,7 @@ describe("Task 2.4: Wizard Configuration Interface", () => {
   });
 
   test("Active checkbox is present", () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="i6qt_he" />);
 
     const createButton = screen.getByText("Create Section");
     fireEvent.click(createButton);
@@ -113,7 +113,7 @@ describe("Task 2.4: Wizard Configuration Interface", () => {
   });
 
   test("Form validation requires title and description", () => {
-    render(<SectionManager />);
+    render(<SectionManager data-oid="..4fe7w" />);
 
     const createButton = screen.getByText("Create Section");
     fireEvent.click(createButton);
